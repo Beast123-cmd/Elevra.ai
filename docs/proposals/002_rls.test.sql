@@ -1,5 +1,6 @@
--- 002_rls.test.sql: behavioural test for 002_rls.sql. Run INSIDE a transaction that you roll back:
---   begin;  \i 002_rls.sql  \i 002_rls.test.sql  select * from rlstest.res order by n;  rollback;
+-- 002_rls.test.sql: behavioural test for db/migrations/002_rls.sql. Run INSIDE a transaction that you roll back
+-- (docs/proposals/run_rls_test.py does this for you):
+--   begin;  [\i db/migrations/002_rls.sql]  \i 002_rls.test.sql  select * from rlstest.res order by n;  rollback;
 -- It builds its own fixtures (notifications, interventions) and impersonates users by setting the role and JWT claims,
 -- exactly as PostgREST does. Needs the seeded demo accounts (admin@, faculty1@, student.red@demo.edu).
 

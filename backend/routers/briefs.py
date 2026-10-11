@@ -71,7 +71,10 @@ def allowed_numbers(p: dict) -> list[float]:
     for risk in (p["academic_risk"], p["placement_risk"]):
         out.append(float(risk.get("points", 0)))
         for d in risk.get("drivers") or []:
-            out += _numbers(d.get("value", "")) + [float(d.get("points", 0))]
+            # values ("47.5%") and the thresholds written in the labels ("below 40", "(65%)") are both profile facts
+            out += _numbers(d.get("value", "")) + _numbers(d.get("label", "")) + [float(d.get("points", 0))]
+    for action in p.get("actions") or []:
+        out += _numbers(action)
     prob = (p.get("model") or {}).get("prob")
     if isinstance(prob, (int, float)):
         out += [prob * 100, round(prob * 100)]
@@ -135,15 +138,23 @@ def make_brief(p: dict) -> dict:
     if hit and time.time() - hit[0] < CACHE_TTL_S:
         return hit[1]
     fallback = {"brief": template_brief(p), "source": "template"}
-    try:
-        data = generate_json(build_prompt(p), max_tokens=400)
-    except LlmUnavailable:
-        return {**fallback, "reason": "AI unavailable, showing the standard summary"}
-    text = data.get("brief")
-    if not isinstance(text, str) or not text.strip():
-        return {**fallback, "reason": "AI returned nothing usable, showing the standard summary"}
-    if not is_grounded(text, allowed_numbers(p)):
-        return {**fallback, "reason": "AI wording failed the fact check, showing the standard summary"}
+    allowed, text, reason = allowed_numbers(p), None, "AI returned nothing usable, showing the standard summary"
+    for _ in range(2):  # one retry: the model's wording varies, so a bad first draft is often fixed by a second
+        try:
+            data = generate_json(build_prompt(p), max_tokens=400)
+        except LlmUnavailable:
+            return {**fallback, "reason": "AI unavailable, showing the standard summary"}
+        draft = data.get("brief")
+        if not isinstance(draft, str) or not draft.strip():
+            reason = "AI returned nothing usable, showing the standard summary"
+            continue
+        if not is_grounded(draft, allowed):
+            reason = "AI wording failed the fact check, showing the standard summary"
+            continue
+        text = draft
+        break
+    if text is None:
+        return {**fallback, "reason": reason}
     result = {"brief": text.strip(), "source": "ai"}
     _cache[key] = (time.time(), result)
     return result

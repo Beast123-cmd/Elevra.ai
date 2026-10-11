@@ -53,6 +53,15 @@ class Grounding(unittest.TestCase):
         self.assertFalse(briefs.is_grounded("Her attendance is 31% which is alarming.", self.allowed))
         self.assertFalse(briefs.is_grounded("She has 14 backlogs.", self.allowed))
 
+    def test_thresholds_quoted_in_driver_labels_are_facts_too(self):
+        # "Attendance below detention line (65%)" and "Coding score below 40" are in the profile's own driver labels
+        self.assertTrue(briefs.is_grounded("Attendance is under the 65% detention line and coding is below 40.", self.allowed))
+        self.assertFalse(briefs.is_grounded("Attendance is under the 70% line.", self.allowed), "a threshold that is not in the profile is invented")
+
+    def test_numbers_in_suggested_actions_are_facts_too(self):
+        p = {**PROFILE, "actions": ["Mentor check-in within 72 hours"]}
+        self.assertTrue(briefs.is_grounded("Arrange a check-in within 72 hours.", briefs.allowed_numbers(p)))
+
     def test_small_counts_are_tolerated(self):
         self.assertTrue(briefs.is_grounded("Start with two conversations in weeks 6 to 8, and one follow-up.", self.allowed))
 
@@ -97,6 +106,22 @@ class Generation(unittest.TestCase):
             out = briefs.make_brief(PROFILE)
         self.assertEqual(out["source"], "template")
         self.assertTrue(out["brief"])
+
+    def test_one_retry_absorbs_a_bad_first_draft(self):
+        replies = [{"brief": "Diya has 99% absenteeism."}, {"brief": "Diya Kumar (score 50.1) needs a check-in about attendance of 47.5%."}]
+        with mock.patch.object(briefs, "generate_json", side_effect=replies) as g:
+            out = briefs.make_brief(PROFILE)
+        self.assertEqual((out["source"], g.call_count), ("ai", 2))
+
+    def test_two_bad_drafts_fall_back_after_exactly_two_attempts(self):
+        with mock.patch.object(briefs, "generate_json", return_value={"brief": "Diya has 99% absenteeism."}) as g:
+            out = briefs.make_brief(PROFILE)
+        self.assertEqual((out["source"], g.call_count), ("template", 2))
+
+    def test_an_outage_is_not_retried(self):
+        with mock.patch.object(briefs, "generate_json", side_effect=LlmUnavailable("offline")) as g:
+            briefs.make_brief(PROFILE)
+        self.assertEqual(g.call_count, 1)
 
     def test_missing_or_non_string_brief_falls_back(self):
         for payload in ({}, {"brief": 5}, {"brief": "   "}):

@@ -9,6 +9,7 @@ const LINKS = [
   ["/admin/users", "Users"],
   ["/admin/interventions", "Interventions"],
   ["/admin/notifications", "Notifications"],
+  ["/admin/chat", "Ask your data"],
   ["/faculty", "Action Queue"],
   ["/insights/data-health", "Data Health"],
   ["/insights/segments", "Segments"],

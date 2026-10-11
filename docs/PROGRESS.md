@@ -13,7 +13,9 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 | Admin: users, overview | Mahesh | Merged (PR #1) |
 | Faculty: action queue, Student 360, interventions | Mahesh | Merged (PR #1) |
 | Student home, Data Health, Segments, Improve path, Certifications | Utkarsh | Merged (PR #2, #4) |
-| Admin: interventions effectiveness, notifications | Mahesh | Built and verified on real data (B6) |
+| Admin: interventions effectiveness, notifications | Mahesh | Done; verified against the live RLS policies (B6) |
+| Admin chat (Ask your data) and faculty mentor briefs | Mahesh | Done, with non-AI fallbacks and offline states (B7) |
+| Row-level security | Aayush | Merged (PR #8) and verified: 59/59 checks, anonymous access closed |
 | Mock interview (Gemini + ElevenLabs), what-if UI | Utkarsh | Not started |
 | What-if / re-score API, model, insights | Aayush | Not started / in progress |
 | Deploy (Vercel + Hostinger VPS) | Utkarsh leads | Last, after features |
@@ -56,6 +58,22 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 | 13:20 | Queries as faculty1 | 30 mentees (F01), all with the right mentor |
 | 13:20 | Admin overview over 1,500 students (paging past the 1000-row cap) | Pass |
 
+### Verification after RLS went live (13:50 to 14:20)
+| What | Result |
+|---|---|
+| `python docs/proposals/run_rls_test.py current` (Aayush's live policies) and `migration` (his file applied in a rolled-back transaction) | 59/59 both ways; database unchanged |
+| App queries with each user's own token: admin overview, faculty queue (with and without the mentor filter), Student 360, analytics, interventions | 11/11 |
+| Notifications: admin posts to all / department / year / one student; each student sees exactly what is addressed to them; faculty and student cannot post; `created_by` cannot be forged | 14/14, test rows deleted |
+| Interventions: faculty logs for mentees only, as themselves; student cannot log or update; admin logs for anyone | 8/8, test rows deleted |
+| API: auth, user creation, rollback, mentor change | 18/18 |
+| Role guards, all roles, including `/admin/chat` | 43/43 |
+| Briefs and chat with live Gemini under RLS: 401/403/404/422, 4 real questions answered, 7 hostile questions (drop, delete, update, emails, `pg_sleep`) all refused, database intact | all pass |
+| Gemini offline (invalid key): briefs fall back to the standard summary, chat uses vetted canned queries, unmatched questions get suggestions | all pass |
+| Fact check on 20 real students with live Gemini | 20/20 AI briefs passed, median 2.4 s, 0 gendered pronouns |
+| Backend unit tests (`python -m unittest discover -s tests -t .` in `backend/`) | 53 pass |
+| Frontend unit tests (`npm test`) | 52 pass |
+| Chat, brief card and loading/offline states in headless Chrome with real sessions | no console or network errors |
+
 ## 4. Decisions
 - **Absolute pillar scores, not batch percentiles.** Percentiles make every batch average 50, so "% at risk" would mean nothing. Percentiles are display text only.
 - **Placement risk is rule-based, with no placement ML model.** There are no real placement outcomes, so any label would be circular. The academic model trains on last semester and predicts end-of-semester results.
@@ -84,18 +102,22 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 - Band badge wrapped onto two lines in narrow columns; "lowest subject" printed a dash when the field is empty. Both fixed.
 - Demo accounts are re-pointed to different students on every re-seed, so docs and demos must not hardcode student names.
 
+- Gemini 2.5 returned empty text for short JSON replies because its hidden "thinking" used the whole output budget; thinking is now off (`common/llm.py`).
+- Fact check wrongly rejected briefs that quoted a threshold from a driver label ("below 50"); label and action numbers now count as profile facts, and one retry absorbs wording variation.
+- Gemini once guessed a gender from a name ("his"); the prompt now forbids gendered pronouns and the fact check enforces it.
+- Chat latency: a fresh database connection costs about 4 s and the old per-statement flow cost about 7 round trips. Now one reused connection and one batched statement (about 4.8 s end to end instead of 10 s); the chat page warms the connection on load.
+- The API needs `PYTHONPATH` to include `pipeline/` (Aayush's `whatif.py` imports `scoring.engine`); the VPS service file already sets it.
+
 ## 7. Open items
-1. **Row-level security (privacy), CRITICAL.** Found by `docs/proposals/run_rls_test.py` (34 of 59 checks fail on today's database):
-   - **Anyone with the public anon key and no login can read all 1,500 students through `student_unified_view`** (views bypass RLS unless `security_invoker` is set). One-line fix: `alter view public.student_unified_view set (security_invoker = true);`
-   - Any logged-in student can read all scores, feedback, interventions and users, **and can log interventions and post notifications to everyone**.
-   - Proposed fix: `docs/proposals/002_rls.sql` (students: own rows; faculty: their mentees; admin: all; interventions: mentors only). With it, 59/59 checks pass. Tested inside a rolled-back transaction, so the shared database is unchanged. Owner: Aayush to review and apply.
+1. ~~Row-level security~~ **Resolved.** Aayush's `db/migrations/002_rls.sql` is live; `docs/proposals/002_rls.test.sql` plus `run_rls_test.py` are kept as the regression test (my duplicate proposal migration was removed).
 2. **Seed realism:** all 300 seeded interventions show "improved 100%" with round averages; 27% of students are Red for academic risk and 33% for placement, which is too many to triage. Add noise and recalibrate thresholds. Owner: Aayush.
 3. `min_subject_attendance` is not populated in `profile.metrics`. Owner: Aayush.
 4. Branch protection on `main` (repo admin).
 5. Mock interview, what-if panel, `/demo` page. Owner: Utkarsh.
-6. B7 (P2): AI student briefs and "Ask your data" chat. Owner: Mahesh.
+6. **Dependency change needs Aayush's OK** (`backend/requirements.txt` is frozen): `supabase==2.32.0` and `pydantic==2.14.0` (already on `main` via PR #6, required because 2.9.0 rejects `sb_secret_` keys), plus `google-genai==2.29.0` and `psycopg[binary]==3.3.6` for B7. Everyone must run `pip install -r backend/requirements.txt`.
 7. Deploy: Vercel + VPS; set env vars there. Utkarsh leads.
 
 ## 8. Change log
+- 14:20 B7 (briefs, data chat) finished and verified under live RLS; proposals folder reduced to the RLS regression test.
 - 13:20 B6 (effectiveness, notifications), supabase fix and full real-data verification on `feat/admin-faculty`.
 - 12:05 Hour-0 skeleton on main. 12:21 admin shell, users, overview, queue, Student 360 (PR #1, merged 12:40). 12:38 teammates' PRs #2 and #3 merged. 12:45 keys moved out of `.env.example` into ignored files, live connections verified.
