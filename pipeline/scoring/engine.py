@@ -165,7 +165,7 @@ def evaluate(metrics: Mapping[str, object], weights: Mapping[str, object] = WEIG
     score = success_score(pillars, weights)
     # Model inference is deliberately optional until a trained, validated model card is supplied.
     probability, factors = 0.0, []
-    if card and card.get("features"):
+    if card and card.get("features") and card.get("algorithm", "logistic_regression") == "logistic_regression":
         z = _number(card.get("intercept")) or 0.0
         for feature in card["features"]:
             value = _number(metrics.get(feature.get("source", feature.get("name", ""))))
@@ -177,6 +177,35 @@ def evaluate(metrics: Mapping[str, object], weights: Mapping[str, object] = WEIG
         probability = 1 / (1 + math.exp(-z))
         factors.sort(key=lambda row: -abs(row["effect"]))
         factors = factors[:3]
+    elif card and card.get("features") and card.get("algorithm") in {"decision_tree", "random_forest"}:
+        feature_values = []
+        for feature in card["features"]:
+            value = _number(metrics.get(feature.get("source", feature.get("name", ""))))
+            feature_values.append(value if value is not None else (_number(feature.get("mean")) or 0.0))
+        trees = card.get("trees", []) if card.get("algorithm") == "random_forest" else [card.get("tree", {})]
+        effects = {}
+        labels = {}
+        probabilities = []
+        for tree in trees:
+            node = tree
+            while node and not node.get("leaf"):
+                index = node.get("feature")
+                if not isinstance(index, int) or index < 0 or index >= len(card["features"]):
+                    break
+                feature = card["features"][index]
+                left = feature_values[index] <= float(node["threshold"])
+                child = node["left"] if left else node["right"]
+                effect = float(child["prob"]) - float(node["prob"])
+                name = str(feature.get("name", index))
+                effects[name] = effects.get(name, 0.0) + effect / max(1, len(trees))
+                labels[name] = (f"{feature.get('label', name)} {'≤' if left else '>'} "
+                                f"{float(node['threshold']):.2f}")
+                node = child
+            if node:
+                probabilities.append(float(node["prob"]))
+        probability = sum(probabilities) / len(probabilities) if probabilities else 0.0
+        factors = [{"feature": name, "label": labels[name], "effect": round(effect, 3)}
+                   for name, effect in sorted(effects.items(), key=lambda item: -abs(item[1]))[:3]]
     academic = academic_risk(metrics, probability)
     placement = placement_risk(metrics, pillars["placement"])
     attendance_drop = _number(metrics.get("attendance_drop_pp")) or 0.0

@@ -95,7 +95,7 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
                 external = ""
                 if completed:
                     # Preserve the deliberately high-performing guided-demo student.
-                    fail = not t["demo_star"] and rng.random() < (0.25 if is_low else 0.065)
+                    fail = not t["demo_star"] and rng.random() < (0.15 if is_low else 0.025)
                     total = max(0, min(100, round(base + rng.gauss(0, 11))))
                     if fail:
                         # Make the planted attendance/backlog relationship visible in exam marks.

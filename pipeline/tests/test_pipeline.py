@@ -41,6 +41,19 @@ class ScoringTests(unittest.TestCase):
         self.assertEqual(result["academic_risk"]["level"], "Red")
         self.assertTrue(result["academic_risk"]["drivers"][0]["label"].startswith("Attendance below detention"))
 
+    def test_tree_model_cards_produce_probability_and_explanation(self):
+        feature = {"name": "attendance_pct", "source": "attendance_pct",
+            "label": "Attendance", "mean": 75, "std": 10}
+        tree = {"prob": 0.4, "n": 100, "leaf": False,
+            "feature": 0, "threshold": 65, "left": {"prob": 0.8, "n": 25, "leaf": True},
+            "right": {"prob": 0.25, "n": 75, "leaf": True}}
+        card = {"algorithm": "decision_tree", "features": [feature], "tree": tree}
+        result = evaluate({**BASE, "attendance_pct": 60}, card=card)
+        self.assertEqual(result["model"]["prob"], 0.8)
+        self.assertIn("Attendance ≤ 65.00", result["model"]["factors"][0]["label"])
+        forest = evaluate({**BASE, "attendance_pct": 60}, card={**card, "algorithm": "random_forest", "trees": [tree, tree]})
+        self.assertEqual(forest["model"]["prob"], 0.8)
+
     def test_ordered_segments_and_whatif_monotonicity(self):
         star = evaluate({**BASE, "cgpa": 9.2, "internal_pct": 90, "aptitude": 40, "coding": 35, "mock": 2})
         silent = evaluate({**BASE, "engagement_drop": 1, "login_trend": -0.7})
@@ -133,6 +146,11 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(model["metrics"]["n_train"] + model["metrics"]["n_test"], 200)
         self.assertEqual(len(model["features"]), 7)
         self.assertIn("synthetic", model["metrics"]["target"])
+        self.assertEqual({row["name"] for row in model["candidates"]},
+                         {"logistic_regression", "decision_tree", "random_forest"})
+        self.assertEqual(model["algorithm"], max(model["candidates"],
+                         key=lambda row: (row["metrics"]["cv_auc"],
+                                          {"logistic_regression": 2, "decision_tree": 1, "random_forest": 0}[row["name"]]))["name"])
         self.assertEqual({row["group_type"] for row in model["fairness"]}, {"residence", "gender"})
         self.assertEqual(len(payload["analytics"][0]["payload"]["lead_time"]), 8)
         self.assertEqual(len(payload["interventions"]), 200)
