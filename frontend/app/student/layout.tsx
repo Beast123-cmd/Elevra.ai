@@ -1,4 +1,6 @@
 import { StudentNav } from "@/components/student/StudentNav";
+import { StudentProfileProvider } from "@/components/student/StudentProfileProvider";
+import { Suspense } from "react";
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,7 +10,9 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
         <header className="hidden h-14 items-center border-b border-slate-200 bg-white px-6 text-[11px] font-medium text-slate-600 md:flex md:px-10">
           Student dashboard
         </header>
-        {children}
+        <Suspense fallback={<div className="mx-auto w-full max-w-[1030px] px-4 py-7 sm:px-6" aria-busy="true" />}>
+          <StudentProfileProvider>{children}</StudentProfileProvider>
+        </Suspense>
       </div>
     </div>
   );
