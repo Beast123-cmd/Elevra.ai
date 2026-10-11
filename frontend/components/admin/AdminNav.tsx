@@ -10,6 +10,7 @@ const LINKS = [
   ["/admin/workload", "Response & workload"],
   ["/admin/interventions", "Interventions"],
   ["/admin/notifications", "Notifications"],
+  ["/admin/evidence", "Evidence"],
   ["/admin/chat", "Ask your data"],
   ["/faculty", "Action Queue"],
   ["/faculty/attendance", "Attendance"],
