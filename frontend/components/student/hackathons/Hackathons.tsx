@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { ExternalLink, LayoutGrid, List as ListIcon, Search, Trophy, X } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { ExternalLink, LayoutGrid, List as ListIcon, MapPin, RefreshCw, Search, Trophy, Users, X } from "lucide-react";
 import type { Profile } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileGate } from "../ProfileGate";
 import { StudentReveal } from "../StudentReveal";
 import { HACKATHONS, type Hackathon, type HackathonKind } from "./data";
+import { ago, countdown, loadFeed, type HackathonFeed, type LiveHackathon } from "./live";
 
 type Scope = "branch" | "all";
 type ViewMode = "grid" | "list";
@@ -162,13 +164,158 @@ function EventCatalog({ profile }: { profile: Profile }) {
   );
 }
 
+// ---------- Live feed: hackathons collected daily by the backend agent (analytics['hackathons']) ----------
+
+type LiveChip = "india" | "online" | "contests";
+const LIVE_CHIPS: { key: LiveChip; label: string }[] = [
+  { key: "india", label: "In India" }, { key: "online", label: "Online" }, { key: "contests", label: "Coding contests" },
+];
+const LIVE_PAGE = 9;
+
+function LiveCard({ event, department }: { event: LiveHackathon; department: string }) {
+  const due = countdown(event);
+  const place = event.mode === "Online" ? "Online" : [event.mode, event.location].filter(Boolean).join(" · ");
+  return (
+    <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-[#dce7e1] bg-white p-4 transition duration-200 hover:-translate-y-0.5 hover:border-[#b7d1c8] hover:shadow-md hover:shadow-slate-900/[0.06] motion-reduce:transform-none motion-reduce:transition-none">
+      <span className={`absolute inset-x-0 top-0 h-1 ${due?.urgent ? "bg-red-400" : "bg-[#398b7d]"}`} aria-hidden="true" />
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">{event.source}</span>
+        {event.kind === "Coding contest" && <span className="rounded-full bg-[#eaf3ef] px-2.5 py-1 text-[11px] font-semibold text-[#18574e]">Coding contest</span>}
+        {event.departments.includes(department) && event.departments.length < 4 && <span className="rounded-full bg-[#eff8f5] px-2.5 py-1 text-[11px] font-medium text-[#286a62]">For {department}</span>}
+      </div>
+      <h3 className="mt-3 text-base font-semibold leading-snug text-[#172824]">{event.title}</h3>
+      {event.organiser && <p className="mt-1 text-xs text-slate-500">{event.organiser}</p>}
+      {event.summary && <p className="mt-3 text-sm leading-5 text-slate-600">{event.summary}</p>}
+      <div className="mt-3 space-y-1 text-xs text-slate-600">
+        {place && <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{place}</p>}
+        {event.team && <p className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" aria-hidden="true" />{event.team === "1" ? "Solo" : `Team of ${event.team}`}</p>}
+        {event.prize && <p className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5" aria-hidden="true" />Prizes: {event.prize}</p>}
+      </div>
+      {due && <p className={`mt-3 text-xs font-semibold ${due.urgent ? "text-red-700" : "text-[#18574e]"}`}>{due.text}</p>}
+      <div className="min-h-4 flex-1" aria-hidden="true" />
+      <a href={event.url} target="_blank" rel="noopener noreferrer"
+        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#eaf3ef] px-3 text-sm font-semibold text-[#18574e] transition-colors hover:bg-[#dcece4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">
+        View &amp; register <ExternalLink className="h-4 w-4" aria-hidden="true" />
+      </a>
+    </article>
+  );
+}
+
+type LiveState = { status: "loading" } | { status: "error" } | { status: "ready"; feed: HackathonFeed | null };
+
+function LiveFeed({ profile }: { profile: Profile }) {
+  const [state, setState] = useState<LiveState>({ status: "loading" });
+  const [scope, setScope] = useState<Scope>("branch");
+  const [chip, setChip] = useState<LiveChip | null>(null);
+  const [shown, setShown] = useState(LIVE_PAGE);
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setState({ status: "loading" });
+    loadFeed()
+      .then((feed) => !cancelled && setState({ status: "ready", feed }))
+      .catch(() => !cancelled && setState({ status: "error" }));
+    return () => { cancelled = true; };
+  }, [attempt]);
+
+  const items = useMemo(() => {
+    if (state.status !== "ready" || !state.feed) return [];
+    return state.feed.items
+      .filter((e) => scope === "all" || e.departments.includes(profile.department))
+      .filter((e) => !chip || (chip === "india" && e.india) || (chip === "online" && e.mode === "Online") || (chip === "contests" && e.kind === "Coding contest"));
+  }, [state, scope, chip, profile.department]);
+
+  useEffect(() => { setShown(LIVE_PAGE); }, [scope, chip]);
+
+  if (state.status === "loading") {
+    return <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-56 rounded-xl" />)}</div>;
+  }
+  if (state.status === "error") {
+    return (
+      <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#dce7e1] bg-white px-4 py-4 text-sm text-slate-600">
+        We couldn&apos;t load today&apos;s live list. The annual events below are always available.
+        <button type="button" onClick={() => setAttempt((a) => a + 1)} className="inline-flex items-center gap-1 text-sm font-semibold text-[#286a62] underline underline-offset-2">
+          <RefreshCw className="h-4 w-4" aria-hidden="true" />Try again
+        </button>
+      </div>
+    );
+  }
+  const feed = state.feed;
+  if (!feed || feed.items.length === 0) {
+    return (
+      <div className="rounded-xl border border-[#dce7e1] bg-white px-4 py-4 text-sm text-slate-600">
+        {feed?.refreshing ? "We're collecting today's hackathons now. Check back in a minute." : "No open hackathons right now. The list refreshes every day."}
+      </div>
+    );
+  }
+  const sources = Object.entries(feed.sources).filter(([, s]) => s.ok && s.count > 0).map(([n]) => n);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <div role="group" aria-label="Live event relevance" className="flex rounded-lg bg-[#edf2ef] p-1">
+            {(["branch", "all"] as const).map((value) => (
+              <button key={value} type="button" aria-pressed={scope === value} onClick={() => setScope(value)}
+                className={`min-h-9 rounded-md px-3 text-xs transition-colors ${scope === value ? "bg-white font-medium text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+                {value === "branch" ? `For ${profile.department}` : "All open"}
+              </button>
+            ))}
+          </div>
+          {LIVE_CHIPS.map((c) => (
+            <button key={c.key} type="button" aria-pressed={chip === c.key} onClick={() => setChip(chip === c.key ? null : c.key)}
+              className={`min-h-9 rounded-full px-3 text-xs font-medium ring-1 ring-inset transition-colors ${chip === c.key ? "bg-[#18574e] text-white ring-[#18574e]" : "bg-white text-slate-600 ring-[#dce7e1] hover:text-slate-900"}`}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-slate-500">Updated {ago(feed.generated_at)} · {sources.join(", ")}{feed.refreshing ? " · updating now" : ""}</p>
+      </div>
+      <p aria-live="polite" className="text-sm text-slate-600"><span className="font-semibold text-[#172824]">{items.length}</span> open now · closing soonest first</p>
+      {items.length ? (
+        <>
+          <StudentReveal key={`${scope}-${chip}`}>
+            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Open hackathons">
+              {items.slice(0, shown).map((event) => <li key={event.id}><LiveCard event={event} department={profile.department} /></li>)}
+            </ul>
+          </StudentReveal>
+          {items.length > shown && (
+            <button type="button" onClick={() => setShown((n) => n + LIVE_PAGE)}
+              className="w-full rounded-lg border border-[#dce7e1] bg-white py-2.5 text-sm font-semibold text-[#286a62] hover:bg-[#edf5f1]">
+              Show more ({items.length - shown} left)
+            </button>
+          )}
+        </>
+      ) : (
+        <div className="rounded-xl border border-[#dce7e1] bg-white px-5 py-8 text-center text-sm text-slate-500">
+          Nothing open in this filter right now. Try &ldquo;All open&rdquo; or another chip.
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Hackathons() {
   return (
     <ProfileGate>
       {(profile) => (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <YourRecord profile={profile} />
-          <EventCatalog profile={profile} />
+          <section aria-labelledby="live-heading" className="space-y-3">
+            <div>
+              <h2 id="live-heading" className="text-base font-semibold text-[#172824]">Open now <span className="ml-1 rounded-full bg-red-50 px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wide text-red-700">Live</span></h2>
+              <p className="text-sm text-slate-500">Hackathons and contests you can still register for, collected daily from Unstop, Devpost, HackerEarth, MLH and CodeChef.</p>
+            </div>
+            <LiveFeed profile={profile} />
+          </section>
+          <section aria-labelledby="annual-heading" className="space-y-3">
+            <div>
+              <h2 id="annual-heading" className="text-base font-semibold text-[#172824]">Annual events and platforms</h2>
+              <p className="text-sm text-slate-500">Recurring national and global events worth planning for.</p>
+            </div>
+            <EventCatalog profile={profile} />
+          </section>
         </div>
       )}
     </ProfileGate>
