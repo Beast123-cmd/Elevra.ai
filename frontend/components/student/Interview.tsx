@@ -12,7 +12,6 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { speak, stopSpeaking, useLiveTranscription } from "./voice";
 import { StudentReveal } from "./StudentReveal";
-import { StudentNextStep } from "./StudentNextStep";
 
 type Stage = "intro" | "resume" | "technical" | "behavioural" | "wrapup";
 interface Turn { role: "interviewer" | "candidate"; text: string }
@@ -205,17 +204,14 @@ export function Interview() {
       <div className="space-y-4">
         {banner}
         <StudentReveal key="interview-intro">
-        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
-          <CardHeader>
-            <CardTitle>Add your resume</CardTitle>
-            <CardDescription>
-              A {TARGET} conversation with an AI interviewer: your introduction, your resume and projects, technical questions
-              for your department, then behavioural ones. Each question builds on your previous answers. Your resume and answers
-              are sent to an AI service; a short summary of your resume is saved with the interview, the file itself is not.
-            </CardDescription>
+        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-none">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Start a practice interview</CardTitle>
+            <CardDescription>{TARGET} · Resume based questions · Text answers work without voice</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-lg border border-dashed border-slate-300 p-4">
+          <CardContent className="space-y-3">
+            <p className="text-xs leading-5 text-slate-500">Your resume is sent to the interview service to create questions. Only a short summary is saved; the uploaded file is not.</p>
+            <div className="rounded-lg border border-[#dce7e1] bg-[#f7faf8] p-3">
               {pdf ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                   <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-slate-500" /><span className="font-medium">{pdf.name}</span></span>
@@ -231,8 +227,8 @@ export function Interview() {
               )}
             </div>
             <div className={pdf ? "pointer-events-none opacity-50" : ""} aria-disabled={pdf !== null}>
-              <p className="mb-2 text-sm text-slate-500">{pdf ? "Using your PDF. Remove it to paste text instead." : "Or paste the text of your resume"}</p>
-              <Textarea value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={6} disabled={pdf !== null}
+              <p className="mb-1.5 text-xs font-medium text-slate-600">{pdf ? "Using your PDF" : "Or paste resume text"}</p>
+              <Textarea value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={4} disabled={pdf !== null}
                 placeholder="Education, projects, skills, internships…" aria-label="Resume text" />
               {!pdf && len > 0 && len < MIN_RESUME && <p className="mt-1 text-xs text-slate-500">Add at least {MIN_RESUME - len} more characters</p>}
             </div>
@@ -255,16 +251,10 @@ export function Interview() {
             </details>
             {errorBox}
             {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-[#286a62]"><span className="student-loading-dot" aria-hidden="true" /> Reading your resume and preparing the interview…</p>}
-            <Button onClick={start} disabled={busy !== null || !ready}>{busy ? "Preparing your interview…" : "Enter the interview room"}</Button>
+            <Button onClick={start} disabled={busy !== null || !ready}>{busy ? "Preparing…" : "Start interview"}</Button>
           </CardContent>
         </Card>
         </StudentReveal>
-        <StudentNextStep
-          label="AFTER PRACTICE"
-          title="Check campus updates"
-          description="Review placement drives and announcements shared with you."
-          href="/student/notifications"
-        />
       </div>
     );
   }
@@ -450,12 +440,6 @@ export function Interview() {
           <Button asChild><Link href="/student">Back to my dashboard</Link></Button>
           <Button variant="outline" onClick={reset}>Start another interview</Button>
         </div>
-        <StudentNextStep
-          label="NEXT"
-          title="Check campus updates"
-          description="Review placement drives and announcements shared with you."
-          href="/student/notifications"
-        />
       </div>
     );
   }
