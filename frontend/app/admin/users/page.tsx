@@ -13,7 +13,9 @@ import type { Role } from "@/lib/types";
 interface UserRow { id: string; email: string; role: Role; student_id: string | null; faculty_id: string | null; created_at: string }
 interface StudentRow { student_id: string; name: string; department: string; year: number; mentor_faculty_id: string | null }
 interface FacultyRow { faculty_id: string; name: string; department: string }
-interface Created { email: string; role: Role; temp_password: string }
+interface Created { email: string; role: Role; temp_password: string; student_id: string | null; faculty_id: string | null; record_created: boolean }
+const DEPARTMENTS = ["Comp", "IT", "ENTC", "AI&DS"];
+const NEW_FACULTY = "__new";
 
 const FIELD = "h-9 w-full rounded-md border border-input bg-card px-3 text-sm";
 
@@ -24,7 +26,8 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
 
-  const [form, setForm] = useState({ email: "", name: "", role: "student" as Role, student_id: "", faculty_id: "" });
+  const EMPTY = { email: "", name: "", role: "student" as Role, student_id: "", faculty_id: "", department: "", year: "", mentor: "" };
+  const [form, setForm] = useState(EMPTY);
   const [creating, setCreating] = useState(false);
   const [created, setCreated] = useState<Created | null>(null);
 
@@ -49,16 +52,22 @@ export default function UsersPage() {
   async function createUser() {
     setCreating(true);
     try {
+      const newFaculty = form.role === "faculty" && form.faculty_id === NEW_FACULTY;
       const res = await api<Created>("/admin/users", {
         email: form.email.trim(), name: form.name.trim(), role: form.role,
-        student_id: form.role === "student" ? form.student_id.trim() : undefined,
-        faculty_id: form.role === "faculty" ? form.faculty_id.trim() : undefined,
+        student_id: form.role === "student" ? form.student_id.trim() || undefined : undefined,
+        faculty_id: form.role === "faculty" && !newFaculty ? form.faculty_id : undefined,
+        // Department (and year for students) are only sent when the record may need to be created.
+        department: form.role !== "admin" ? form.department || undefined : undefined,
+        year: form.role === "student" && form.year ? Number(form.year) : undefined,
+        mentor_faculty_id: form.role === "student" ? form.mentor || undefined : undefined,
       });
       setCreated(res);
-      setForm({ email: "", name: "", role: "student", student_id: "", faculty_id: "" });
+      setForm(EMPTY);
       load();
-    } catch {
-      toast.error("Could not create the account. Check the id exists and the email is not already used.");
+    } catch (e) {
+      const why = e instanceof Error ? e.message.split(" - ")[1] : "";
+      toast.error(why ? `Could not create the account: ${why}` : "Could not create the account. Check the details and try again.");
     } finally {
       setCreating(false);
     }
@@ -89,7 +98,8 @@ export default function UsersPage() {
 
   const needle = filter.trim().toLowerCase();
   const shown = (users ?? []).filter((u) => !needle || `${u.email} ${u.role} ${u.student_id ?? ""} ${u.faculty_id ?? ""}`.toLowerCase().includes(needle));
-  const canCreate = form.email && form.name && (form.role === "admin" || (form.role === "student" ? form.student_id : form.faculty_id));
+  const canCreate = form.email && form.name && (form.role === "admin"
+    || (form.role === "student" ? form.student_id || (form.department && form.year) : form.faculty_id && (form.faculty_id !== NEW_FACULTY || form.department)));
 
   return (
     <div className="space-y-6">
@@ -110,17 +120,40 @@ export default function UsersPage() {
               <option value="admin">Admin</option>
             </select>
             {form.role === "student" && (
-              <input className={FIELD} placeholder="Student id, e.g. 42178" value={form.student_id} onChange={(e) => setForm({ ...form, student_id: e.target.value })} />
+              <>
+                <input className={FIELD} placeholder="Student id (leave blank for a new one)" value={form.student_id} onChange={(e) => setForm({ ...form, student_id: e.target.value })} />
+                <select className={FIELD} value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
+                  <option value="">Department (for a new student)</option>
+                  {DEPARTMENTS.map((d) => <option key={d}>{d}</option>)}
+                </select>
+                <select className={FIELD} value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })}>
+                  <option value="">Year (for a new student)</option>
+                  {[1, 2, 3, 4].map((y) => <option key={y} value={y}>Year {y}</option>)}
+                </select>
+                <select className={FIELD} value={form.mentor} onChange={(e) => setForm({ ...form, mentor: e.target.value })}>
+                  <option value="">Mentor (optional)</option>
+                  {faculty.filter((f) => !form.department || f.department === form.department).map((f) => (
+                    <option key={f.faculty_id} value={f.faculty_id}>{f.faculty_id} · {f.name} ({f.department})</option>
+                  ))}
+                </select>
+              </>
             )}
             {form.role === "faculty" && (
-              <select className={FIELD} value={form.faculty_id} onChange={(e) => setForm({ ...form, faculty_id: e.target.value })}>
-                <option value="">Select faculty record</option>
-                {faculty.map((f) => (
-                  <option key={f.faculty_id} value={f.faculty_id}>
-                    {f.faculty_id} · {f.name} ({f.department})
-                  </option>
-                ))}
-              </select>
+              <>
+                <select className={FIELD} value={form.faculty_id} onChange={(e) => setForm({ ...form, faculty_id: e.target.value })}>
+                  <option value="">Select faculty record</option>
+                  <option value={NEW_FACULTY}>+ New faculty record</option>
+                  {faculty.map((f) => (
+                    <option key={f.faculty_id} value={f.faculty_id}>{f.faculty_id} · {f.name} ({f.department})</option>
+                  ))}
+                </select>
+                {form.faculty_id === NEW_FACULTY && (
+                  <select className={FIELD} value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
+                    <option value="">Department</option>
+                    {DEPARTMENTS.map((d) => <option key={d}>{d}</option>)}
+                  </select>
+                )}
+              </>
             )}
           </div>
           <Button disabled={creating || !canCreate} onClick={createUser}>
@@ -199,6 +232,9 @@ export default function UsersPage() {
           {created && (
             <div className="space-y-2 text-sm">
               <div>Email: <b>{created.email}</b> ({created.role})</div>
+              {(created.student_id || created.faculty_id) && (
+                <div>{created.student_id ? "Student id" : "Faculty id"}: <b>{created.student_id ?? created.faculty_id}</b>{created.record_created ? " (new record created)" : ""}</div>
+              )}
               <div className="flex items-center gap-2">
                 Temporary password: <code className="rounded bg-muted px-2 py-1">{created.temp_password}</code>
                 <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(created.temp_password).then(() => toast.success("Copied"))}>Copy</Button>
