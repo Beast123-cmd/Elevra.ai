@@ -3,18 +3,19 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ExternalLink, History, MessageCircle, Plus, Send, Trash2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ExternalLink, History, MessageCircle, Plus, Send, Trash2, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatChart, type ChartSpec } from "@/components/insights/assistant/ChatChart";
 import { deleteConversation as removeConversation, type Conversation } from "@/components/insights/assistant/conversations";
 
 interface HackathonCard { title: string; organiser: string | null; url: string; mode: string | null; location: string | null; deadline: string | null; summary: string | null; source: string }
 interface CourseCard { title: string; description: string; provider: string; url: string; tag: string }
-interface Reply { reply: string; chart: ChartSpec | null; cards: HackathonCard[] | null; courses?: CourseCard[] | null; follow_ups: string[]; ai: boolean; conversation_id?: number | null }
+interface PageLink { label: string; href: string }
+interface Reply { reply: string; chart: ChartSpec | null; cards: HackathonCard[] | null; courses?: CourseCard[] | null; links?: PageLink[] | null; follow_ups: string[]; ai: boolean; conversation_id?: number | null }
 interface SavedMessage { role: "user" | "assistant"; content: string; payload: Partial<Reply> }
 interface Message { role: "user" | "assistant"; text: string; reply?: Reply; error?: boolean }
 
-const STARTERS = ["Why is my score where it is?", "What should I focus on this week?", "What if my attendance was 85%?", "Suggest a course for me", "Any hackathons for me?"];
+const STARTERS = ["Why is my score where it is?", "What should I focus on this week?", "What if my attendance was 85%?", "Suggest a course for me", "Start a mock interview"];
 
 const closes = (iso: string | null) => {
   if (!iso) return null;
@@ -89,7 +90,7 @@ export function StudentAssistant() {
       const c = await api<{ id: number; messages: SavedMessage[] }>(`/assistant/conversations/${id}`);
       setConversationId(c.id);
       setMessages(c.messages.map((m) => m.role === "user" ? { role: "user", text: m.content }
-        : { role: "assistant", text: m.content, reply: { reply: m.content, chart: m.payload.chart ?? null, cards: m.payload.cards ?? null, courses: m.payload.courses ?? null, follow_ups: m.payload.follow_ups ?? [], ai: m.payload.ai ?? true } }));
+        : { role: "assistant", text: m.content, reply: { reply: m.content, chart: m.payload.chart ?? null, cards: m.payload.cards ?? null, courses: m.payload.courses ?? null, links: m.payload.links ?? null, follow_ups: m.payload.follow_ups ?? [], ai: m.payload.ai ?? true } }));
     } catch {
       setMessages([{ role: "assistant", error: true, text: "Couldn't open that conversation. Please try again." }]);
     } finally { setBusy(false); }
@@ -178,6 +179,16 @@ export function StudentAssistant() {
                 <div className={`max-w-[90%] space-y-2 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${m.role === "user" ? "bg-[#18574e] text-white" : m.error ? "bg-amber-50 text-amber-900" : "bg-[#f1f6f3] text-[#172824]"}`}>
                   {m.role === "assistant" && !m.error ? <RichText text={m.text} /> : <p>{m.text}</p>}
                   {m.reply?.chart && <ChatChart spec={m.reply.chart} />}
+                  {m.reply?.links && m.reply.links.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-0.5">
+                      {m.reply.links.map((l, j) => (
+                        <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] ${j === 0 ? "bg-[#18574e] text-white hover:bg-[#12473f]" : "border border-[#cfe1d8] bg-white text-[#18574e] hover:bg-[#eaf3ef]"}`}>
+                          {l.label} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                   {m.reply?.courses && m.reply.courses.length > 0 && (
                     <div className="space-y-2">
                       <ul className="space-y-2">

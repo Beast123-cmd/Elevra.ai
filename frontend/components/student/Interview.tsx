@@ -84,13 +84,14 @@ const clock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec 
 type Phase = "intro" | "room" | "result";
 
 export function Interview() {
-  const mock = useSearchParams().get("mock") === "1";
+  const params = useSearchParams();
+  const mock = params.get("mock") === "1";
   const [phase, setPhase] = useState<Phase>("intro");
   const [resume, setResume] = useState("");
   const [pdf, setPdf] = useState<{ name: string; base64: string } | null>(null);
   const [voiceOn, setVoiceOn] = useState(false);
   const [autoListen, setAutoListen] = useState(false);
-  const [mode, setMode] = useState<"full" | "focus">("full");
+  const [mode, setMode] = useState<"full" | "focus">(params.get("mode") === "focus" ? "focus" : "full");
   const [weakAreas, setWeakAreas] = useState<string[]>([]);       // student's unresolved focus areas, for the mode choice
   const [practiceFocus, setPracticeFocus] = useState<string[]>([]); // areas being retested in this session
 
