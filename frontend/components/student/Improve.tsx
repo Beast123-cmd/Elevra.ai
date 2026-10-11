@@ -192,7 +192,7 @@ export function Improve() {
             <PlanAnalytics profile={profile} />
             {secondary && <OtherFocus pillar={secondary.pillar} value={secondary.value} />}
 
-            <section aria-labelledby="score-estimate-heading" className="space-y-3">
+            <section data-tour="student-what-if" aria-labelledby="score-estimate-heading" className="space-y-3">
               <div>
                 <h2 id="score-estimate-heading" className="text-base font-semibold tracking-tight text-foreground">Try a score estimate</h2>
                 <p className="mt-1 text-xs text-muted-foreground">Adjust a value to see how it could affect your score. Your saved records stay unchanged.</p>

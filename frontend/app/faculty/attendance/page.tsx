@@ -86,6 +86,7 @@ export default function AttendancePage() {
       <div className="print:hidden">
         <SearchFilterBar
           label="Search attendance records"
+          dataTour="faculty-attendance-filter"
           placeholder="Search students by name or ID"
           value={query}
           onChange={setQuery}

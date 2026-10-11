@@ -298,6 +298,7 @@ export function Hackathons() {
           <h2 className="text-lg font-bold leading-tight tracking-tight text-foreground">Hackathons</h2>
           <SearchFilterBar
             label="Search hackathons"
+            dataTour="student-event-search"
             placeholder="Search events, organisers, or skills"
             value={searchText}
             onChange={setSearchText}

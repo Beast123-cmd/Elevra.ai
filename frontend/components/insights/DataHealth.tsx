@@ -116,7 +116,7 @@ export function DataHealth() {
 
   if (sources.length === 0 && quality.length === 0) {
     return (
-      <Card>
+      <Card data-tour="shared-data-cleaning">
         <CardHeader>
           <CardTitle>No integration results yet</CardTitle>
           <CardDescription>
@@ -189,7 +189,7 @@ export function DataHealth() {
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card data-tour="shared-data-cleaning" className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Cleaning log</CardTitle>
             <CardDescription>Every fix the pipeline made, largest first</CardDescription>

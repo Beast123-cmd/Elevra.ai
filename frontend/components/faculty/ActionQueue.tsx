@@ -71,6 +71,7 @@ export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[
       <div className="space-y-2">
         <SearchFilterBar
           label="Search mentees"
+          dataTour="shared-queue-search"
           placeholder="Search by name or student ID"
           value={f.q}
           onChange={(q) => updateFilters((current) => ({ ...current, q }))}

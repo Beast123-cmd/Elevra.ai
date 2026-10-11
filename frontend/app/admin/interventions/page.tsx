@@ -51,7 +51,7 @@ export default function InterventionsPage() {
         <Kpi label="Still open" value={open.toLocaleString()} hint="planned or in progress" />
       </div>
 
-      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
+      <Card data-tour="admin-intervention-results" data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <h2 className="text-sm font-semibold">Average score change by intervention type</h2>
         {synthetic > 0 && <p className="text-xs text-risk-amber">Includes {synthetic} synthetic historical examples for demonstration; their score changes are simulated.</p>}
         {eff.rows.length === 0 ? (

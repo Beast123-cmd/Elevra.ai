@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { currentLabel, isActive, NAV, roleFromPath, type IconName, type ShellRole } from "./nav";
 import { useApiStatus } from "./useApiStatus";
 import { ThemeToggle } from "./ThemeToggle";
+import { GuidedWalkthrough } from "./GuidedWalkthrough";
 
 const ICONS: Record<IconName, LucideIcon> = {
   overview: BarChart3, workload: Activity, interventions: ClipboardCheck, notifications: Bell, queue: ListChecks,
@@ -76,6 +77,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const path = usePathname() ?? "/";
   const [role, setRole] = useState<ShellRole>(roleFromPath(path));
   const [email, setEmail] = useState<string>("");
+  const [userId, setUserId] = useState("");
+  const [identityReady, setIdentityReady] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const apiStatus = useApiStatus();
@@ -83,7 +86,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const menuButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    getIdentity().then((id) => { if (id?.role) setRole(id.role as ShellRole); });
+    getIdentity().then((id) => { if (id?.role) setRole(id.role as ShellRole); if (id?.userId) setUserId(id.userId); }).finally(() => setIdentityReady(true));
     createClient().auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? ""));
     try { setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "1"); } catch { /* default: expanded */ }
   }, []);
@@ -139,6 +142,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto"><NavList role={role} path={path} collapsed={collapsed} /></div>
+        <div className={`mt-auto border-t border-sidebar-border pt-3 ${collapsed ? "flex justify-center px-0" : "px-1"}`}>
+          <div className={`flex min-h-11 items-center gap-3 ${collapsed ? "justify-center" : ""}`} title={collapsed ? `${email || ROLE_LABEL[role]} · ${ROLE_LABEL[role]}` : undefined}>
+            <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-muted font-serif text-sm font-semibold text-primary">{initial}</span>
+            {!collapsed && <span className="min-w-0 leading-tight">
+              <span className="block truncate text-xs font-medium">{email || ROLE_LABEL[role]}</span>
+              <span className="block truncate text-[11px] text-muted-foreground">{ROLE_LABEL[role]}</span>
+            </span>}
+          </div>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-col">
@@ -149,14 +161,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
             <span className="truncate text-sm font-medium lg:hidden">{label ?? "Elevra"}</span>
+            <span className="hidden text-xs font-medium tracking-wide text-muted-foreground sm:block">Campus success, made visible</span>
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
-              <div className="hidden items-center gap-2.5 border-l border-border pl-3 sm:flex">
-                <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full bg-muted font-serif text-sm font-semibold text-primary">{initial}</span>
-                <span className="hidden max-w-[180px] leading-tight md:block">
-                  <span className="block truncate text-xs font-medium">{email || ROLE_LABEL[role]}</span>
-                  <span className="block text-[11px] text-muted-foreground">{ROLE_LABEL[role]}</span>
-                </span>
-              </div>
+              {identityReady && userId && <GuidedWalkthrough role={role} ready={identityReady} userId={userId} />}
               <ThemeToggle className="mr-1" />
               <button type="button" onClick={signOutAndLeave} className="flex h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Sign out">
                 <LogOut className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Sign out</span>
@@ -196,6 +203,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
             </div>
             <NavList role={role} path={path} collapsed={false} onNavigate={() => setDrawer(false)} />
+            <div className="mt-auto border-t border-sidebar-border px-1 pt-3">
+              <div className="flex min-h-11 items-center gap-3">
+                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-muted font-serif text-sm font-semibold text-primary">{initial}</span>
+                <span className="min-w-0 leading-tight">
+                  <span className="block truncate text-xs font-medium">{email || ROLE_LABEL[role]}</span>
+                  <span className="block truncate text-[11px] text-muted-foreground">{ROLE_LABEL[role]}</span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -103,7 +103,7 @@ export default function NotificationsPage() {
           <span className="text-xs text-muted-foreground">{body.length}/{BODY_MAX}</span>
         </label>
         {!audience.ok && kind !== "all" && target !== "" && <p className="text-xs text-risk-red">{audience.error}</p>}
-        <Button disabled={!valid || saving} onClick={send}>{saving ? "Posting…" : "Post notification"}</Button>
+        <Button data-tour="admin-notification-send" disabled={!valid || saving} onClick={send}>{saving ? "Posting…" : "Post notification"}</Button>
       </Card>
 
       <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">

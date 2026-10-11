@@ -111,6 +111,7 @@ export function AdminOverview({ rows, insights = [], cases = null }: { rows: Ove
 
       <SearchFilterBar
         label="Search students"
+        dataTour="admin-overview-filter"
         placeholder="Search by student name or ID"
         value={query}
         onChange={setQuery}

@@ -16,8 +16,6 @@ const MOTION_TEXT = [
   "[data-motion-text], h1",
 ].join(", ");
 const MOTION_TARGETS = `${MOTION_CARDS}, ${MOTION_TEXT}`;
-const ASYNC_TEXT = "[data-motion-text], h1";
-
 export default function Template({ children }: Readonly<{ children: ReactNode }>) {
   const rootRef = useRef<HTMLDivElement>(null);
   const landingThemeRef = useRef<HTMLDivElement>(null);
@@ -29,17 +27,20 @@ export default function Template({ children }: Readonly<{ children: ReactNode }>
     if (!root) return;
     const targets = Array.from(root.querySelectorAll<HTMLElement>(MOTION_TARGETS));
     if (!("IntersectionObserver" in window)) {
-      targets.forEach((target) => target.classList.add(isMotionCard(target) ? "dashboard-card-reveal" : "dashboard-text-reveal"));
+      targets.forEach((target) => {
+        if (!target.closest("[data-student-reveal]") && !target.closest("[aria-hidden='true']")) {
+          target.classList.add(isMotionCard(target) ? "dashboard-card-reveal" : "dashboard-text-reveal");
+        }
+      });
       return;
     }
 
     const observed = new WeakSet<Element>();
-    const pending = new Set<HTMLElement>();
-    let batchTimer: number | undefined;
     const observer = new IntersectionObserver((entries) => {
       const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target as HTMLElement);
       if (!visible.length) return;
       requestAnimationFrame(() => visible.forEach((target) => {
+        target.classList.remove("dashboard-motion-pending");
         target.classList.add(isMotionCard(target) ? "dashboard-card-reveal" : "dashboard-text-reveal");
         observer.unobserve(target);
       }));
@@ -48,38 +49,13 @@ export default function Template({ children }: Readonly<{ children: ReactNode }>
     const observeTarget = (target: HTMLElement) => {
       if (observed.has(target) || target.closest("[data-student-reveal]") || target.closest("[aria-hidden='true']")) return false;
       observed.add(target);
+      target.classList.add("dashboard-motion-pending");
       observer.observe(target);
       return true;
     };
     targets.forEach(observeTarget);
 
-    const queueTarget = (target: HTMLElement) => {
-      pending.add(target);
-      window.clearTimeout(batchTimer);
-      batchTimer = window.setTimeout(() => {
-        const batch = Array.from(pending);
-        pending.clear();
-        batch.forEach(observeTarget);
-      }, 120);
-    };
-
-    const changes = new MutationObserver((records) => {
-      records.forEach((record) => record.addedNodes.forEach((node) => {
-        if (!(node instanceof HTMLElement)) return;
-        const cards = [
-          ...(node.matches(MOTION_CARDS) ? [node] : []),
-          ...Array.from(node.querySelectorAll<HTMLElement>(MOTION_CARDS)),
-        ];
-        cards.forEach(queueTarget);
-        if (node.matches(ASYNC_TEXT)) queueTarget(node);
-        node.querySelectorAll<HTMLElement>(ASYNC_TEXT).forEach(queueTarget);
-      }));
-    });
-    changes.observe(root, { childList: true, subtree: true });
-
     return () => {
-      window.clearTimeout(batchTimer);
-      changes.disconnect();
       observer.disconnect();
     };
   }, []);

@@ -53,7 +53,7 @@ function Dashboard({ profile }: { profile: Profile }) {
 
       <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[1.08fr_.92fr]">
         <StudentReveal>
-        <Card className="min-w-0 overflow-hidden rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
+        <Card data-tour="student-score" className="min-w-0 overflow-hidden rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
           <CardContent className="p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div><p className="text-xs font-semibold text-foreground">Success score</p><p className="mt-0.5 text-[11px] text-muted-foreground">A snapshot of your current progress</p></div>
