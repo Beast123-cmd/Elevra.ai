@@ -7,6 +7,7 @@ import type { Profile } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StudentLoading } from "./StudentPage";
+import { StudentReveal } from "./StudentReveal";
 import { ProfileGate } from "./ProfileGate";
 import { useSearchParams } from "next/navigation";
 
@@ -92,6 +93,7 @@ function Feed({ p }: { p: Profile }) {
     <ul className="space-y-3">
       {state.notes.map((n) => (
         <li key={n.id}>
+          <StudentReveal>
           <Card className="overflow-hidden rounded-xl border-slate-200 shadow-sm shadow-slate-900/[0.02] transition-shadow hover:shadow-md hover:shadow-slate-900/[0.04]">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">{n.title}</CardTitle>
@@ -101,6 +103,7 @@ function Feed({ p }: { p: Profile }) {
             </CardHeader>
             <CardContent className="text-sm">{n.body}</CardContent>
           </Card>
+          </StudentReveal>
         </li>
       ))}
     </ul>

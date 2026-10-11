@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CERTIFICATIONS, PILLAR_LABEL } from "./playbook";
 import { ProfileGate } from "./ProfileGate";
 import { weakestPillars } from "./weakest";
+import { StudentReveal } from "./StudentReveal";
 
 export function Certifications() {
   return (
@@ -27,7 +28,8 @@ export function Certifications() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map(({ c, match }) => (
-                  <Card key={c.title} className={match ? "ring-1 ring-slate-900" : ""}>
+                  <StudentReveal key={c.title}>
+                  <Card className={`h-full rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.02] transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#b8cec3] hover:shadow-md ${match ? "ring-1 ring-[#286a62]/35" : ""}`}>
                     <CardHeader className="pb-2">
                       {match && <Badge className="mb-2 w-fit">Matches your weak area: {PILLAR_LABEL[match]}</Badge>}
                       <CardTitle className="text-base leading-snug">{c.title}</CardTitle>
@@ -38,12 +40,13 @@ export function Certifications() {
                         href={c.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-medium underline underline-offset-2"
+                        className="inline-flex min-h-9 items-center gap-1 rounded-md text-sm font-semibold text-[#1d6158] no-underline transition-colors hover:text-[#123f3a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2"
                       >
                         Find on {c.provider} <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     </CardContent>
                   </Card>
+                  </StudentReveal>
                 ))}
               </div>
             )}

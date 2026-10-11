@@ -9,6 +9,8 @@ import { PILLAR_LABEL, PLAYBOOK } from "./playbook";
 import { ProfileGate } from "./ProfileGate";
 import { weakestPillars } from "./weakest";
 import { WhatIfPanel } from "./WhatIfPanel";
+import { StudentProgress } from "./StudentPage";
+import { StudentReveal } from "./StudentReveal";
 
 export function Improve() {
   return (
@@ -35,7 +37,8 @@ export function Improve() {
             </p>
             <div className="grid gap-6 md:grid-cols-2">
               {weak.map(({ pillar, value }, i) => (
-                <Card key={pillar}>
+              <StudentReveal key={pillar}>
+              <Card className="h-full rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.02] transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-[#b8cec3] hover:shadow-md">
                   <CardHeader>
                     <div className="flex items-baseline justify-between gap-3">
                       <CardTitle className="text-lg">{i + 1}. {PILLAR_LABEL[pillar]}</CardTitle>
@@ -54,6 +57,7 @@ export function Improve() {
                     </ol>
                   </CardContent>
                 </Card>
+              </StudentReveal>
               ))}
             </div>
             <p className="text-sm text-slate-500">
@@ -80,9 +84,7 @@ export function Improve() {
                             <span className="font-medium text-slate-700">{PILLAR_LABEL[pillar]}</span>
                             <span className="tabular-nums text-slate-500">{value === null ? "Not assessed" : `${fmt(value, 0)} / 100`}</span>
                           </div>
-                          <div className="h-1.5 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label={PILLAR_LABEL[pillar]} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value === null ? undefined : Math.max(0, Math.min(100, value))}>
-                            {value !== null && <div className="h-full rounded-full bg-teal-700" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />}
-                          </div>
+                          {value !== null && <StudentProgress value={value} label={PILLAR_LABEL[pillar]} />}
                         </div>
                       );
                     })}

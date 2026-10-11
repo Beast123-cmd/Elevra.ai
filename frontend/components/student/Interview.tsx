@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { StudentReveal } from "./StudentReveal";
 
 interface StartResponse { session_id: number; questions: string[]; ai: boolean }
 interface FinishResponse {
@@ -111,7 +112,8 @@ export function Interview() {
     return (
       <div className="space-y-4">
         {banner}
-        <Card>
+        <StudentReveal key="interview-intro">
+        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
           <CardHeader>
             <CardTitle>Paste your resume</CardTitle>
             <CardDescription>
@@ -128,9 +130,11 @@ export function Interview() {
               <span>{len < MIN_RESUME ? `Add at least ${MIN_RESUME - len} more characters` : `${len.toLocaleString("en-IN")} characters`}</span>
             </div>
             {errorBox}
+            {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-[#286a62]"><span className="student-loading-dot" aria-hidden="true" /> Building your practice session…</p>}
             <Button onClick={start} disabled={busy || len < MIN_RESUME}>{busy ? "Preparing your questions…" : "Start interview"}</Button>
           </CardContent>
         </Card>
+        </StudentReveal>
       </div>
     );
   }
@@ -146,12 +150,13 @@ export function Interview() {
             The AI question writer is offline, so these are standard questions for your department.
           </p>
         )}
-        <Card>
+        <StudentReveal key={`interview-question-${index}`}>
+        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
           <CardHeader>
             <div className="flex items-center justify-between text-sm text-slate-500">
               <span>Question {index + 1} of {session.questions.length}</span>
             </div>
-            <Progress value={((index + 1) / session.questions.length) * 100} className="h-2" />
+            <Progress value={((index + 1) / session.questions.length) * 100} className="h-2 transition-all duration-500" />
             <CardTitle className="pt-3 text-lg leading-snug">{session.questions[index]}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -161,6 +166,7 @@ export function Interview() {
               placeholder="Type your answer as you would say it in an interview…"
             />
             {errorBox}
+            {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-[#286a62]"><span className="student-loading-dot" aria-hidden="true" /> {last ? "Reviewing your answers…" : "Saving your response…"}</p>}
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs text-slate-500">You can skip a question by leaving it empty.</p>
               <Button onClick={next} disabled={busy || (last && !anyAnswer)}>
@@ -169,6 +175,7 @@ export function Interview() {
             </div>
           </CardContent>
         </Card>
+        </StudentReveal>
       </div>
     );
   }
@@ -183,7 +190,8 @@ export function Interview() {
             AI marking was offline, so this score only reflects how complete your answers were. Try again later for full feedback.
           </p>
         )}
-        <Card>
+        <StudentReveal key="interview-result">
+        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
           <CardContent className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-slate-500">Your interview score</p>
@@ -202,6 +210,7 @@ export function Interview() {
             </div>
           </CardContent>
         </Card>
+        </StudentReveal>
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader><CardTitle className="text-base">What went well</CardTitle></CardHeader>

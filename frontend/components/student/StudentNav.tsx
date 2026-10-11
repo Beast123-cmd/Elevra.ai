@@ -43,24 +43,27 @@ export function StudentNav() {
   }
 
   return (
-    <aside className="flex min-w-0 flex-col border-b border-slate-200 bg-white px-3 py-3 md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:px-3.5 md:py-5">
+    <aside className="sticky top-0 z-30 flex min-w-0 flex-col border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-sm md:sticky md:h-screen md:border-b-0 md:border-r md:bg-white md:px-3.5 md:py-5 md:backdrop-blur-none">
       <Link href="/student" className="flex h-9 shrink-0 items-center gap-2.5 px-2.5 text-slate-900 no-underline" aria-label="Elevra student home">
         <BrandMark compact />
         <span className="text-base font-semibold tracking-[-.045em]">elevra<span className="font-medium text-[#718078]">.ai</span></span>
       </Link>
       <p className="mb-2 mt-7 hidden px-2.5 text-[9px] font-semibold uppercase tracking-[.1em] text-slate-400 md:block">Student space</p>
-      <nav aria-label="Student pages" className="mt-3 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] md:mt-0 md:flex-col md:gap-1.5 md:overflow-visible md:pb-0">
+      <nav aria-label="Student pages" className="mt-2 grid grid-cols-5 gap-1 md:mt-0 md:flex md:flex-col md:gap-1.5">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const active = href === "/student" ? path === href : path.startsWith(href);
+          const mobileLabel = { Home: "Home", "My plan": "Plan", Certifications: "Courses", "Mock interview": "Practice", Inbox: "Inbox" }[label] ?? label;
           return (
             <Link
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-10 min-w-fit flex-row items-center justify-center gap-2 rounded-md px-3 py-2 text-[11px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:w-full md:justify-start md:gap-2.5 md:px-2.5 md:py-0 ${active ? "bg-teal-50 text-teal-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+              aria-label={label}
+              className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-0.5 py-1 text-[9px] font-medium no-underline transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:flex-row md:justify-start md:gap-2.5 md:px-2.5 md:py-0 md:text-[11px] ${active ? "bg-teal-50 text-teal-900 md:shadow-[inset_3px_0_0_#286a62]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
             >
               <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-800" : "text-slate-400"}`} aria-hidden="true" />
-              <span className="max-w-full truncate">{label}</span>
+              <span className="max-w-full truncate md:hidden">{mobileLabel}</span>
+              <span className="hidden max-w-full truncate md:inline">{label}</span>
             </Link>
           );
         })}
