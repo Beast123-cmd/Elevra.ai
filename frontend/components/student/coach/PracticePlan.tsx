@@ -24,30 +24,30 @@ export function PracticePlan({ tasks, readOnly = false }: { tasks: PracticeTask[
     }
   }
 
-  if (items.length === 0) return <p className="text-sm text-slate-500">No practice plan for this interview.</p>;
+  if (items.length === 0) return <p className="text-sm text-muted-foreground">No practice plan for this interview.</p>;
   const days = Array.from(new Set(items.map((t) => t.day))).sort((a, b) => a - b);
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#edf2ef]" aria-hidden="true">
-          <div className="h-full rounded-full bg-[#286a62] transition-[width] duration-300" style={{ width: `${(done / items.length) * 100}%` }} />
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+          <div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${(done / items.length) * 100}%` }} />
         </div>
-        <span className="text-xs tabular-nums text-slate-600">{done} of {items.length} done</span>
+        <span className="text-xs tabular-nums text-muted-foreground">{done} of {items.length} done</span>
       </div>
-      {error && <p role="alert" className="text-xs text-red-700">{error}</p>}
+      {error && <p role="alert" className="text-xs text-risk-red">{error}</p>}
       <ol className="space-y-2">
         {days.map((day) => (
-          <li key={day} className="rounded-lg border border-[#e2ebe6] bg-white p-3">
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Day {day}</p>
+          <li key={day} className="rounded-lg border border-border bg-card p-3">
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Day {day}</p>
             <ul className="space-y-1.5">
               {items.filter((t) => t.day === day).map((t) => (
                 <li key={t.id}>
                   <button type="button" onClick={() => void toggle(t)} disabled={readOnly} aria-pressed={t.done}
-                    className="flex w-full items-start gap-2.5 rounded-md p-1 text-left text-sm hover:bg-[#f7faf8] disabled:cursor-default disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">
-                    <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${t.done ? "border-[#286a62] bg-[#286a62] text-white" : "border-slate-300 bg-white"}`} aria-hidden="true">
+                    className="flex w-full items-start gap-2.5 rounded-md p-1 text-left text-sm hover:bg-muted disabled:cursor-default disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${t.done ? "border-primary bg-primary text-primary-foreground" : "border-input bg-card"}`} aria-hidden="true">
                       {t.done && <Check className="h-3 w-3" />}
                     </span>
-                    <span className={t.done ? "text-slate-400 line-through" : "text-slate-700"}>{t.task}</span>
+                    <span className={t.done ? "text-muted-foreground line-through" : "text-foreground"}>{t.task}</span>
                   </button>
                 </li>
               ))}

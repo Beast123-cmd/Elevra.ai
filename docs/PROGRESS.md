@@ -152,3 +152,11 @@ Decision record and sources: `docs/FEATURE_RESEARCH.md`. All are tested (`npm te
 - **Data realism (owner: Aayush):** segments are lopsided (Steady middle 900, Silent disengagers 462, Engaged but struggling 5, Skilled but irregular 7), about 24% Red for academic and 36% Red for placement risk, and every seeded intervention shows an improvement. A reviewer will notice; recalibrate if time allows.
 - **Security (owner: Aayush):** `/whatif` accepts any student id and `/rescore` returns all students' scores to a faculty login, because the service-role client bypasses RLS. Restrict both to the caller's own scope.
 
+## 11. One design system across the whole app (evening, 11 Oct)
+Spec: `docs/superpowers/specs/2026-10-11-ui-design-system-design.md`.
+- **Direction:** "campus annual report": warm paper, ink and evergreen, ochre as the only second accent, earthy risk colours always paired with words; IBM Plex Sans / Serif / Mono self-hosted in `frontend/public/fonts`. Light and dark from one set of tokens in `app/globals.css` (HSL triplets; the earlier oklch values were silently ignored by Tailwind, which is why pages had hard-coded colours).
+- **One shell** (`components/shared/shell/`) for admin, faculty, insights, demo and student: grouped sidebar that collapses to icons, drawer with focus trap below 1024px, find-a-student search (staff), theme toggle, skip link. The old `AdminNav`, `FacultyNav`, `StudentNav` and `StudentWorkspace` (with its `!important` dark-mode block) are gone.
+- **Charts, not bare numbers** (`components/shared/viz.tsx`, no new packages): ring, meter with target line, share bar, funnel. Used on the Overview funnel and stats, Response & workload, Attendance planner, Evidence, Student 360 and the student home.
+- **Checks:** `tsc`, lint and build clean; 117 frontend tests; 43/43 role guards; headers and login flows pass; a screenshot matrix (every staff and student page at 1366px light and 390px dark) shows no console errors and no sideways scrolling; the real-browser faculty flow passes.
+- **Known gaps:** student pages other than Home keep their original layouts (colours and fonts now come from the shared tokens); the hackathon catalogue is very dense on phones.
+

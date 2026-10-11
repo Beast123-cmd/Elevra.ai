@@ -5,7 +5,8 @@ import {
   byDepartment, classify, DEFAULT_THRESHOLDS, learnersCsv, mentorAllocation, mentorsCsv, slowLearnerSupport, supportCsv, supportSummary,
   type Learner, type SupportRow, type Thresholds,
 } from "@/components/admin/evidence";
-import { EmptyState, Kpi } from "@/components/shared/Kpi";
+import { EmptyState } from "@/components/shared/Kpi";
+import { Ring, ShareBar } from "@/components/shared/viz";
 import { useCachedQuery } from "@/components/shared/useCachedQuery";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -82,12 +83,27 @@ export default function EvidencePage() {
         <p className="mt-2 hidden text-xs print:block">Cut-offs: slow below {t.slowBelow}, advanced above {t.advancedAbove}.</p>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi label="Students" value={dept.all.total.toLocaleString()} />
-        <Kpi label="Slow learners" value={dept.all.slow.toLocaleString()} hint={`${dept.all.slowPct}% of assessed`} />
-        <Kpi label="Advanced learners" value={dept.all.advanced.toLocaleString()} hint={`${dept.all.advancedPct}% of assessed`} />
-        <Kpi label="Slow learners with support" value={`${slowSupport.pct}%`} hint={`${slowSupport.withSupport} of ${slowSupport.slow} have a support record`} />
-      </div>
+      <section className="grid gap-5 rounded-lg border border-border bg-card p-5 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-semibold">{dept.all.total.toLocaleString()} students by learning level</h2>
+          <p className="mb-3 text-[13px] text-muted-foreground">Academic score below {t.slowBelow} is a slow learner; above {t.advancedAbove} is advanced.</p>
+          <ShareBar label="Students by learning level" height={16} parts={[
+            { label: "Slow learners", value: dept.all.slow, tone: "red" },
+            { label: "Average", value: dept.all.average, tone: "none" },
+            { label: "Advanced learners", value: dept.all.advanced, tone: "primary" },
+            ...(dept.all.notAssessed > 0 ? [{ label: "Not assessed", value: dept.all.notAssessed, tone: "slate" as const }] : []),
+          ]} />
+        </div>
+        <div className="flex items-center gap-4 border-t border-border pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+          <Ring value={slowSupport.pct} size={96} stroke={9} tone={slowSupport.pct >= 75 ? "green" : slowSupport.pct >= 30 ? "highlight" : "red"} label={`${slowSupport.pct}% of slow learners have a support record`}>
+            <span className="tabular font-serif text-xl font-semibold">{slowSupport.pct}%</span>
+          </Ring>
+          <div>
+            <p className="text-sm font-medium">Slow learners with support</p>
+            <p className="text-[13px] text-muted-foreground">{slowSupport.withSupport} of {slowSupport.slow} have at least one support record</p>
+          </div>
+        </div>
+      </section>
 
       <Card className="p-4 print:border-0">
         <div className="flex items-center justify-between">
@@ -98,11 +114,12 @@ export default function EvidencePage() {
         </div>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase text-muted-foreground"><tr><th className={th}>Department</th><th className={th}>Students</th><th className={th}>Slow</th><th className={th}>Average</th><th className={th}>Advanced</th><th className={th}>Not assessed</th></tr></thead>
+            <thead className="text-xs text-muted-foreground"><tr><th className={th}>Department</th><th className={th}>Students</th><th className={`${th} min-w-[180px] w-[34%]`}>Mix</th><th className={th}>Slow</th><th className={th}>Average</th><th className={th}>Advanced</th><th className={th}>Not assessed</th></tr></thead>
             <tbody>
               {[...dept.depts, dept.all].map((d) => (
                 <tr key={d.department} className={`border-t border-border ${d === dept.all ? "font-semibold" : ""}`}>
-                  <td className="py-1.5 pr-3">{d.department}</td><td className="pr-3">{d.total}</td>
+                  <td className="py-2 pr-3">{d.department}</td><td className="tabular pr-3">{d.total}</td>
+                  <td className="pr-3"><ShareBar legend={false} height={10} label={d.department} parts={[{ label: "Slow", value: d.slow, tone: "red" }, { label: "Average", value: d.average, tone: "none" }, { label: "Advanced", value: d.advanced, tone: "primary" }]} /></td>
                   <td className="pr-3">{d.slow} <span className="text-xs text-muted-foreground">({d.slowPct}%)</span></td>
                   <td className="pr-3">{d.average}</td>
                   <td className="pr-3">{d.advanced} <span className="text-xs text-muted-foreground">({d.advancedPct}%)</span></td>

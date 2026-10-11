@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Copy, Mail, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -49,16 +50,23 @@ export function MessageDrafts({ profile }: { profile: Profile }) {
       </div>
       {draft && (
         <div className="space-y-2">
-          <textarea aria-label="Message text" className="min-h-28 w-full rounded-md border border-input p-2 text-sm" value={draft.text}
+          <textarea aria-label="Message text" className="min-h-32 w-full rounded-md border border-input bg-card p-3 text-[15px] leading-relaxed" value={draft.text}
             onChange={(e) => setDraft({ ...draft, text: e.target.value })} />
-          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <span className={`rounded-full px-2 py-0.5 ${draft.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>{label}</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className={`rounded px-1.5 py-0.5 font-medium ${draft.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>{label}</span>
             {draft.note && <span>{draft.note}</span>}
-            <span className="ml-auto flex gap-3">
-              <button className="text-primary hover:underline" onClick={() => navigator.clipboard.writeText(draft.text).then(() => toast.success("Copied"), () => toast.error("Could not copy"))}>Copy</button>
-              <a className="text-primary hover:underline" href={whatsappUrl(draft.text)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-              <a className="text-primary hover:underline" href={mailtoUrl(subject, draft.text)}>Email</a>
-            </span>
+          </div>
+          <div className="flex flex-col gap-2 border-t border-border pt-3 sm:flex-row sm:items-center">
+            <span className="text-sm font-medium sm:mr-auto">Send it yourself</span>
+            <Button className="h-10 gap-2" onClick={() => navigator.clipboard.writeText(draft.text).then(() => toast.success("Message copied"), () => toast.error("Could not copy"))}>
+              <Copy className="h-4 w-4" aria-hidden="true" />Copy message
+            </Button>
+            <Button asChild variant="outline" className="h-10 gap-2">
+              <a href={whatsappUrl(draft.text)} target="_blank" rel="noopener noreferrer"><MessageCircle className="h-4 w-4" aria-hidden="true" />Open in WhatsApp</a>
+            </Button>
+            <Button asChild variant="outline" className="h-10 gap-2">
+              <a href={mailtoUrl(subject, draft.text)}><Mail className="h-4 w-4" aria-hidden="true" />Open in email</a>
+            </Button>
           </div>
         </div>
       )}

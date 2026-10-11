@@ -23,15 +23,15 @@ export function StudentLoading({ rows = 3 }: { rows?: number }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2" role="status" aria-label="Loading student data" aria-busy="true">
       {Array.from({ length: rows }, (_, index) => (
-        <div key={index} aria-hidden="true" className="rounded-xl border border-[#dce7e1] bg-white p-4 sm:p-5">
+        <div key={index} aria-hidden="true" className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
-            <Skeleton className="h-4 w-2/5 bg-[#e8efeb]" />
-            <Skeleton className="h-7 w-14 rounded-full bg-[#edf2ef]" />
+            <Skeleton className="h-4 w-2/5 bg-muted" />
+            <Skeleton className="h-7 w-14 rounded-full bg-muted" />
           </div>
-          <Skeleton className="mt-5 h-7 w-3/5 bg-[#e8efeb]" />
-          <Skeleton className="mt-3 h-3 w-full bg-[#edf2ef]" />
-          <Skeleton className="mt-2 h-3 w-4/5 bg-[#edf2ef]" />
-          <Skeleton className="mt-5 h-9 w-24 rounded-lg bg-[#e8efeb]" />
+          <Skeleton className="mt-5 h-7 w-3/5 bg-muted" />
+          <Skeleton className="mt-3 h-3 w-full bg-muted" />
+          <Skeleton className="mt-2 h-3 w-4/5 bg-muted" />
+          <Skeleton className="mt-5 h-9 w-24 rounded-lg bg-muted" />
         </div>
       ))}
     </div>
@@ -41,8 +41,8 @@ export function StudentLoading({ rows = 3 }: { rows?: number }) {
 export function StudentProgress({ value, label }: { value: number; label: string }) {
   const safeValue = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0));
   return (
-    <div className="h-2 overflow-hidden rounded-full bg-[#e9efeb]" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={safeValue}>
-      <div className="student-value-flow h-full rounded-full bg-[#286a62]" style={{ width: `${safeValue}%` }} />
+    <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={safeValue}>
+      <div className="student-value-flow h-full rounded-full bg-primary" style={{ width: `${safeValue}%` }} />
     </div>
   );
 }

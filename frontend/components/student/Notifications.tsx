@@ -84,7 +84,7 @@ function Feed({ p }: { p: Profile }) {
   if (state.notes.length === 0) {
     return (
       <Card>
-        <CardContent className="flex items-center gap-3 p-6 text-slate-500">
+        <CardContent className="flex items-center gap-3 p-6 text-muted-foreground">
           <Bell className="h-5 w-5" />
           <p className="text-sm">No notifications yet. Placement drives and announcements for you will show up here.</p>
         </CardContent>
@@ -95,11 +95,11 @@ function Feed({ p }: { p: Profile }) {
     <section className="space-y-4" aria-labelledby="inbox-updates-heading">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 id="inbox-updates-heading" className="text-base font-semibold text-[#172824]">Latest campus updates</h2>
-          <p className="mt-1 text-sm text-slate-500">{state.notes.length} update{state.notes.length === 1 ? "" : "s"} for your department, year or account.</p>
+          <h2 id="inbox-updates-heading" className="text-base font-semibold text-foreground">Latest campus updates</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{state.notes.length} update{state.notes.length === 1 ? "" : "s"} for your department, year or account.</p>
         </div>
         {state.notes.length > 5 && (
-          <Button variant="ghost" size="sm" className="min-h-10 text-[#1d6158]" onClick={() => setShowAll((value) => !value)} aria-expanded={showAll}>
+          <Button variant="ghost" size="sm" className="min-h-10 text-primary" onClick={() => setShowAll((value) => !value)} aria-expanded={showAll}>
             {showAll ? "Show recent only" : `Show all ${state.notes.length}`}
           </Button>
         )}
@@ -108,14 +108,14 @@ function Feed({ p }: { p: Profile }) {
         {(showAll ? state.notes : state.notes.slice(0, 5)).map((n) => (
           <li key={n.id}>
             <StudentReveal>
-              <Card className="overflow-hidden rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.02]">
+              <Card className="overflow-hidden rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.02]">
                 <CardHeader className="px-4 pb-2 pt-4 sm:px-5">
-                  <CardTitle className="text-base leading-6 text-[#172824]">{n.title}</CardTitle>
+                  <CardTitle className="text-base leading-6 text-foreground">{n.title}</CardTitle>
                   <CardDescription>
                     {new Date(n.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="px-4 pb-4 text-sm leading-6 text-slate-600 sm:px-5">{n.body}</CardContent>
+                <CardContent className="px-4 pb-4 text-sm leading-6 text-muted-foreground sm:px-5">{n.body}</CardContent>
               </Card>
             </StudentReveal>
           </li>

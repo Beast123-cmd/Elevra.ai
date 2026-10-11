@@ -31,9 +31,9 @@ export interface FocusRow {
 }
 
 export const STATUS_STYLE: Record<FocusRow["status"], { label: string; chip: string }> = {
-  open: { label: "Needs practice", chip: "bg-amber-50 text-amber-900 ring-amber-100" },
-  improving: { label: "Improving", chip: "bg-blue-50 text-blue-800 ring-blue-100" },
-  resolved: { label: "Strong now", chip: "bg-[#eaf3ef] text-[#18574e] ring-[#d3e7dd]" },
+  open: { label: "Needs practice", chip: "bg-risk-amber-bg text-risk-amber ring-risk-amber/20" },
+  improving: { label: "Improving", chip: "bg-primary/10 text-primary ring-primary/20" },
+  resolved: { label: "Strong now", chip: "bg-risk-green-bg text-risk-green ring-risk-green/20" },
 };
 
 export const REVISIT_LABEL: Record<Revisit["result"], string> = {
