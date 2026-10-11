@@ -92,7 +92,7 @@ function FlowIllustration({ step, signal, onSignalChange }: { step: number; sign
 
               <div className="min-w-0 rounded-xl bg-[#173f38] p-3.5 text-white sm:p-4">
                 <div className="flex items-center gap-2 text-[10px] font-medium text-[#c7ddd3]"><Database className="h-3.5 w-3.5" aria-hidden="true" /> Unified student view</div>
-                <div className="mt-3 rounded-lg bg-white/[.08] p-3">
+                <div key={signal} className="signal-detail mt-3 rounded-lg bg-white/[.08] p-3">
                   <p className="text-[9px] font-semibold uppercase tracking-[.12em] text-[#b8d1c6]">Selected signal</p>
                   <p className="mt-2 text-xs font-semibold leading-4">{activeSignal.label}</p>
                   <p className="mt-1.5 text-[10px] leading-4 text-[#d3e0da]">{activeSignal.detail}</p>
@@ -218,16 +218,17 @@ export default function Home() {
         @keyframes data-flow { to { stroke-dashoffset: -36; } }
         @keyframes data-dot { 0% { transform: translateX(0); opacity: .25; } 55% { opacity: 1; } 100% { transform: translateX(25px); opacity: 0; } }
         @keyframes flow-reveal { from { opacity: .65; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .data-flow-path { animation: data-flow 2.4s linear infinite; }
-        .data-flow-dot { animation: data-dot 2.4s ease-in-out infinite; }
+        .data-flow-path { animation: data-flow 3.2s linear infinite; }
+        .data-flow-dot { animation: data-dot 3.2s ease-in-out infinite; }
         .flow-step-content { animation: flow-reveal .22s ease-out both; }
+        .signal-detail { animation: flow-reveal .2s ease-out both; }
         .landing-page.reveal-ready [data-reveal] { opacity: 0; transform: translate3d(0, 16px, 0); transition: opacity .55s cubic-bezier(.2,.7,.2,1), transform .55s cubic-bezier(.2,.7,.2,1); }
         .landing-page.reveal-ready [data-reveal][data-revealed="true"] { opacity: 1; transform: translate3d(0, 0, 0); }
         .landing-page.reveal-ready [data-reveal-delay="1"] { transition-delay: 80ms; }
         .landing-page.reveal-ready [data-reveal-delay="2"] { transition-delay: 150ms; }
         .landing-page.reveal-ready [data-reveal-delay="3"] { transition-delay: 220ms; }
         html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-        @media (prefers-reduced-motion: reduce) { .data-flow-path, .data-flow-dot, .flow-step-content { animation: none; } .landing-page.reveal-ready [data-reveal] { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto !important; } }
+        @media (prefers-reduced-motion: reduce) { .data-flow-path, .data-flow-dot, .flow-step-content, .signal-detail { animation: none; } .landing-page.reveal-ready [data-reveal] { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto !important; } }
       `}</style>
 
       <div ref={mainRef} className="landing-page">
@@ -238,11 +239,11 @@ export default function Home() {
             <span className="text-[17px] font-bold tracking-[-.04em]">elevra<span className="font-medium text-slate-500">.ai</span></span>
           </Link>
           <nav aria-label="Page sections" className="hidden items-center gap-7 sm:flex">
-            <a href="#journey" className="text-xs font-medium text-slate-600 no-underline hover:text-[#154e49]">How it works</a>
-            <a href="#mvp" className="text-xs font-medium text-slate-600 no-underline hover:text-[#154e49]">MVP features</a>
-            <a href="#impact" className="text-xs font-medium text-slate-600 no-underline hover:text-[#154e49]">Impact</a>
+            <a href="#journey" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">How it works</a>
+            <a href="#mvp" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">MVP features</a>
+            <a href="#impact" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">Impact</a>
           </nav>
-          <Link href="/login" className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md bg-[#154e49] px-3.5 text-xs font-semibold text-white no-underline transition-colors hover:bg-[#103e3a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2 sm:h-11 sm:px-4 sm:text-sm">
+          <Link href="/login" className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md bg-[#154e49] px-3.5 text-xs font-semibold text-white no-underline transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#103e3a] hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2 sm:h-11 sm:px-4 sm:text-sm">
             Sign in <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
@@ -254,7 +255,7 @@ export default function Home() {
           <h1 data-reveal data-reveal-delay="1" id="hero-heading" className="max-w-[12ch] text-[clamp(2.35rem,6.2vw,4.2rem)] font-semibold leading-[1.02] tracking-[-.055em] text-[#172824]">See student needs clearly. Act sooner.</h1>
           <p data-reveal data-reveal-delay="2" className="mt-5 max-w-[500px] text-[15px] leading-6 text-slate-600 sm:mt-6 sm:text-base sm:leading-7">Elevra connects seven campus data sources, explains why a student may need a check-in, and helps turn that signal into a practical next step.</p>
           <div data-reveal data-reveal-delay="3" className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-5">
-            <a href="#journey" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#154e49] px-5 text-sm font-semibold text-white no-underline transition-colors hover:bg-[#103e3a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2 sm:min-w-[210px]">Explore how it works <ArrowDown className="h-4 w-4" aria-hidden="true" /></a>
+            <a href="#journey" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#154e49] px-5 text-sm font-semibold text-white no-underline transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#103e3a] hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2 sm:min-w-[210px]">Explore how it works <ArrowDown className="h-4 w-4" aria-hidden="true" /></a>
             <p className="min-w-0 text-center text-[11px] text-slate-500 sm:max-w-[160px] sm:text-left">A campus support platform, grounded in data.</p>
           </div>
         </section>
@@ -268,7 +269,7 @@ export default function Home() {
           <div data-reveal className="mb-5 flex items-center gap-3 border-b border-[#dfe6df] pb-3"><span className="text-[10px] font-semibold uppercase tracking-[.13em] text-[#286a62]">The product flow</span><span className="h-px flex-1 bg-[#dfe6df]" /><span className="text-[10px] tabular-nums text-slate-500">0{activeStep} / 03</span></div>
           {STORY.map((item) => (
             <article key={item.id} data-journey-step={item.id} className="journey-panel flex min-h-[270px] flex-col justify-center border-t py-8 sm:min-h-[310px] sm:py-10 lg:min-h-[clamp(500px,72svh,760px)] lg:border-t-0 lg:py-12">
-              <div data-reveal className="flex items-center gap-3"><span className={`grid h-9 w-9 place-items-center rounded-full border text-xs font-semibold tabular-nums transition-colors ${activeStep === item.id ? "border-[#b8cec3] bg-[#eaf2ed] text-[#1c564c]" : "border-[#dfe6df] text-slate-500"}`}>{String(item.id).padStart(2, "0")}</span><p className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#286a62]">{item.eyebrow}</p></div>
+              <div data-reveal className="flex items-center gap-3"><span aria-current={activeStep === item.id ? "step" : undefined} className={`grid h-9 w-9 place-items-center rounded-full border text-xs font-semibold tabular-nums transition-colors ${activeStep === item.id ? "border-[#b8cec3] bg-[#eaf2ed] text-[#1c564c]" : "border-[#dfe6df] text-slate-500"}`}>{String(item.id).padStart(2, "0")}</span><p className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#286a62]">{item.eyebrow}</p></div>
               <h2 data-reveal data-reveal-delay="1" className="mt-5 max-w-[18ch] text-[clamp(1.65rem,3.2vw,2.45rem)] font-semibold leading-[1.08] tracking-[-.045em] text-[#172824]">{item.title}</h2>
               <p data-reveal data-reveal-delay="2" className="mt-4 max-w-[520px] text-sm leading-6 text-slate-600 sm:text-[15px] sm:leading-7">{item.body}</p>
               <p data-reveal data-reveal-delay="3" className="mt-4 flex items-center gap-2 text-xs font-medium text-[#286a62]"><Check className="h-4 w-4" aria-hidden="true" />{item.note}</p>
@@ -286,7 +287,7 @@ export default function Home() {
               <p data-reveal data-reveal-delay="2" className="mt-4 text-sm leading-6 text-slate-600">The first release focuses on the parts that make student support understandable and usable day to day.</p>
             </div>
             <div className="divide-y divide-[#e8ece8] border-y border-[#e8ece8]">
-              {MVP.map(({ icon: Icon, title, detail }, index) => <article key={title} data-reveal data-reveal-delay={String(Math.min(index % 3 + 1, 3))} className="grid gap-2 py-4 sm:grid-cols-[34px_1fr] sm:gap-4 sm:py-5">
+              {MVP.map(({ icon: Icon, title, detail }, index) => <article key={title} data-reveal data-reveal-delay={String(Math.min(index % 3 + 1, 3))} className="grid gap-2 py-4 transition-colors hover:bg-[#fbfcfa] sm:grid-cols-[34px_1fr] sm:gap-4 sm:px-3 sm:py-5">
                 <span className="hidden h-8 w-8 place-items-center rounded-lg bg-[#edf4ef] text-[#286a62] sm:grid"><Icon className="h-4 w-4" aria-hidden="true" /></span>
                 <div className="flex items-start gap-2 sm:block"><span className="mt-0.5 shrink-0 font-mono text-[10px] text-[#6b9284] sm:hidden">0{index + 1}</span><div><h3 className="text-sm font-semibold text-[#172824]">{title}</h3><p className="mt-1 text-xs leading-5 text-slate-600 sm:text-sm sm:leading-6">{detail}</p></div></div>
               </article>)}
@@ -310,12 +311,12 @@ export default function Home() {
 
       <section className="bg-[#173f38] text-white">
         <div className="mx-auto flex max-w-[1240px] flex-col gap-6 px-5 py-10 sm:px-8 sm:py-12 md:flex-row md:items-center md:justify-between">
-          <div><p className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#b6d8c8]">See Elevra in action</p><h2 className="mt-2 max-w-[24ch] text-[clamp(1.5rem,3.5vw,2.25rem)] font-semibold leading-tight tracking-[-.04em]">A clearer view can change what happens next.</h2></div>
-          <Link href="/login" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-[#173f38] no-underline transition-colors hover:bg-[#eaf2ed] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#173f38]">Explore the workspace <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></Link>
+          <div data-reveal><p className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#b6d8c8]">See Elevra in action</p><h2 data-reveal data-reveal-delay="1" className="mt-2 max-w-[24ch] text-[clamp(1.5rem,3.5vw,2.25rem)] font-semibold leading-tight tracking-[-.04em]">A clearer view can change what happens next.</h2></div>
+          <div data-reveal data-reveal-delay="2"><Link href="/login" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-[#173f38] no-underline transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#eaf2ed] hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#173f38]">Explore the workspace <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></Link></div>
         </div>
       </section>
 
-      <footer className="mx-auto flex max-w-[1240px] flex-col gap-2 px-5 py-5 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>Elevra.ai · Student success intelligence</span><span>Scores are guidance signals, shown with their drivers and available data.</span></footer>
+      <footer data-reveal className="mx-auto flex max-w-[1240px] flex-col gap-2 border-t border-[#e0e6e1] px-5 py-5 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>Elevra.ai · Student success intelligence</span><span>Scores are guidance signals, shown with their drivers and available data.</span></footer>
       </div>
     </main>
   );
