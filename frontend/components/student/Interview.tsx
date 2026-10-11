@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { speak, stopSpeaking, useLiveTranscription } from "./voice";
+import { playClip, preloadClips, speak, stopSpeaking, useLiveTranscription } from "./voice";
+
+// Played the moment an answer is sent (voice on), so the interviewer responds instantly while the next question is written.
+const ACKS = ["Okay.", "Got it.", "Alright.", "I see.", "Thanks for that."];
 import { StudentReveal } from "./StudentReveal";
 
 type Stage = "intro" | "resume" | "technical" | "behavioural" | "wrapup";
@@ -148,6 +151,7 @@ export function Interview() {
       const r = mock ? mockTurn() : await api<TurnResponse>("/interview/start", body);
       setSessionId(r.session_id ?? null); setTurns([]); setStartedAt(Date.now() - r.elapsed_sec * 1000); setNow(Date.now());
       setPhase("room");
+      if (voiceOn && !mock) preloadClips(ACKS);
       interviewerSays(r);
     } catch (e) { setError(friendlyError(e)); } finally { setBusy(null); }
   }
@@ -159,6 +163,7 @@ export function Interview() {
     await mic.stop(); // wait for the last spoken words to land in the answer
     const text = draftRef.current.trim();
     if (!text) { setBusy(null); return; }
+    if (voiceOn && !mock && !done) void playClip(ACKS[Math.floor(Math.random() * ACKS.length)]);
     setTurns((t) => [...t, { role: "candidate", text }]); updateDraft("");
     try {
       const r = mock ? mockTurn() : await api<TurnResponse>("/interview/reply", { session_id: sessionId, answer_text: text });

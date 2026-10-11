@@ -10,6 +10,8 @@ import base64
 import binascii
 import json
 import logging
+import os
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from typing import Literal, TypeVar
 
@@ -32,6 +34,10 @@ MIN_QUESTIONS = 10       # ...and only once this many questions have been asked
 MAX_MINUTES = 20         # hard stops
 MAX_QUESTIONS = 18
 MAX_PDF_BYTES = 5 * 1024 * 1024
+# Each turn uses a lighter, faster model with a hard time limit; the resume summary and final report keep the main model.
+TURN_MODEL = os.getenv("INTERVIEW_TURN_MODEL", "gemini-3.1-flash-lite")
+TURN_TIMEOUT_S = 6.0
+_turn_pool = ThreadPoolExecutor(max_workers=8, thread_name_prefix="interview-turn")
 Stage = Literal["intro", "resume", "technical", "behavioural", "wrapup"]
 STAGES: tuple[Stage, ...] = ("intro", "resume", "technical", "behavioural", "wrapup")
 
@@ -126,23 +132,27 @@ class _Marking(BaseModel):
 # ---------- Gemini ----------
 
 def _gemini_json(prompt: str, schema: type[T], pdf: bytes | None = None, temperature: float = 0.5,
-                 max_tokens: int = 700) -> T:
-    """Ask Gemini for JSON only and validate it. Raises on any failure so callers can fall back."""
-    if pdf is None:
-        return schema.model_validate(generate_json(prompt, max_tokens=max_tokens, temperature=temperature, timeout_s=20.0))
-    # The shared helper only accepts text, so a PDF resume calls Gemini directly with the same settings
-    # (no thinking, capped output, timeout).
+                 max_tokens: int = 700, model: str | None = None, timeout_s: float = 20.0) -> T:
+    """Ask Gemini for JSON only and validate it. Raises on any failure so callers can fall back.
+
+    Plain text on the default model goes through the shared helper. A PDF, or a specific model, calls Gemini directly
+    with the same settings (no thinking, capped output, timeout), since the shared helper takes text only and one model.
+    """
+    if pdf is None and model is None:
+        return schema.model_validate(generate_json(prompt, max_tokens=max_tokens, temperature=temperature, timeout_s=timeout_s))
     if not settings.GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY not set")
     from google import genai
     from google.genai import types
 
     client = genai.Client(api_key=settings.GEMINI_API_KEY)  # keep a reference: a discarded client closes mid-request
+    contents = [types.Part.from_bytes(data=pdf, mime_type="application/pdf"), prompt] if pdf else prompt
     resp = client.models.generate_content(
-        model=settings.GEMINI_MODEL, contents=[types.Part.from_bytes(data=pdf, mime_type="application/pdf"), prompt],
+        model=model or settings.GEMINI_MODEL, contents=contents,
         config=types.GenerateContentConfig(
             response_mime_type="application/json", temperature=temperature, max_output_tokens=max_tokens,
-            thinking_config=types.ThinkingConfig(thinking_budget=0), http_options=types.HttpOptions(timeout=30_000)),
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+            http_options=types.HttpOptions(timeout=int(timeout_s * 1000))),
     )
     return schema.model_validate(json.loads(resp.text))
 
@@ -213,19 +223,25 @@ def next_turn(state: dict, department: str, minutes: float) -> tuple[dict, bool]
         f"<resume_summary>\n{state.get('resume') or '(not available)'}\n</resume_summary>\n"
         f"<conversation>\n{_transcript_text(turns)}\n</conversation>"
     )
-    try:
-        t = _gemini_json(prompt, _Turn, max_tokens=400)
-        end = (t.end and (can_end or must_end)) or must_end
-        return {"message": t.message.strip(), "stage": t.stage, "end": end}, True
-    except Exception as e:  # noqa: BLE001
-        log.warning("next turn fell back: %s", e)
-        plan = _fallback_plan(department)
-        i = max(asked - 1, 0)  # the opening message was question 1
-        if must_end or i >= len(plan):
-            return {"message": "That's all from my side. Thank you for your time today, you did well to see it through. "
-                               "Press Get my feedback to see how it went.", "stage": "wrapup", "end": True}, False
-        stage, question = plan[i]
-        return {"message": question, "stage": stage, "end": False}, False
+    # Speed matters here: the fast model first with a hard time limit, then the main model once, then the question bank.
+    # Gemini rejects request deadlines under 10 s, so the shorter limit is enforced here by not waiting any longer;
+    # an abandoned request simply finishes in the background.
+    for model, limit in ((TURN_MODEL, TURN_TIMEOUT_S), (None, TURN_TIMEOUT_S + 2)):
+        try:
+            future = _turn_pool.submit(_gemini_json, prompt, _Turn, max_tokens=400, model=model, timeout_s=10.0)
+            t = future.result(timeout=limit)
+            end = (t.end and (can_end or must_end)) or must_end
+            return {"message": t.message.strip(), "stage": t.stage, "end": end}, True
+        except Exception as e:  # noqa: BLE001
+            log.warning("next turn via %s failed: %s", model or "main model", e)
+    # Every AI attempt failed: keep the interview going from the question bank.
+    plan = _fallback_plan(department)
+    i = max(asked - 1, 0)  # the opening message was question 1
+    if must_end or i >= len(plan):
+        return {"message": "That's all from my side. Thank you for your time today, you did well to see it through. "
+                           "Press Get my feedback to see how it went.", "stage": "wrapup", "end": True}, False
+    stage, question = plan[i]
+    return {"message": question, "stage": stage, "end": False}, False
 
 
 def mark_interview(turns: list[dict]) -> tuple[float, dict, bool]:
