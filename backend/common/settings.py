@@ -11,6 +11,7 @@ def _list(name: str, default: str = "") -> list[str]:
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+SUPABASE_DB_URL = os.getenv("SUPABASE_DB_URL", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")

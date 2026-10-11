@@ -59,7 +59,7 @@ export function StudentProfile({ profile: s, cohortMeans, mode, actions, liveSco
   const mine = mode === "student";
   const records: [string, string][] = [
     ["Academic", `CGPA ${fmt(m.cgpa, 2)} · backlogs ${fmt(m.backlogs)} · internals ${fmt(m.internal_pct, 0, "%")}`],
-    ["Attendance", `${fmt(m.attendance_pct, 1, "%")} overall · lowest subject ${fmt(m.min_subject_attendance, 0, "%")}`],
+    ["Attendance", `${fmt(m.attendance_pct, 1, "%")} overall${m.min_subject_attendance == null ? "" : ` · lowest subject ${fmt(m.min_subject_attendance, 0, "%")}`}`],
     ["LMS", `submission ${fmt((m.submit_rate ?? NaN) * 100, 0, "%")} · active weeks ${fmt((m.login_consistency ?? NaN) * 100, 0, "%")}`],
     ["Engagement", `${fmt(m.events)} events · ${fmt(m.clubs)} clubs · ${fmt(m.hackathons)} hackathons · ${fmt(m.certifications)} certifications`],
     [
