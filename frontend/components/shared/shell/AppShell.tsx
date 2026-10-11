@@ -11,6 +11,7 @@ import { getIdentity, signOutAndLeave } from "@/components/shared/session";
 import { createClient } from "@/lib/supabase/client";
 import { currentLabel, isActive, NAV, roleFromPath, type IconName, type ShellRole } from "./nav";
 import { StudentSearch } from "./StudentSearch";
+import { useApiStatus } from "./useApiStatus";
 import { useTheme } from "./theme";
 
 const ICONS: Record<IconName, LucideIcon> = {
@@ -77,6 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [theme, toggleTheme] = useTheme();
+  const apiStatus = useApiStatus();
   const drawerRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
 
@@ -171,6 +173,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           {staff && <div className="px-3 pb-2 md:hidden"><StudentSearch /></div>}
         </header>
+
+        {apiStatus === "down" && (
+          <div role="status" className="border-b border-risk-amber/30 bg-risk-amber-bg px-4 py-2 text-[13px] text-risk-amber">
+            <div className="mx-auto max-w-[1320px] sm:px-2 lg:px-4">
+              <strong className="font-semibold">The Elevra server is not reachable.</strong>{" "}
+              Dashboards and student records still work. Creating accounts, AI summaries, the assistant, the simulator and the mock interview need the server and will work again as soon as it is back.
+            </div>
+          </div>
+        )}
 
         <main id="main" className="mx-auto w-full max-w-[1320px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
       </div>

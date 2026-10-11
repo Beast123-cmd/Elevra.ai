@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { describeApiError } from "@/components/shared/apiErrors";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import type { Role } from "@/lib/types";
@@ -66,8 +67,7 @@ export default function UsersPage() {
       setForm(EMPTY);
       load();
     } catch (e) {
-      const why = e instanceof Error ? e.message.split(" - ")[1] : "";
-      toast.error(why ? `Could not create the account: ${why}` : "Could not create the account. Check the details and try again.");
+      toast.error(describeApiError(e, "Creating the account"));
     } finally {
       setCreating(false);
     }
@@ -91,8 +91,8 @@ export default function UsersPage() {
       await api(`/admin/students/${studentId}/mentor`, { mentor_faculty_id: mentor });
       toast.success(`Mentor for ${studentId} set to ${mentor}`);
       setMatches((m) => m.map((s) => (s.student_id === studentId ? { ...s, mentor_faculty_id: mentor } : s)));
-    } catch {
-      toast.error("Could not change the mentor.");
+    } catch (e) {
+      toast.error(describeApiError(e, "Changing the mentor"));
     }
   }
 
@@ -237,8 +237,13 @@ export default function UsersPage() {
               )}
               <div className="flex items-center gap-2">
                 Temporary password: <code className="rounded bg-muted px-2 py-1">{created.temp_password}</code>
-                <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(created.temp_password).then(() => toast.success("Copied"))}>Copy</Button>
+                <Button className="h-9 gap-2" onClick={() => navigator.clipboard.writeText(created.temp_password).then(() => toast.success("Password copied"), () => toast.error("Could not copy"))}>Copy password</Button>
               </div>
+              {created.role === "student" && created.record_created && (
+                <p className="rounded-md bg-muted px-3 py-2 text-[13px] text-muted-foreground">
+                  This student can sign in now, but their score and risk flags appear after the next score refresh. Until then their pages say &ldquo;No score yet&rdquo;.
+                </p>
+              )}
             </div>
           )}
         </DialogContent>

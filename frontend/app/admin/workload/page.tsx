@@ -10,6 +10,7 @@ import { useCachedQuery } from "@/components/shared/useCachedQuery";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { describeApiError } from "@/components/shared/apiErrors";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 
@@ -66,8 +67,8 @@ export default function WorkloadPage() {
       await api(`/admin/students/${m.student_id}/mentor`, { mentor_faculty_id: m.to });
       toast.success(`${m.name} now has ${label(m.to)} as mentor`);
       done();
-    } catch {
-      toast.error("Could not change the mentor. Please try again.");
+    } catch (e) {
+      toast.error(describeApiError(e, "Changing the mentor"));
     } finally {
       setBusy(null);
     }
