@@ -160,3 +160,8 @@ Spec: `docs/superpowers/specs/2026-10-11-ui-design-system-design.md`.
 - **Checks:** `tsc`, lint and build clean; 117 frontend tests; 43/43 role guards; headers and login flows pass; a screenshot matrix (every staff and student page at 1366px light and 390px dark) shows no console errors and no sideways scrolling; the real-browser faculty flow passes.
 - **Known gaps:** student pages other than Home keep their original layouts (colours and fonts now come from the shared tokens); the hackathon catalogue is very dense on phones.
 
+## 12. Submission readiness (night, 11 Oct)
+- **Reported:** creating a user in Admin seemed to fail. Cause: the API was not running (`ERR_CONNECTION_REFUSED`) and the page blamed the form. Fixed in PR #30: a shared error helper says when the server is unreachable, and a banner appears on every page while the API is down. The account tools themselves were tested end to end (new faculty, new student with mentor, new admin, bad input, no leftover rows) and work.
+- **Deployment pack:** `docs/DEPLOYMENT.md`, `deploy/elevra-api.service`, `deploy/nginx-elevra-api.conf`, and `deploy/smoke_test.py` (22 checks: pages, API health, CORS, demo sign-ins, role guards, brief, message draft, simulator, admin endpoints). The smoke test passes against a local run; it must be run again against the deployed URLs.
+- **Still open (cannot be done from the repo):** the actual deployment, giving evaluators access to the private repository, the slides and demo video, and the byteXL submission.
+

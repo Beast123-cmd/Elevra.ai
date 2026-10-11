@@ -103,6 +103,10 @@ cd frontend && npm install && npm run dev                               # http:/
 
 Tests: `cd frontend && npm test` · `cd backend && python -m unittest discover -s tests -t .` · `pytest pipeline/tests`.
 
+### Deploying
+
+Step-by-step for Vercel (web) and a Hostinger VPS (API), with ready-made service and nginx files in `deploy/`: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). After deploying, run `python deploy/smoke_test.py WEB_URL API_URL`; every line must say PASS.
+
 ### Environment variables (names only)
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_DEMO_PASSWORD` (web) ·
