@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Award, Bell, BookOpen, House, LogOut, Mic2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { BrandMark } from "@/components/shared/Brand";
 
 const LINKS = [
   { href: "/student", label: "Home", icon: House },
@@ -39,8 +40,8 @@ export function StudentNav() {
   return (
     <aside className="flex min-w-0 flex-col border-b border-slate-200 bg-white px-3 py-3 md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:px-3.5 md:py-5">
       <Link href="/student" className="flex h-9 shrink-0 items-center gap-2.5 px-2.5 text-slate-900 no-underline" aria-label="Elevra student home">
-        <span className="grid h-7 w-7 place-items-center rounded-lg bg-teal-800 text-sm font-semibold text-white">e</span>
-        <span className="text-base font-bold tracking-tight">elevra</span>
+        <BrandMark compact />
+        <span className="text-base font-semibold tracking-[-.045em]">elevra<span className="font-medium text-[#718078]">.ai</span></span>
       </Link>
       <p className="mb-2 mt-7 hidden px-2.5 text-[9px] font-semibold uppercase tracking-[.1em] text-slate-400 md:block">Student space</p>
       <nav aria-label="Student pages" className="mt-3 grid grid-cols-3 gap-1 md:mt-0 md:grid-cols-1 md:gap-1.5">
