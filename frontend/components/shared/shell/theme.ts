@@ -22,8 +22,10 @@ function resolve(preference: ThemePreference, darkSystem: boolean): Theme {
 }
 
 function apply(theme: Theme, preference: ThemePreference) {
-  document.documentElement.classList.toggle("dark", theme === "dark");
-  document.documentElement.classList.toggle("light", preference === "light");
+  const root = document.documentElement;
+  root.classList.toggle("dark", theme === "dark");
+  root.classList.toggle("light", preference === "light");
+  root.style.colorScheme = theme;
 }
 
 /** Shared appearance preference. A stored Light/Dark choice wins; otherwise follow the device. */

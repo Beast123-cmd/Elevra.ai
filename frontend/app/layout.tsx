@@ -15,6 +15,8 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const themeBootstrap = `(()=>{let preference="system";try{preference=localStorage.getItem("elevra-theme")||localStorage.getItem("elevra-student-theme")||"system"}catch{}const dark=preference==="dark"||(preference!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);const root=document.documentElement;root.classList.toggle("dark",dark);root.classList.toggle("light",preference==="light");root.style.colorScheme=dark?"dark":"light"})();`;
+
 export const metadata: Metadata = {
   title: "Elevra.ai | Student Success Intelligence",
   description: "Early-warning and student success analytics for campuses.",
@@ -26,7 +28,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
