@@ -11,11 +11,11 @@ export type ProfileState =
   | { status: "ready"; profile: Profile };
 
 /** Reads the profile state shared by all student routes. */
-export function useStudentProfile(): { state: ProfileState; mock: boolean } {
+export function useStudentProfile(): { state: ProfileState; mock: boolean; retry: () => void } {
   const value = useContext(StudentProfileContext);
   if (!value) throw new Error("useStudentProfile must be used inside StudentProfileProvider");
   useEffect(() => {
     if (!value.mock && value.state.status === "loading") value.load();
   }, [value]);
-  return { state: value.state, mock: value.mock };
+  return { state: value.state, mock: value.mock, retry: value.load };
 }

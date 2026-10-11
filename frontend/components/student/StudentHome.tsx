@@ -5,7 +5,8 @@ import { ArrowRight, BookOpen, BriefcaseBusiness, CalendarCheck2 } from "lucide-
 import { BAND_COLOR, TIER_STYLE, fmt } from "@/lib/format";
 import { type Pillar, type Profile, type Tier } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { StudentLoading } from "./StudentPage";
 import { useStudentProfile } from "./useStudentProfile";
 
 const SUMMARY: { key: Pillar; label: string; icon: typeof BookOpen; href: string; suffix?: string }[] = [
@@ -110,13 +111,13 @@ function Dashboard({ profile }: { profile: Profile }) {
 }
 
 export function StudentHome() {
-  const { state, mock } = useStudentProfile();
+  const { state, mock, retry } = useStudentProfile();
 
   if (state.status === "loading") {
-    return <div className="mx-auto w-full max-w-[1120px] space-y-5 px-4 py-7 sm:px-6 lg:px-10" aria-busy="true"><div className="space-y-2"><Skeleton className="h-7 w-56" /><Skeleton className="h-4 w-64" /></div><div className="grid gap-4 lg:grid-cols-2"><Skeleton className="h-60" /><Skeleton className="h-60" /></div><div className="grid gap-3 sm:grid-cols-3"><Skeleton className="h-28" /><Skeleton className="h-28" /><Skeleton className="h-28" /></div></div>;
+    return <div className="mx-auto w-full max-w-[1120px] px-4 py-7 sm:px-6 lg:px-10"><StudentLoading rows={3} /></div>;
   }
   if (state.status === "error") {
-    return <div className="mx-auto max-w-[1120px] px-4 py-7 sm:px-6 lg:px-10"><Card role="alert" className="rounded-lg border-[#e0e6e1] shadow-sm"><CardContent className="p-5"><h1 className="font-semibold text-[#172824]">Couldn&apos;t load your dashboard</h1><p className="mt-1 text-sm text-slate-500">{state.message}. Try signing in again.</p></CardContent></Card></div>;
+    return <div className="mx-auto max-w-[1120px] px-4 py-7 sm:px-6 lg:px-10"><Card role="alert" className="rounded-lg border-[#e0e6e1] shadow-sm"><CardContent className="p-5"><h1 className="font-semibold text-[#172824]">Couldn&apos;t load your dashboard</h1><p className="mt-1 text-sm text-slate-500">{state.message}. Check your connection, then retry.</p><Button onClick={retry} variant="outline" className="mt-4">Retry</Button></CardContent></Card></div>;
   }
   if (state.status === "empty") {
     return <div className="mx-auto max-w-[1120px] px-4 py-7 sm:px-6 lg:px-10"><Card className="rounded-lg border-[#e0e6e1] shadow-sm"><CardContent className="p-5"><h1 className="font-semibold text-[#172824]">Your dashboard is getting ready</h1><p className="mt-1 text-sm text-slate-500">Your score hasn&apos;t been calculated yet. Check back after the next data refresh.</p></CardContent></Card></div>;

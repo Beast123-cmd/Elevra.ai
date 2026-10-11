@@ -5,7 +5,8 @@ import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { StudentLoading } from "./StudentPage";
 import { ProfileGate } from "./ProfileGate";
 import { useSearchParams } from "next/navigation";
 
@@ -49,6 +50,7 @@ function load(p: Profile): Promise<Note[]> {
 function Feed({ p }: { p: Profile }) {
   const mock = useSearchParams().get("mock") === "1";
   const [state, setState] = useState<State>({ status: "loading" });
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (mock) {
@@ -60,10 +62,10 @@ function Feed({ p }: { p: Profile }) {
       .then((notes) => !cancelled && setState({ status: "ready", notes }))
       .catch((e: Error) => !cancelled && setState({ status: "error", message: e.message }));
     return () => { cancelled = true; };
-  }, [p, mock]);
+  }, [p, mock, attempt]);
 
   if (state.status === "loading") {
-    return <div className="space-y-3" aria-busy="true"><Skeleton className="h-20" /><Skeleton className="h-20" /></div>;
+    return <StudentLoading rows={2} />;
   }
   if (state.status === "error") {
     return (
@@ -71,6 +73,7 @@ function Feed({ p }: { p: Profile }) {
         <CardHeader>
           <CardTitle>Couldn&apos;t load notifications</CardTitle>
           <CardDescription>{state.message}. Try again in a moment.</CardDescription>
+          <Button variant="outline" className="mt-2 w-fit" onClick={() => { setState({ status: "loading" }); setAttempt((value) => value + 1); }}>Retry</Button>
         </CardHeader>
       </Card>
     );
@@ -89,7 +92,7 @@ function Feed({ p }: { p: Profile }) {
     <ul className="space-y-3">
       {state.notes.map((n) => (
         <li key={n.id}>
-          <Card>
+          <Card className="overflow-hidden rounded-xl border-slate-200 shadow-sm shadow-slate-900/[0.02] transition-shadow hover:shadow-md hover:shadow-slate-900/[0.04]">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">{n.title}</CardTitle>
               <CardDescription>

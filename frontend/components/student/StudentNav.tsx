@@ -16,6 +16,11 @@ const LINKS = [
   { href: "/student/notifications", label: "Inbox", icon: Bell },
 ];
 
+export function StudentRouteTitle() {
+  const path = usePathname();
+  return LINKS.find(({ href }) => href === "/student" ? path === href : path.startsWith(href))?.label ?? "Student space";
+}
+
 export function StudentNav() {
   const path = usePathname();
   const router = useRouter();
@@ -44,7 +49,7 @@ export function StudentNav() {
         <span className="text-base font-semibold tracking-[-.045em]">elevra<span className="font-medium text-[#718078]">.ai</span></span>
       </Link>
       <p className="mb-2 mt-7 hidden px-2.5 text-[9px] font-semibold uppercase tracking-[.1em] text-slate-400 md:block">Student space</p>
-      <nav aria-label="Student pages" className="mt-3 grid grid-cols-3 gap-1 md:mt-0 md:grid-cols-1 md:gap-1.5">
+      <nav aria-label="Student pages" className="mt-3 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] md:mt-0 md:flex-col md:gap-1.5 md:overflow-visible md:pb-0">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const active = href === "/student" ? path === href : path.startsWith(href);
           return (
@@ -52,7 +57,7 @@ export function StudentNav() {
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[10px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:flex-row md:justify-start md:gap-2.5 md:px-2.5 md:py-0 md:text-[11px] md:w-full ${active ? "bg-teal-50 text-teal-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+              className={`flex min-h-10 min-w-fit flex-row items-center justify-center gap-2 rounded-md px-3 py-2 text-[11px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:w-full md:justify-start md:gap-2.5 md:px-2.5 md:py-0 ${active ? "bg-teal-50 text-teal-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
             >
               <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-800" : "text-slate-400"}`} aria-hidden="true" />
               <span className="max-w-full truncate">{label}</span>
