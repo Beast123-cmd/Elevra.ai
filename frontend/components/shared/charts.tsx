@@ -22,7 +22,7 @@ export function Waterfall({ contributions }: { contributions: Profile["contribut
         <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 12 }} />
         <ReferenceLine x={0} stroke="#475569" />
         <Tooltip formatter={(v) => `${Number(v) > 0 ? "+" : ""}${Number(v).toFixed(1)} pts vs cohort`} />
-        <Bar dataKey="points">
+        <Bar isAnimationActive={false} dataKey="points">
           {data.map((d) => (
             <Cell key={d.name} fill={d.points >= 0 ? "#059669" : "#dc2626"} />
           ))}
@@ -45,8 +45,8 @@ export function PillarRadar({ pillars, cohortMeans }: { pillars: Profile["pillar
         <PolarGrid />
         <PolarAngleAxis dataKey="pillar" tick={{ fontSize: 11 }} />
         <PolarRadiusAxis domain={[0, 100]} tick={false} />
-        {cohortMeans && <Radar dataKey="cohort" name="Cohort average" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.2} />}
-        <Radar dataKey="student" name="Student" stroke="#1e49e2" fill="#1e49e2" fillOpacity={0.35} />
+        {cohortMeans && <Radar isAnimationActive={false} dataKey="cohort" name="Cohort average" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.2} />}
+        <Radar isAnimationActive={false} dataKey="student" name="Student" stroke="#1e49e2" fill="#1e49e2" fillOpacity={0.35} />
         <Legend />
       </RadarChart>
     </ResponsiveContainer>
@@ -65,8 +65,8 @@ export function WeeklyTimeline({ weekly }: { weekly: Profile["weekly"] }) {
         <YAxis yAxisId="r" orientation="right" domain={[0, 100]} />
         <Tooltip />
         <Legend />
-        <Line yAxisId="l" dataKey="logins" name="LMS logins" stroke="#1e49e2" connectNulls />
-        <Line yAxisId="r" dataKey="attendance" name="Attendance %" stroke="#059669" connectNulls />
+        <Line isAnimationActive={false} yAxisId="l" dataKey="logins" name="LMS logins" stroke="#1e49e2" connectNulls />
+        <Line isAnimationActive={false} yAxisId="r" dataKey="attendance" name="Attendance %" stroke="#059669" connectNulls />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -82,7 +82,7 @@ export function HistoryChart({ history }: { history: Profile["history"] }) {
         <XAxis dataKey="semester" />
         <YAxis domain={[0, 100]} />
         <Tooltip />
-        <Line dataKey="score" name="Success score" stroke="#7c3aed" strokeWidth={2} />
+        <Line isAnimationActive={false} dataKey="score" name="Success score" stroke="#7c3aed" strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
   );
