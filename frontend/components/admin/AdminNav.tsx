@@ -12,6 +12,7 @@ const LINKS = [
   ["/admin/notifications", "Notifications"],
   ["/admin/chat", "Ask your data"],
   ["/faculty", "Action Queue"],
+  ["/faculty/attendance", "Attendance"],
   ["/insights/data-health", "Data Health"],
   ["/insights/segments", "Segments"],
   ["/insights/method", "Method & Trust"],
@@ -28,7 +29,7 @@ export function AdminNav() {
         </span>
         <nav className="flex flex-wrap gap-1 text-sm">
           {LINKS.map(([href, label]) => {
-            const active = href === "/admin" ? path === "/admin" : path.startsWith(href);
+            const active = href === "/admin" ? path === "/admin" : href === "/faculty" ? path === "/faculty" : path.startsWith(href);
             return (
               <Link
                 key={href}
