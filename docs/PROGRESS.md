@@ -7,7 +7,7 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 | Area | Owner | State |
 |---|---|---|
 | Schema (`db/migrations/001_init.sql`) | Aayush | Run in Supabase, 18 tables + `student_unified_view` |
-| Seed data: 200 students, 50 faculty, scores, analytics, data quality | Aayush | Loaded and verified live |
+| Seed data: 1,500 students, 50 faculty, scores, analytics, data quality | Aayush | Loaded and verified live (re-seeded to 1,500 after the first 200-student load) |
 | Demo login accounts (4) | Aayush | Created 13:06 and verified (re-pointed to new students on each re-seed) |
 | Hour-0 skeleton (Next.js + FastAPI) | Mahesh | Merged |
 | Admin: users, overview | Mahesh | Merged (PR #1) |
@@ -16,9 +16,12 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 | Admin: interventions effectiveness, notifications | Mahesh | Done; verified against the live RLS policies (B6) |
 | Admin chat (Ask your data) and faculty mentor briefs | Mahesh | Done, with non-AI fallbacks and offline states (B7) |
 | Row-level security | Aayush | Merged (PR #8) and verified: 59/59 checks, anonymous access closed |
-| Mock interview (Gemini + ElevenLabs), what-if UI | Utkarsh | Not started |
-| What-if / re-score API, model, insights | Aayush | Not started / in progress |
-| Deploy (Vercel + Hostinger VPS) | Utkarsh leads | Last, after features |
+| Mock interview (Gemini + ElevenLabs), what-if UI | Utkarsh | Merged; pages load and the what-if API answers (checked 17:00) |
+| What-if / re-score API, model, insights | Aayush | Merged and working |
+| Admin/faculty closed loop, attendance planner, message drafts, evidence, weekly brief | Mahesh | Merged (#18) / PR #21 open |
+| README, score note | Mahesh / Aayush | README written 17:10; score note present |
+| Deploy (Vercel + Hostinger VPS) | Utkarsh leads | **Not started. This is now the critical path** |
+| Slides, demo video, byteXL submission | All | Not started |
 
 ## 2. What exists, by lane
 
@@ -129,3 +132,23 @@ Reported: sessions and caching felt unmanaged, going to another page seemed to r
 - 14:20 B7 (briefs, data chat) finished and verified under live RLS; proposals folder reduced to the RLS regression test.
 - 13:20 B6 (effectiveness, notifications), supabase fix and full real-data verification on `feat/admin-faculty`.
 - 12:05 Hour-0 skeleton on main. 12:21 admin shell, users, overview, queue, Student 360 (PR #1, merged 12:40). 12:38 teammates' PRs #2 and #3 merged. 12:45 keys moved out of `.env.example` into ignored files, live connections verified.
+
+## 9. Admin and faculty features added after the research pass (afternoon, 11 Oct)
+Decision record and sources: `docs/FEATURE_RESEARCH.md`. All are tested (`npm test` 109, backend 67) and were run against the live Supabase project in a real browser.
+| Feature | Where | Notes |
+|---|---|---|
+| My week closed loop | `/faculty` | Red mentees contacted in 7 days, "start with these 5", follow-ups with Done, Last contact column. Only live, non-planned interventions count as contact. |
+| Response & workload | `/admin/workload` | Coverage KPIs, per-mentor caseload, rebalancing suggestions (same department, untouched students only), bulk check-in tasks behind a confirmation. |
+| Attendance recovery planner | `/faculty/attendance` | Editable policy (75% / 10-point condonation / 16 weeks / 15 classes). Class counts are estimated from the average percentage; there are no per-class records. |
+| Message drafts | Student 360 | `POST /briefs/{id}/message`; AI text must pass the fact check and message rules, else a standard draft; browser fallback offline. |
+| Accreditation evidence | `/admin/evidence` | Slow/advanced cut-offs editable (50/75), CSV formula-safe, seeded rows excluded. |
+| Weekly brief | `/admin` card, `GET /admin/weekly-brief` | Figures computed on the server, wording by Gemini only if every number matches; admin only. |
+| Auth-outage fix | `middleware.ts` | A network error while verifying the session no longer signs the user out (`authErrors.ts`). Frozen file: reviewed by Aayush through #18. |
+
+## 10. Audit against the brief and the rule book (17:00, real browser, live data)
+- All 16 pages (admin, faculty, student, insights, demo, landing, login) load with their key content and no console or network errors.
+- Capabilities confirmed live: unified view with 17 documented cleaning issues across all sources, Success Score and both risk flags, segments, explainable drivers, what-if (`overrides` body), Ask your data, briefs, role guards (403 for the wrong role).
+- **Gaps that can cost points (in order):** (1) nothing is deployed, and the automated gate runs on the deployed link; (2) the GitHub repository is private, so evaluators cannot open it unless access is granted; (3) no slides and no demo video; (4) nothing submitted yet on byteXL.
+- **Data realism (owner: Aayush):** segments are lopsided (Steady middle 900, Silent disengagers 462, Engaged but struggling 5, Skilled but irregular 7), about 24% Red for academic and 36% Red for placement risk, and every seeded intervention shows an improvement. A reviewer will notice; recalibrate if time allows.
+- **Security (owner: Aayush):** `/whatif` accepts any student id and `/rescore` returns all students' scores to a faculty login, because the service-role client bypasses RLS. Restrict both to the caller's own scope.
+
