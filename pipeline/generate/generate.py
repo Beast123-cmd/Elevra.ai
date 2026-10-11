@@ -16,6 +16,34 @@ FIRST_NAMES = ("Aarav", "Vivaan", "Aditya", "Sai", "Arjun", "Ishaan", "Ananya", 
 LAST_NAMES = ("Sharma", "Reddy", "Patel", "Iyer", "Nair", "Gupta", "Rao", "Kumar", "Singh", "Das", "Joshi", "Menon")
 SKILLS = {"Comp": ("DSA", "Web development", "Databases"), "IT": ("DSA", "Cloud", "Databases"),
           "ENTC": ("Embedded systems", "Python", "VLSI"), "AI&DS": ("Python", "Machine learning", "Statistics")}
+# Every skill a student can be assessed on. A student is assessed on their branch core plus a few electives.
+TECH_SKILLS = ("DSA", "Python", "Web development", "Databases", "Machine learning", "Statistics", "Cloud",
+               "Networking", "Embedded systems", "VLSI")
+SOFT_SKILLS = ("Communication", "Public speaking", "English language", "Teamwork", "Leadership",
+               "Problem solving", "Time management", "Logical reasoning")
+# Student archetypes: per-skill shifts (points) on top of general ability. They make profiles genuinely different:
+# a strong coder who freezes when presenting, a fluent speaker who is average at DSA, an ML enthusiast, and so on.
+ARCHETYPES = {
+    "coder": {"DSA": 18, "Python": 10, "Databases": 6, "Problem solving": 12, "Logical reasoning": 10,
+              "Communication": -14, "Public speaking": -20, "English language": -8, "Leadership": -10},
+    "communicator": {"Communication": 18, "Public speaking": 22, "English language": 16, "Leadership": 14, "Teamwork": 10,
+                     "DSA": -14, "Machine learning": -12, "Statistics": -8, "VLSI": -14, "Embedded systems": -12},
+    "ml_enthusiast": {"Machine learning": 22, "Statistics": 16, "Python": 14, "Problem solving": 6,
+                      "Web development": -10, "Networking": -10, "Public speaking": -8},
+    "builder": {"Web development": 20, "Cloud": 14, "Databases": 10, "Networking": 6, "Teamwork": 8,
+                "Statistics": -10, "Machine learning": -6, "Logical reasoning": -4},
+    "hardware": {"Embedded systems": 20, "VLSI": 18, "Networking": 8, "Logical reasoning": 6,
+                 "Web development": -12, "Machine learning": -8, "Public speaking": -6},
+    "all_rounder": {skill: 10 for skill in TECH_SKILLS + SOFT_SKILLS},
+    "struggler": {skill: -14 for skill in TECH_SKILLS + SOFT_SKILLS},
+    "balanced": {},
+}
+ARCHETYPE_WEIGHTS = {  # (archetype, weight) by department
+    "Comp": (("coder", 24), ("builder", 20), ("ml_enthusiast", 12), ("communicator", 13), ("all_rounder", 6), ("struggler", 9), ("balanced", 16)),
+    "IT": (("builder", 26), ("coder", 16), ("ml_enthusiast", 8), ("communicator", 14), ("all_rounder", 6), ("struggler", 10), ("balanced", 20)),
+    "ENTC": (("hardware", 30), ("coder", 8), ("ml_enthusiast", 6), ("communicator", 14), ("all_rounder", 5), ("struggler", 12), ("balanced", 25)),
+    "AI&DS": (("ml_enthusiast", 34), ("coder", 16), ("builder", 6), ("communicator", 12), ("all_rounder", 7), ("struggler", 8), ("balanced", 17)),
+}
 
 
 def _write(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
@@ -29,6 +57,41 @@ def _stable_rng(seed: int, namespace: str) -> random.Random:
     """Create an independent random stream that does not shift when the cohort grows."""
     digest = hashlib.sha256(f"{seed}:{namespace}".encode("utf-8")).digest()
     return random.Random(int.from_bytes(digest[:8], "big"))
+
+
+def _student_skills(seed: int, sid: str, row: dict, t: dict) -> list[dict]:
+    """Differentiated skill profile for one student, from an independent random stream.
+
+    A student is assessed on the branch core plus 2-4 electives and 6-8 soft skills. Scores combine general ability,
+    an archetype (coder, communicator, ML enthusiast, ...), year-on-year growth and individual noise, so students
+    differ both in overall level and in *which* skills are strong or weak."""
+    r = _stable_rng(seed, f"skills:{sid}")
+    dept = row["department"]
+    if t["demo_star"]:
+        archetype = "all_rounder"
+    else:
+        names, weights = zip(*ARCHETYPE_WEIGHTS[dept])
+        archetype = r.choices(names, weights=weights)[0]
+    shifts = ARCHETYPES[archetype]
+    core = SKILLS[dept]
+    extra_pool = [skill for skill in TECH_SKILLS if skill not in core]
+    # Electives follow interest: the archetype's strongest skills are more likely to be assessed.
+    extra_pool.sort(key=lambda skill: -shifts.get(skill, 0) + r.uniform(0, 22))
+    tech = list(core) + extra_pool[:r.randint(2, 4)]
+    soft = r.sample(SOFT_SKILLS, r.randint(6, 8))
+    growth = 3 * (row["year"] - 3)
+    rows = []
+    for category, skills, ability_weight in (("technical", tech, 9.0), ("soft", soft, 5.0)):
+        for skill in skills:
+            driver = ability_weight * t["ability"] + (7 * t["career"] if category == "technical" else 6 * t["diligence"])
+            value = 56 + driver + shifts.get(skill, 0) + growth + r.gauss(0, 13)
+            if skill in core:
+                value += 4  # taught in the curriculum
+            value = max(5, min(98, value))
+            scale = 10 if r.random() < 0.5 else 100
+            rows.append({"student_id": sid, "category": category, "skill": skill,
+                         "score": round(value / 10, 1) if scale == 10 else round(value, 1), "scale": scale})
+    return rows
 
 
 def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED) -> dict[str, list[dict]]:
@@ -139,16 +202,11 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
                     minutes = -minutes - 1
                 raw["lms"].append({"student_id": raw_lms_id, "semester": semester, "week": week,
                     "logins": logins, "minutes": minutes, "assignments_due": due, "assignments_submitted": submitted})
-        for skill in SKILLS[row["department"]]:
-            value = max(5, min(100, 65 + 11 * t["ability"] + 8 * t["career"] + rng.gauss(0, 12)))
-            scale = 10 if rng.random() < 0.5 else 100
-            raw["skills"].append({"student_id": sid, "category": "technical", "skill": skill,
-                                  "score": round(value / 10, 1) if scale == 10 else round(value, 1), "scale": scale})
-        for skill in ("Communication", "Teamwork"):
-            value = max(5, min(100, 68 + 7 * t["diligence"] + rng.gauss(0, 12)))
-            scale = 10 if rng.random() < 0.5 else 100
-            raw["skills"].append({"student_id": sid, "category": "soft", "skill": skill,
-                                  "score": round(value / 10, 1) if scale == 10 else round(value, 1), "scale": scale})
+        # The original uniform draws are still consumed so every other source (engagement, placement, feedback)
+        # keeps the exact values it had; the skills actually written come from _student_skills below.
+        for _ in range(len(SKILLS[row["department"]]) + 2):
+            rng.gauss(0, 12); rng.random()
+        raw["skills"].extend(_student_skills(seed, sid, row, t))
         for activity in ("event", "club", "hackathon", "certification"):
             count = max(0, min(3, int(rng.gauss(1.0 + 0.35 * t["career"], 0.9))))
             for count_index in range(count):
