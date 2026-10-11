@@ -8,12 +8,12 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 |---|---|---|
 | Schema (`db/migrations/001_init.sql`) | Aayush | Run in Supabase, 18 tables + `student_unified_view` |
 | Seed data: 200 students, 50 faculty, scores, analytics, data quality | Aayush | Loaded and verified live |
-| Demo login accounts (4) | Aayush | **Pending:** the seed must be re-run with `DEMO_PASSWORD` set |
+| Demo login accounts (4) | Aayush | Created 13:06 and verified (re-pointed to new students on each re-seed) |
 | Hour-0 skeleton (Next.js + FastAPI) | Mahesh | Merged |
 | Admin: users, overview | Mahesh | Merged (PR #1) |
 | Faculty: action queue, Student 360, interventions | Mahesh | Merged (PR #1) |
 | Student home, Data Health, Segments, Improve path, Certifications | Utkarsh | Merged (PR #2, #4) |
-| Admin: interventions effectiveness, notifications | Mahesh | Next (B6) |
+| Admin: interventions effectiveness, notifications | Mahesh | Built and verified on real data (B6) |
 | Mock interview (Gemini + ElevenLabs), what-if UI | Utkarsh | Not started |
 | What-if / re-score API, model, insights | Aayush | Not started / in progress |
 | Deploy (Vercel + Hostinger VPS) | Utkarsh leads | Last, after features |
@@ -49,7 +49,12 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 | 12:45 | Live Supabase: my exact queries against seeded data | Shapes match `lib/types.ts`; 68/68 year-2 students have no placement data and are handled |
 | 12:45 | Gemini key | Works |
 | 12:45 | ElevenLabs key | Restricted key: text-to-speech works (tested); it cannot list voices |
-| — | **Login and role guards against real Supabase accounts** | **Not yet tested** (accounts pending) |
+| 13:06 | Demo accounts: all four log in with the right role and linked record | Pass |
+| 13:10 | **API end to end against real Supabase** (18 checks): 401 without or with a bad token, 403 for student/faculty, validation 422/404, user creation, login with the temp password, no orphan row after a failed create, mentor change and restore, cleanup | 18/18 pass |
+| 13:15 | **Role guards in the running app with real sessions** (39 checks, 4 roles x all page groups) | 39/39 pass |
+| 13:20 | **Every page in headless Chrome with real sessions**: admin overview, users, interventions, notifications, faculty queue, Student 360, student home | No console or network errors; layouts verified from screenshots |
+| 13:20 | Queries as faculty1 | 30 mentees (F01), all with the right mentor |
+| 13:20 | Admin overview over 1,500 students (paging past the 1000-row cap) | Pass |
 
 ## 4. Decisions
 - **Absolute pillar scores, not batch percentiles.** Percentiles make every batch average 50, so "% at risk" would mean nothing. Percentiles are display text only.
@@ -73,13 +78,21 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 - Sync before working and after every merge: `git fetch --all && git rebase origin/main`, then `git push --force-with-lease origin <your-branch>` (own branch only).
 - PR #1, #2, #3, #4 merged so far. No file-level conflicts to date, because each lane stays in its own folders.
 
+## 6b. Bugs found by testing, and fixes
+- **supabase-py 2.9.0 rejected the new `sb_secret_` keys** ("Invalid API key"), so every authenticated API call returned 401. Fixed by pinning `supabase==2.32.0` (and `pydantic==2.14.0`).
+- `tsc` caught an invalid `Set` spread that would have broken the production build; replaced with `Array.from`.
+- Band badge wrapped onto two lines in narrow columns; "lowest subject" printed a dash when the field is empty. Both fixed.
+- Demo accounts are re-pointed to different students on every re-seed, so docs and demos must not hardcode student names.
+
 ## 7. Open items
-1. Set `DEMO_PASSWORD` (same value as `NEXT_PUBLIC_DEMO_PASSWORD`) and re-run `python pipeline/seed.py` **without** `--skip-demo-users`.
-2. Test login, role guards and every page with real accounts.
-3. B6: interventions effectiveness chart and notifications.
+1. **Row-level security (privacy):** any logged-in student can currently read all 1,500 students' scores, feedback and interventions, and the user list. Needs `002_rls.sql` (students: own rows; faculty: their mentees; admin: all). Owner: Aayush.
+2. **Seed realism:** all 300 seeded interventions show "improved 100%" with round averages; 27% of students are Red for academic risk and 33% for placement, which is too many to triage. Add noise and recalibrate thresholds. Owner: Aayush.
+3. `min_subject_attendance` is not populated in `profile.metrics`. Owner: Aayush.
 4. Branch protection on `main` (repo admin).
-5. Mock interview, what-if panel, `/demo` page.
-6. Deploy: Vercel + VPS; set env vars there.
+5. Mock interview, what-if panel, `/demo` page. Owner: Utkarsh.
+6. B7 (P2): AI student briefs and "Ask your data" chat. Owner: Mahesh.
+7. Deploy: Vercel + VPS; set env vars there. Utkarsh leads.
 
 ## 8. Change log
+- 13:20 B6 (effectiveness, notifications), supabase fix and full real-data verification on `feat/admin-faculty`.
 - 12:05 Hour-0 skeleton on main. 12:21 admin shell, users, overview, queue, Student 360 (PR #1, merged 12:40). 12:38 teammates' PRs #2 and #3 merged. 12:45 keys moved out of `.env.example` into ignored files, live connections verified.
