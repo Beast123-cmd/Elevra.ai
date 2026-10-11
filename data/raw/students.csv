@@ -199,4 +199,1319 @@ student_id,name,email,department,year,batch,section,gender,residence,mentor_facu
 40197,Ishaan Nair,40197@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
 40198,Vivaan Gupta,40198@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F19
 40199,Kavya Rao,40199@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F20
-40095,Sneha Nair,40095@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F32
+40200,Sai Sharma,40200@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F13
+40201,Aarav Joshi,40201@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F14
+40202,Vivaan Joshi,40202@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F19
+40203,Priya Kumar,40203@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F20
+40204,Priya Kumar,40204@campus.edu,Comp,2,2026-2027,A,M,Hostel,F17
+40205,Priya Kumar,40205@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F18
+40206,Priya Rao,40206@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F23
+40207,Aarav Rao,40207@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F24
+40208,Ananya Patel,40208@campus.edu,Comp,3,2025-2027,B,F,Hostel,F17
+40209,Ananya Reddy,40209@campus.edu,IT,3,2025-2027,C,M,Hostel,F18
+40210,Priya Patel,40210@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F23
+40211,Sai Kumar,40211@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F24
+40212,Aarav Iyer,40212@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F17
+40213,Sai Sharma,40213@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F18
+40214,Ishaan Iyer,40214@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F23
+40215,Kavya Joshi,40215@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F24
+40216,Ananya Rao,40216@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F21
+40217,Priya Rao,40217@campus.edu,IT,2,2026-2027,B,M,Hostel,F22
+40218,Ishaan Reddy,40218@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F27
+40219,Kavya Singh,40219@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F28
+40220,Meera Reddy,40220@campus.edu,Comp,3,2025-2027,B,F,Hostel,F21
+40221,Diya Singh,40221@campus.edu,IT,3,2025-2027,C,F,Hostel,F22
+40222,Ishaan Iyer,40222@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F27
+40223,Aditya Iyer,40223@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F28
+40224,Diya Menon,40224@campus.edu,Comp,4,2024-2027,C,F,Hostel,F21
+40225,Kavya Sharma,40225@campus.edu,IT,4,2024-2027,A,M,Hostel,F22
+40226,Kavya Iyer,40226@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F27
+40227,Aarav Sharma,40227@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F28
+40228,Meera Joshi,40228@campus.edu,Comp,2,2026-2027,A,M,Hostel,F25
+40229,Ananya Reddy,40229@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F26
+40230,Kavya Joshi,40230@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F31
+40231,Ishaan Das,40231@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F32
+40232,Sneha Kumar,40232@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F25
+40233,Sai Das,40233@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F26
+40234,Ananya Joshi,40234@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F31
+40235,Ananya Iyer,40235@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F32
+40236,Arjun Kumar,40236@campus.edu,Comp,4,2024-2027,C,F,Hostel,F25
+40237,Meera Reddy,40237@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F26
+40238,Aarav Nair,40238@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F31
+40239,Priya Reddy,40239@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F32
+40240,Priya Iyer,40240@campus.edu,Comp,2,2026-2027,A,M,Hostel,F29
+40241,Diya Reddy,40241@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F30
+40242,Aarav Rao,40242@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F35
+40243,Ishaan Das,40243@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F36
+40244,Diya Das,40244@campus.edu,Comp,3,2025-2027,B,M,Hostel,F29
+40245,Priya Sharma,40245@campus.edu,IT,3,2025-2027,C,F,Hostel,F30
+40246,Ananya Joshi,40246@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F35
+40247,Ananya Singh,40247@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F36
+40248,Priya Das,40248@campus.edu,Comp,4,2024-2027,C,M,Hostel,F29
+40249,Ananya Gupta,40249@campus.edu,IT,4,2024-2027,A,M,Hostel,F30
+40250,Sneha Iyer,40250@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F35
+40251,Vivaan Reddy,40251@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F36
+40252,Vivaan Kumar,40252@campus.edu,Comp,2,2026-2027,A,F,Hostel,F33
+40253,Meera Iyer,40253@campus.edu,IT,2,2026-2027,B,M,Hostel,F34
+40254,Aditya Joshi,40254@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F39
+40255,Meera Reddy,40255@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F40
+40256,Diya Singh,40256@campus.edu,Comp,3,2025-2027,B,M,Hostel,F33
+40257,Arjun Das,40257@campus.edu,IT,3,2025-2027,C,M,Hostel,F34
+40258,Ananya Rao,40258@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F39
+40259,Arjun Patel,40259@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F40
+40260,Ananya Singh,40260@campus.edu,Comp,4,2024-2027,C,F,Hostel,F33
+40261,Arjun Sharma,40261@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F34
+40262,Vivaan Das,40262@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F39
+40263,Vivaan Menon,40263@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F40
+40264,Diya Reddy,40264@campus.edu,Comp,2,2026-2027,A,M,Hostel,F37
+40265,Sai Iyer,40265@campus.edu,IT,2,2026-2027,B,F,Hostel,F38
+40266,Sneha Nair,40266@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F43
+40267,Kavya Patel,40267@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F44
+40268,Aditya Das,40268@campus.edu,Comp,3,2025-2027,B,F,Hostel,F37
+40269,Ishaan Kumar,40269@campus.edu,IT,3,2025-2027,C,M,Hostel,F38
+40270,Kavya Menon,40270@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F43
+40271,Sneha Patel,40271@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F44
+40272,Diya Sharma,40272@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F37
+40273,Aditya Nair,40273@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F38
+40274,Meera Menon,40274@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F43
+40275,Aarav Menon,40275@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F44
+40276,Vivaan Reddy,40276@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F41
+40277,Aarav Das,40277@campus.edu,IT,2,2026-2027,B,M,Hostel,F42
+40278,Sai Reddy,40278@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F47
+40279,Sai Singh,40279@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F48
+40280,Sai Singh,40280@campus.edu,Comp,3,2025-2027,B,M,Hostel,F41
+40281,Kavya Das,40281@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F42
+40282,Ananya Gupta,40282@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F47
+40283,Ananya Singh,40283@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F48
+40284,Aditya Nair,40284@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F41
+40285,Kavya Reddy,40285@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F42
+40286,Sneha Das,40286@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F47
+40287,Priya Menon,40287@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F48
+40288,Ishaan Rao,40288@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F45
+40289,Ishaan Patel,40289@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F46
+40290,Aarav Iyer,40290@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F03
+40291,Sai Gupta,40291@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F04
+40292,Aarav Patel,40292@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F45
+40293,Diya Sharma,40293@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F46
+40294,Sai Menon,40294@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F03
+40295,Ishaan Sharma,40295@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F04
+40296,Aarav Patel,40296@campus.edu,Comp,4,2024-2027,C,F,Hostel,F45
+40297,Vivaan Singh,40297@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F46
+40298,Arjun Gupta,40298@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F03
+40299,Vivaan Patel,40299@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F04
+40300,Diya Nair,40300@campus.edu,Comp,2,2026-2027,A,F,Hostel,F49
+40301,Meera Iyer,40301@campus.edu,IT,2,2026-2027,B,F,Hostel,F50
+40302,Diya Singh,40302@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F07
+40303,Ananya Gupta,40303@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F08
+40304,Sai Joshi,40304@campus.edu,Comp,3,2025-2027,B,M,Hostel,F49
+40305,Meera Rao,40305@campus.edu,IT,3,2025-2027,C,M,Hostel,F50
+40306,Aditya Sharma,40306@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F07
+40307,Kavya Singh,40307@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F08
+40308,Diya Gupta,40308@campus.edu,Comp,4,2024-2027,C,F,Hostel,F49
+40309,Diya Singh,40309@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F50
+40310,Meera Sharma,40310@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F07
+40311,Ishaan Menon,40311@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F08
+40312,Sai Kumar,40312@campus.edu,Comp,2,2026-2027,A,M,Hostel,F01
+40313,Aditya Gupta,40313@campus.edu,IT,2,2026-2027,B,M,Hostel,F02
+40314,Vivaan Singh,40314@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F11
+40315,Ananya Joshi,40315@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F12
+40316,Sai Joshi,40316@campus.edu,Comp,3,2025-2027,B,M,Hostel,F01
+40317,Sneha Sharma,40317@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F02
+40318,Ishaan Menon,40318@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F11
+40319,Aarav Nair,40319@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F12
+40320,Ananya Patel,40320@campus.edu,Comp,4,2024-2027,C,F,Hostel,F01
+40321,Aditya Kumar,40321@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F02
+40322,Ananya Patel,40322@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F11
+40323,Aditya Das,40323@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F12
+40324,Meera Singh,40324@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F05
+40325,Arjun Joshi,40325@campus.edu,IT,2,2026-2027,B,F,Hostel,F06
+40326,Vivaan Nair,40326@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F15
+40327,Aarav Nair,40327@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F16
+40328,Kavya Gupta,40328@campus.edu,Comp,3,2025-2027,B,F,Hostel,F05
+40329,Diya Das,40329@campus.edu,IT,3,2025-2027,C,M,Hostel,F06
+40330,Sneha Joshi,40330@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F15
+40331,Vivaan Joshi,40331@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F16
+40332,Vivaan Reddy,40332@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F05
+40333,Ananya Reddy,40333@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F06
+40334,Vivaan Nair,40334@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F15
+40335,Sneha Das,40335@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F16
+40336,Arjun Gupta,40336@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F09
+40337,Meera Kumar,40337@campus.edu,IT,2,2026-2027,B,F,Hostel,F10
+40338,Ananya Menon,40338@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F19
+40339,Priya Das,40339@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F20
+40340,Meera Iyer,40340@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F09
+40341,Diya Das,40341@campus.edu,IT,3,2025-2027,C,F,Hostel,F10
+40342,Aarav Patel,40342@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F19
+40343,Kavya Sharma,40343@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F20
+40344,Meera Menon,40344@campus.edu,Comp,4,2024-2027,C,M,Hostel,F09
+40345,Vivaan Sharma,40345@campus.edu,IT,4,2024-2027,A,F,Hostel,F10
+40346,Vivaan Kumar,40346@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F19
+40347,Sai Sharma,40347@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F20
+40348,Arjun Nair,40348@campus.edu,Comp,2,2026-2027,A,M,Hostel,F13
+40349,Kavya Kumar,40349@campus.edu,IT,2,2026-2027,B,M,Hostel,F14
+40350,Vivaan Kumar,40350@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F23
+40351,Meera Nair,40351@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F24
+40352,Kavya Das,40352@campus.edu,Comp,3,2025-2027,B,F,Hostel,F13
+40353,Aditya Patel,40353@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
+40354,Aditya Reddy,40354@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F23
+40355,Diya Reddy,40355@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F24
+40356,Meera Gupta,40356@campus.edu,Comp,4,2024-2027,C,M,Hostel,F13
+40357,Arjun Patel,40357@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F14
+40358,Priya Das,40358@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F23
+40359,Ananya Sharma,40359@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F24
+40360,Kavya Sharma,40360@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F17
+40361,Vivaan Rao,40361@campus.edu,IT,2,2026-2027,B,F,Hostel,F18
+40362,Ananya Joshi,40362@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F27
+40363,Vivaan Kumar,40363@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F28
+40364,Aarav Singh,40364@campus.edu,Comp,3,2025-2027,B,F,Hostel,F17
+40365,Aditya Reddy,40365@campus.edu,IT,3,2025-2027,C,M,Hostel,F18
+40366,Arjun Kumar,40366@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F27
+40367,Aarav Sharma,40367@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F28
+40368,Vivaan Gupta,40368@campus.edu,Comp,4,2024-2027,C,M,Hostel,F17
+40369,Aditya Reddy,40369@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F18
+40370,Sneha Joshi,40370@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F27
+40371,Diya Reddy,40371@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F28
+40372,Meera Das,40372@campus.edu,Comp,2,2026-2027,A,M,Hostel,F21
+40373,Diya Gupta,40373@campus.edu,IT,2,2026-2027,B,M,Hostel,F22
+40374,Aditya Singh,40374@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F31
+40375,Kavya Rao,40375@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F32
+40376,Vivaan Kumar,40376@campus.edu,Comp,3,2025-2027,B,F,Hostel,F21
+40377,Priya Singh,40377@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F22
+40378,Priya Das,40378@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F31
+40379,Arjun Singh,40379@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F32
+40380,Vivaan Nair,40380@campus.edu,Comp,4,2024-2027,C,M,Hostel,F21
+40381,Kavya Joshi,40381@campus.edu,IT,4,2024-2027,A,F,Hostel,F22
+40382,Priya Menon,40382@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F31
+40383,Aditya Reddy,40383@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F32
+40384,Sai Nair,40384@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F25
+40385,Priya Gupta,40385@campus.edu,IT,2,2026-2027,B,M,Hostel,F26
+40386,Kavya Patel,40386@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F35
+40387,Sneha Joshi,40387@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F36
+40388,Vivaan Sharma,40388@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F25
+40389,Arjun Iyer,40389@campus.edu,IT,3,2025-2027,C,F,Hostel,F26
+40390,Meera Joshi,40390@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F35
+40391,Kavya Gupta,40391@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F36
+40392,Sai Joshi,40392@campus.edu,Comp,4,2024-2027,C,F,Hostel,F25
+40393,Kavya Reddy,40393@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F26
+40394,Sneha Nair,40394@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F35
+40395,Arjun Kumar,40395@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F36
+40396,Priya Patel,40396@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F29
+40397,Priya Kumar,40397@campus.edu,IT,2,2026-2027,B,M,Hostel,F30
+40398,Sneha Das,40398@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F39
+40399,Priya Gupta,40399@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F40
+40400,Vivaan Patel,40400@campus.edu,Comp,3,2025-2027,B,F,Hostel,F29
+40401,Sai Singh,40401@campus.edu,IT,3,2025-2027,C,M,Hostel,F30
+40402,Aarav Kumar,40402@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F39
+40403,Diya Joshi,40403@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F40
+40404,Meera Das,40404@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F29
+40405,Ananya Rao,40405@campus.edu,IT,4,2024-2027,A,M,Hostel,F30
+40406,Arjun Joshi,40406@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F39
+40407,Vivaan Sharma,40407@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F40
+40408,Ishaan Iyer,40408@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F33
+40409,Aarav Singh,40409@campus.edu,IT,2,2026-2027,B,M,Hostel,F34
+40410,Ishaan Gupta,40410@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F43
+40411,Sneha Patel,40411@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F44
+40412,Meera Joshi,40412@campus.edu,Comp,3,2025-2027,B,F,Hostel,F33
+40413,Aditya Joshi,40413@campus.edu,IT,3,2025-2027,C,M,Hostel,F34
+40414,Vivaan Menon,40414@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F43
+40415,Priya Singh,40415@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F44
+40416,Diya Singh,40416@campus.edu,Comp,4,2024-2027,C,F,Hostel,F33
+40417,Diya Patel,40417@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F34
+40418,Sai Kumar,40418@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F43
+40419,Aarav Joshi,40419@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F44
+40420,Aditya Rao,40420@campus.edu,Comp,2,2026-2027,A,M,Hostel,F37
+40421,Ishaan Kumar,40421@campus.edu,IT,2,2026-2027,B,F,Hostel,F38
+40422,Arjun Iyer,40422@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F47
+40423,Diya Iyer,40423@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F48
+40424,Priya Sharma,40424@campus.edu,Comp,3,2025-2027,B,F,Hostel,F37
+40425,Meera Joshi,40425@campus.edu,IT,3,2025-2027,C,M,Hostel,F38
+40426,Ananya Das,40426@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F47
+40427,Vivaan Iyer,40427@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F48
+40428,Sneha Reddy,40428@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F37
+40429,Priya Sharma,40429@campus.edu,IT,4,2024-2027,A,M,Hostel,F38
+40430,Sai Kumar,40430@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F47
+40431,Sai Reddy,40431@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F48
+40432,Vivaan Singh,40432@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F41
+40433,Ananya Das,40433@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F42
+40434,Ishaan Singh,40434@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F03
+40435,Diya Menon,40435@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F04
+40436,Aarav Patel,40436@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F41
+40437,Sneha Sharma,40437@campus.edu,IT,3,2025-2027,C,F,Hostel,F42
+40438,Aditya Joshi,40438@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F03
+40439,Sneha Patel,40439@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F04
+40440,Kavya Rao,40440@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F41
+40441,Ishaan Nair,40441@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F42
+40442,Priya Reddy,40442@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F03
+40443,Ananya Das,40443@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F04
+40444,Diya Reddy,40444@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F45
+40445,Meera Nair,40445@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F46
+40446,Ishaan Iyer,40446@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F07
+40447,Sai Iyer,40447@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F08
+40448,Kavya Kumar,40448@campus.edu,Comp,3,2025-2027,B,M,Hostel,F45
+40449,Arjun Kumar,40449@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F46
+40450,Ananya Kumar,40450@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F07
+40451,Aarav Sharma,40451@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F08
+40452,Arjun Kumar,40452@campus.edu,Comp,4,2024-2027,C,F,Hostel,F45
+40453,Sneha Patel,40453@campus.edu,IT,4,2024-2027,A,F,Hostel,F46
+40454,Sai Patel,40454@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F07
+40455,Ishaan Kumar,40455@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F08
+40456,Diya Joshi,40456@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F49
+40457,Kavya Das,40457@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F50
+40458,Diya Menon,40458@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F11
+40459,Sneha Das,40459@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F12
+40460,Sneha Joshi,40460@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F49
+40461,Aditya Menon,40461@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F50
+40462,Diya Singh,40462@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F11
+40463,Sai Iyer,40463@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F12
+40464,Ishaan Kumar,40464@campus.edu,Comp,4,2024-2027,C,F,Hostel,F49
+40465,Meera Joshi,40465@campus.edu,IT,4,2024-2027,A,F,Hostel,F50
+40466,Vivaan Kumar,40466@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F11
+40467,Meera Kumar,40467@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F12
+40468,Ishaan Iyer,40468@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F01
+40469,Sai Singh,40469@campus.edu,IT,2,2026-2027,B,F,Hostel,F02
+40470,Ananya Iyer,40470@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F15
+40471,Aarav Singh,40471@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F16
+40472,Aarav Kumar,40472@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F01
+40473,Aditya Sharma,40473@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F02
+40474,Aarav Reddy,40474@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F15
+40475,Kavya Iyer,40475@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F16
+40476,Priya Reddy,40476@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F01
+40477,Aditya Nair,40477@campus.edu,IT,4,2024-2027,A,F,Hostel,F02
+40478,Aditya Gupta,40478@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F15
+40479,Aditya Menon,40479@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F16
+40480,Diya Menon,40480@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F05
+40481,Sai Das,40481@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F06
+40482,Vivaan Singh,40482@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F19
+40483,Ishaan Das,40483@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F20
+40484,Priya Patel,40484@campus.edu,Comp,3,2025-2027,B,M,Hostel,F05
+40485,Sai Reddy,40485@campus.edu,IT,3,2025-2027,C,M,Hostel,F06
+40486,Arjun Sharma,40486@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F19
+40487,Aarav Gupta,40487@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F20
+40488,Aarav Menon,40488@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F05
+40489,Sai Das,40489@campus.edu,IT,4,2024-2027,A,M,Hostel,F06
+40490,Diya Menon,40490@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F19
+40491,Ishaan Gupta,40491@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F20
+40492,Sai Das,40492@campus.edu,Comp,2,2026-2027,A,F,Hostel,F09
+40493,Arjun Das,40493@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F10
+40494,Meera Nair,40494@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F23
+40495,Sai Iyer,40495@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F24
+40496,Diya Patel,40496@campus.edu,Comp,3,2025-2027,B,F,Hostel,F09
+40497,Aarav Gupta,40497@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F10
+40498,Sneha Sharma,40498@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F23
+40499,Kavya Menon,40499@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F24
+40500,Aditya Patel,40500@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F09
+40501,Diya Singh,40501@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F10
+40502,Arjun Rao,40502@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F23
+40503,Arjun Patel,40503@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F24
+40504,Sai Joshi,40504@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F13
+40505,Aarav Gupta,40505@campus.edu,IT,2,2026-2027,B,M,Hostel,F14
+40506,Priya Nair,40506@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F27
+40507,Aarav Nair,40507@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F28
+40508,Kavya Joshi,40508@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F13
+40509,Diya Das,40509@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
+40510,Priya Nair,40510@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F27
+40511,Aarav Joshi,40511@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F28
+40512,Ishaan Rao,40512@campus.edu,Comp,4,2024-2027,C,F,Hostel,F13
+40513,Arjun Das,40513@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F14
+40514,Arjun Menon,40514@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F27
+40515,Priya Singh,40515@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F28
+40516,Ananya Rao,40516@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F17
+40517,Sneha Das,40517@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F18
+40518,Diya Patel,40518@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F31
+40519,Aarav Nair,40519@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F32
+40520,Diya Das,40520@campus.edu,Comp,3,2025-2027,B,M,Hostel,F17
+40521,Sneha Menon,40521@campus.edu,IT,3,2025-2027,C,F,Hostel,F18
+40522,Aarav Iyer,40522@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F31
+40523,Arjun Nair,40523@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F32
+40524,Diya Reddy,40524@campus.edu,Comp,4,2024-2027,C,M,Hostel,F17
+40525,Sneha Menon,40525@campus.edu,IT,4,2024-2027,A,F,Hostel,F18
+40526,Meera Reddy,40526@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F31
+40527,Priya Rao,40527@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F32
+40528,Meera Sharma,40528@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F21
+40529,Arjun Sharma,40529@campus.edu,IT,2,2026-2027,B,M,Hostel,F22
+40530,Diya Kumar,40530@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F35
+40531,Aditya Sharma,40531@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F36
+40532,Aarav Reddy,40532@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F21
+40533,Sneha Gupta,40533@campus.edu,IT,3,2025-2027,C,F,Hostel,F22
+40534,Priya Reddy,40534@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F35
+40535,Meera Joshi,40535@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F36
+40536,Ishaan Nair,40536@campus.edu,Comp,4,2024-2027,C,F,Hostel,F21
+40537,Sneha Iyer,40537@campus.edu,IT,4,2024-2027,A,F,Hostel,F22
+40538,Sneha Rao,40538@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F35
+40539,Priya Singh,40539@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F36
+40540,Aditya Iyer,40540@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F25
+40541,Priya Gupta,40541@campus.edu,IT,2,2026-2027,B,M,Hostel,F26
+40542,Priya Singh,40542@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F39
+40543,Ananya Joshi,40543@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F40
+40544,Ishaan Menon,40544@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F25
+40545,Aarav Iyer,40545@campus.edu,IT,3,2025-2027,C,F,Hostel,F26
+40546,Meera Singh,40546@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F39
+40547,Ananya Menon,40547@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F40
+40548,Aarav Reddy,40548@campus.edu,Comp,4,2024-2027,C,F,Hostel,F25
+40549,Ishaan Kumar,40549@campus.edu,IT,4,2024-2027,A,F,Hostel,F26
+40550,Priya Gupta,40550@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F39
+40551,Aarav Patel,40551@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F40
+40552,Sneha Joshi,40552@campus.edu,Comp,2,2026-2027,A,M,Hostel,F29
+40553,Diya Das,40553@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F30
+40554,Diya Kumar,40554@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F43
+40555,Ishaan Kumar,40555@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F44
+40556,Sneha Patel,40556@campus.edu,Comp,3,2025-2027,B,F,Hostel,F29
+40557,Sai Das,40557@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F30
+40558,Ananya Das,40558@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F43
+40559,Diya Gupta,40559@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F44
+40560,Ananya Gupta,40560@campus.edu,Comp,4,2024-2027,C,M,Hostel,F29
+40561,Aditya Kumar,40561@campus.edu,IT,4,2024-2027,A,F,Hostel,F30
+40562,Kavya Nair,40562@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F43
+40563,Arjun Sharma,40563@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F44
+40564,Aarav Iyer,40564@campus.edu,Comp,2,2026-2027,A,M,Hostel,F33
+40565,Priya Rao,40565@campus.edu,IT,2,2026-2027,B,F,Hostel,F34
+40566,Kavya Sharma,40566@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F47
+40567,Meera Das,40567@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F48
+40568,Ananya Das,40568@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F33
+40569,Diya Menon,40569@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F34
+40570,Arjun Kumar,40570@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F47
+40571,Sneha Nair,40571@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F48
+40572,Ishaan Rao,40572@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F33
+40573,Kavya Kumar,40573@campus.edu,IT,4,2024-2027,A,F,Hostel,F34
+40574,Aditya Singh,40574@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F47
+40575,Meera Patel,40575@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F48
+40576,Aarav Gupta,40576@campus.edu,Comp,2,2026-2027,A,M,Hostel,F37
+40577,Meera Joshi,40577@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F38
+40578,Diya Rao,40578@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F03
+40579,Ananya Sharma,40579@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F04
+40580,Priya Joshi,40580@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F37
+40581,Diya Joshi,40581@campus.edu,IT,3,2025-2027,C,M,Hostel,F38
+40582,Priya Sharma,40582@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F03
+40583,Aarav Das,40583@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F04
+40584,Vivaan Reddy,40584@campus.edu,Comp,4,2024-2027,C,M,Hostel,F37
+40585,Diya Joshi,40585@campus.edu,IT,4,2024-2027,A,F,Hostel,F38
+40586,Ishaan Nair,40586@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F03
+40587,Diya Iyer,40587@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F04
+40588,Diya Menon,40588@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F41
+40589,Aarav Joshi,40589@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F42
+40590,Diya Rao,40590@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F07
+40591,Priya Gupta,40591@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F08
+40592,Ishaan Reddy,40592@campus.edu,Comp,3,2025-2027,B,M,Hostel,F41
+40593,Vivaan Joshi,40593@campus.edu,IT,3,2025-2027,C,F,Hostel,F42
+40594,Sneha Iyer,40594@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F07
+40595,Aarav Gupta,40595@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F08
+40596,Priya Patel,40596@campus.edu,Comp,4,2024-2027,C,M,Hostel,F41
+40597,Kavya Patel,40597@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F42
+40598,Vivaan Reddy,40598@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F07
+40599,Vivaan Joshi,40599@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F08
+40600,Vivaan Nair,40600@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F45
+40601,Sneha Rao,40601@campus.edu,IT,2,2026-2027,B,M,Hostel,F46
+40602,Arjun Rao,40602@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F11
+40603,Meera Sharma,40603@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F12
+40604,Priya Iyer,40604@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F45
+40605,Sai Nair,40605@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F46
+40606,Aarav Sharma,40606@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F11
+40607,Aditya Patel,40607@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F12
+40608,Sai Menon,40608@campus.edu,Comp,4,2024-2027,C,F,Hostel,F45
+40609,Diya Das,40609@campus.edu,IT,4,2024-2027,A,F,Hostel,F46
+40610,Meera Iyer,40610@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F11
+40611,Aditya Gupta,40611@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F12
+40612,Priya Iyer,40612@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F49
+40613,Sai Iyer,40613@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F50
+40614,Aarav Sharma,40614@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F15
+40615,Vivaan Singh,40615@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F16
+40616,Aarav Kumar,40616@campus.edu,Comp,3,2025-2027,B,M,Hostel,F49
+40617,Aditya Gupta,40617@campus.edu,IT,3,2025-2027,C,M,Hostel,F50
+40618,Arjun Rao,40618@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F15
+40619,Priya Joshi,40619@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F16
+40620,Meera Reddy,40620@campus.edu,Comp,4,2024-2027,C,M,Hostel,F49
+40621,Meera Iyer,40621@campus.edu,IT,4,2024-2027,A,M,Hostel,F50
+40622,Ishaan Gupta,40622@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F15
+40623,Kavya Menon,40623@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F16
+40624,Arjun Reddy,40624@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F01
+40625,Priya Patel,40625@campus.edu,IT,2,2026-2027,B,M,Hostel,F02
+40626,Priya Joshi,40626@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F19
+40627,Sneha Patel,40627@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F20
+40628,Aditya Gupta,40628@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F01
+40629,Aditya Patel,40629@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F02
+40630,Aarav Joshi,40630@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F19
+40631,Aditya Kumar,40631@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F20
+40632,Arjun Das,40632@campus.edu,Comp,4,2024-2027,C,F,Hostel,F01
+40633,Vivaan Nair,40633@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F02
+40634,Priya Iyer,40634@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F19
+40635,Diya Gupta,40635@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F20
+40636,Ananya Gupta,40636@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F05
+40637,Diya Nair,40637@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F06
+40638,Aditya Iyer,40638@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F23
+40639,Arjun Rao,40639@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F24
+40640,Diya Sharma,40640@campus.edu,Comp,3,2025-2027,B,F,Hostel,F05
+40641,Kavya Joshi,40641@campus.edu,IT,3,2025-2027,C,F,Hostel,F06
+40642,Vivaan Nair,40642@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F23
+40643,Vivaan Gupta,40643@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F24
+40644,Aditya Gupta,40644@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F05
+40645,Kavya Patel,40645@campus.edu,IT,4,2024-2027,A,M,Hostel,F06
+40646,Arjun Joshi,40646@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F23
+40647,Aditya Reddy,40647@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F24
+40648,Priya Menon,40648@campus.edu,Comp,2,2026-2027,A,M,Hostel,F09
+40649,Ishaan Patel,40649@campus.edu,IT,2,2026-2027,B,F,Hostel,F10
+40650,Vivaan Iyer,40650@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F27
+40651,Aarav Kumar,40651@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F28
+40652,Arjun Sharma,40652@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F09
+40653,Vivaan Patel,40653@campus.edu,IT,3,2025-2027,C,F,Hostel,F10
+40654,Sai Singh,40654@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F27
+40655,Meera Reddy,40655@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F28
+40656,Vivaan Patel,40656@campus.edu,Comp,4,2024-2027,C,M,Hostel,F09
+40657,Diya Gupta,40657@campus.edu,IT,4,2024-2027,A,M,Hostel,F10
+40658,Arjun Joshi,40658@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F27
+40659,Kavya Gupta,40659@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F28
+40660,Aditya Rao,40660@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F13
+40661,Ananya Reddy,40661@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F14
+40662,Kavya Rao,40662@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F31
+40663,Sai Joshi,40663@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F32
+40664,Sneha Joshi,40664@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F13
+40665,Diya Kumar,40665@campus.edu,IT,3,2025-2027,C,F,Hostel,F14
+40666,Vivaan Rao,40666@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F31
+40667,Ananya Patel,40667@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F32
+40668,Diya Kumar,40668@campus.edu,Comp,4,2024-2027,C,M,Hostel,F13
+40669,Aarav Sharma,40669@campus.edu,IT,4,2024-2027,A,F,Hostel,F14
+40670,Ananya Reddy,40670@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F31
+40671,Arjun Reddy,40671@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F32
+40672,Arjun Sharma,40672@campus.edu,Comp,2,2026-2027,A,M,Hostel,F17
+40673,Ishaan Kumar,40673@campus.edu,IT,2,2026-2027,B,M,Hostel,F18
+40674,Vivaan Singh,40674@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F35
+40675,Sneha Gupta,40675@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F36
+40676,Priya Nair,40676@campus.edu,Comp,3,2025-2027,B,M,Hostel,F17
+40677,Meera Singh,40677@campus.edu,IT,3,2025-2027,C,F,Hostel,F18
+40678,Priya Das,40678@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F35
+40679,Arjun Rao,40679@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F36
+40680,Aditya Nair,40680@campus.edu,Comp,4,2024-2027,C,F,Hostel,F17
+40681,Ananya Joshi,40681@campus.edu,IT,4,2024-2027,A,M,Hostel,F18
+40682,Kavya Sharma,40682@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F35
+40683,Ishaan Joshi,40683@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F36
+40684,Vivaan Singh,40684@campus.edu,Comp,2,2026-2027,A,M,Hostel,F21
+40685,Sneha Menon,40685@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F22
+40686,Diya Rao,40686@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F39
+40687,Aditya Gupta,40687@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F40
+40688,Aarav Menon,40688@campus.edu,Comp,3,2025-2027,B,M,Hostel,F21
+40689,Sai Kumar,40689@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F22
+40690,Sai Nair,40690@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F39
+40691,Diya Kumar,40691@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F40
+40692,Arjun Singh,40692@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F21
+40693,Diya Joshi,40693@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F22
+40694,Kavya Patel,40694@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F39
+40695,Arjun Iyer,40695@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F40
+40696,Aarav Singh,40696@campus.edu,Comp,2,2026-2027,A,F,Hostel,F25
+40697,Arjun Patel,40697@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F26
+40698,Diya Joshi,40698@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F43
+40699,Sai Das,40699@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F44
+40700,Arjun Iyer,40700@campus.edu,Comp,3,2025-2027,B,F,Hostel,F25
+40701,Kavya Iyer,40701@campus.edu,IT,3,2025-2027,C,M,Hostel,F26
+40702,Sai Kumar,40702@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F43
+40703,Arjun Rao,40703@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F44
+40704,Ishaan Kumar,40704@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F25
+40705,Meera Gupta,40705@campus.edu,IT,4,2024-2027,A,M,Hostel,F26
+40706,Aditya Gupta,40706@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F43
+40707,Aditya Sharma,40707@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F44
+40708,Meera Singh,40708@campus.edu,Comp,2,2026-2027,A,F,Hostel,F29
+40709,Priya Nair,40709@campus.edu,IT,2,2026-2027,B,F,Hostel,F30
+40710,Vivaan Iyer,40710@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F47
+40711,Ishaan Patel,40711@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F48
+40712,Ishaan Sharma,40712@campus.edu,Comp,3,2025-2027,B,M,Hostel,F29
+40713,Kavya Nair,40713@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F30
+40714,Ananya Reddy,40714@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F47
+40715,Meera Nair,40715@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F48
+40716,Ananya Kumar,40716@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F29
+40717,Diya Joshi,40717@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F30
+40718,Ananya Reddy,40718@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F47
+40719,Vivaan Sharma,40719@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F48
+40720,Sneha Reddy,40720@campus.edu,Comp,2,2026-2027,A,F,Hostel,F33
+40721,Ishaan Das,40721@campus.edu,IT,2,2026-2027,B,M,Hostel,F34
+40722,Sai Patel,40722@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F03
+40723,Diya Menon,40723@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F04
+40724,Meera Joshi,40724@campus.edu,Comp,3,2025-2027,B,M,Hostel,F33
+40725,Aarav Iyer,40725@campus.edu,IT,3,2025-2027,C,F,Hostel,F34
+40726,Diya Patel,40726@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F03
+40727,Sai Nair,40727@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F04
+40728,Diya Menon,40728@campus.edu,Comp,4,2024-2027,C,M,Hostel,F33
+40729,Diya Iyer,40729@campus.edu,IT,4,2024-2027,A,M,Hostel,F34
+40730,Diya Reddy,40730@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F03
+40731,Sai Das,40731@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F04
+40732,Meera Rao,40732@campus.edu,Comp,2,2026-2027,A,F,Hostel,F37
+40733,Meera Reddy,40733@campus.edu,IT,2,2026-2027,B,F,Hostel,F38
+40734,Arjun Iyer,40734@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F07
+40735,Vivaan Gupta,40735@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F08
+40736,Aarav Singh,40736@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F37
+40737,Vivaan Reddy,40737@campus.edu,IT,3,2025-2027,C,F,Hostel,F38
+40738,Vivaan Iyer,40738@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F07
+40739,Aditya Reddy,40739@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F08
+40740,Priya Patel,40740@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F37
+40741,Ananya Rao,40741@campus.edu,IT,4,2024-2027,A,F,Hostel,F38
+40742,Aarav Menon,40742@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F07
+40743,Kavya Patel,40743@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F08
+40744,Ananya Joshi,40744@campus.edu,Comp,2,2026-2027,A,F,Hostel,F41
+40745,Ananya Kumar,40745@campus.edu,IT,2,2026-2027,B,F,Hostel,F42
+40746,Kavya Rao,40746@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F11
+40747,Sai Reddy,40747@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F12
+40748,Arjun Iyer,40748@campus.edu,Comp,3,2025-2027,B,M,Hostel,F41
+40749,Kavya Reddy,40749@campus.edu,IT,3,2025-2027,C,F,Hostel,F42
+40750,Meera Joshi,40750@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F11
+40751,Meera Iyer,40751@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F12
+40752,Ananya Reddy,40752@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F41
+40753,Arjun Das,40753@campus.edu,IT,4,2024-2027,A,M,Hostel,F42
+40754,Aditya Singh,40754@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F11
+40755,Priya Gupta,40755@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F12
+40756,Vivaan Gupta,40756@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F45
+40757,Arjun Iyer,40757@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F46
+40758,Arjun Das,40758@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F15
+40759,Kavya Kumar,40759@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F16
+40760,Ishaan Singh,40760@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F45
+40761,Arjun Singh,40761@campus.edu,IT,3,2025-2027,C,M,Hostel,F46
+40762,Priya Iyer,40762@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F15
+40763,Sneha Kumar,40763@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F16
+40764,Aditya Rao,40764@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F45
+40765,Aditya Nair,40765@campus.edu,IT,4,2024-2027,A,M,Hostel,F46
+40766,Vivaan Gupta,40766@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F15
+40767,Priya Singh,40767@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F16
+40768,Sai Sharma,40768@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F49
+40769,Kavya Singh,40769@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F50
+40770,Priya Kumar,40770@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F19
+40771,Arjun Joshi,40771@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F20
+40772,Sneha Reddy,40772@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F49
+40773,Ishaan Joshi,40773@campus.edu,IT,3,2025-2027,C,M,Hostel,F50
+40774,Sai Kumar,40774@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F19
+40775,Priya Menon,40775@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F20
+40776,Kavya Kumar,40776@campus.edu,Comp,4,2024-2027,C,F,Hostel,F49
+40777,Diya Gupta,40777@campus.edu,IT,4,2024-2027,A,F,Hostel,F50
+40778,Vivaan Das,40778@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F19
+40779,Aarav Iyer,40779@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F20
+40780,Meera Das,40780@campus.edu,Comp,2,2026-2027,A,F,Hostel,F01
+40781,Meera Nair,40781@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F02
+40782,Diya Sharma,40782@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F23
+40783,Diya Kumar,40783@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F24
+40784,Aarav Rao,40784@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F01
+40785,Aditya Gupta,40785@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F02
+40786,Ishaan Nair,40786@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F23
+40787,Diya Reddy,40787@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F24
+40788,Vivaan Patel,40788@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F01
+40789,Ananya Reddy,40789@campus.edu,IT,4,2024-2027,A,M,Hostel,F02
+40790,Ananya Das,40790@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F23
+40791,Vivaan Das,40791@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F24
+40792,Diya Patel,40792@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F05
+40793,Aditya Patel,40793@campus.edu,IT,2,2026-2027,B,M,Hostel,F06
+40794,Sai Singh,40794@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F27
+40795,Diya Menon,40795@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F28
+40796,Ishaan Patel,40796@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F05
+40797,Diya Menon,40797@campus.edu,IT,3,2025-2027,C,F,Hostel,F06
+40798,Aarav Reddy,40798@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F27
+40799,Arjun Patel,40799@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F28
+40800,Arjun Reddy,40800@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F05
+40801,Kavya Patel,40801@campus.edu,IT,4,2024-2027,A,M,Hostel,F06
+40802,Aditya Iyer,40802@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F27
+40803,Priya Nair,40803@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F28
+40804,Diya Iyer,40804@campus.edu,Comp,2,2026-2027,A,M,Hostel,F09
+40805,Priya Kumar,40805@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F10
+40806,Kavya Das,40806@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F31
+40807,Ishaan Nair,40807@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F32
+40808,Sneha Gupta,40808@campus.edu,Comp,3,2025-2027,B,F,Hostel,F09
+40809,Ishaan Reddy,40809@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F10
+40810,Ishaan Sharma,40810@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F31
+40811,Aditya Menon,40811@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F32
+40812,Ananya Das,40812@campus.edu,Comp,4,2024-2027,C,F,Hostel,F09
+40813,Sai Singh,40813@campus.edu,IT,4,2024-2027,A,F,Hostel,F10
+40814,Ananya Menon,40814@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F31
+40815,Kavya Gupta,40815@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F32
+40816,Aarav Das,40816@campus.edu,Comp,2,2026-2027,A,F,Hostel,F13
+40817,Ananya Iyer,40817@campus.edu,IT,2,2026-2027,B,M,Hostel,F14
+40818,Arjun Reddy,40818@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F35
+40819,Sai Iyer,40819@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F36
+40820,Ananya Patel,40820@campus.edu,Comp,3,2025-2027,B,M,Hostel,F13
+40821,Meera Joshi,40821@campus.edu,IT,3,2025-2027,C,F,Hostel,F14
+40822,Aarav Patel,40822@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F35
+40823,Vivaan Nair,40823@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F36
+40824,Aditya Rao,40824@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F13
+40825,Sai Patel,40825@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F14
+40826,Diya Rao,40826@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F35
+40827,Priya Sharma,40827@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F36
+40828,Ananya Sharma,40828@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F17
+40829,Diya Patel,40829@campus.edu,IT,2,2026-2027,B,F,Hostel,F18
+40830,Meera Rao,40830@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F39
+40831,Diya Menon,40831@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F40
+40832,Diya Sharma,40832@campus.edu,Comp,3,2025-2027,B,M,Hostel,F17
+40833,Aarav Gupta,40833@campus.edu,IT,3,2025-2027,C,F,Hostel,F18
+40834,Meera Patel,40834@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F39
+40835,Sai Iyer,40835@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F40
+40836,Kavya Nair,40836@campus.edu,Comp,4,2024-2027,C,F,Hostel,F17
+40837,Sneha Patel,40837@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F18
+40838,Aditya Gupta,40838@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F39
+40839,Priya Joshi,40839@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F40
+40840,Sai Menon,40840@campus.edu,Comp,2,2026-2027,A,F,Hostel,F21
+40841,Meera Das,40841@campus.edu,IT,2,2026-2027,B,F,Hostel,F22
+40842,Ananya Joshi,40842@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F43
+40843,Kavya Menon,40843@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F44
+40844,Vivaan Iyer,40844@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F21
+40845,Ananya Menon,40845@campus.edu,IT,3,2025-2027,C,M,Hostel,F22
+40846,Kavya Iyer,40846@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F43
+40847,Aditya Kumar,40847@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F44
+40848,Meera Patel,40848@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F21
+40849,Sai Sharma,40849@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F22
+40850,Ishaan Rao,40850@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F43
+40851,Ananya Nair,40851@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F44
+40852,Ananya Rao,40852@campus.edu,Comp,2,2026-2027,A,F,Hostel,F25
+40853,Diya Joshi,40853@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F26
+40854,Meera Rao,40854@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F47
+40855,Priya Joshi,40855@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F48
+40856,Sneha Gupta,40856@campus.edu,Comp,3,2025-2027,B,F,Hostel,F25
+40857,Meera Rao,40857@campus.edu,IT,3,2025-2027,C,F,Hostel,F26
+40858,Aditya Singh,40858@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F47
+40859,Ananya Kumar,40859@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F48
+40860,Ishaan Sharma,40860@campus.edu,Comp,4,2024-2027,C,F,Hostel,F25
+40861,Vivaan Iyer,40861@campus.edu,IT,4,2024-2027,A,M,Hostel,F26
+40862,Ishaan Das,40862@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F47
+40863,Ishaan Gupta,40863@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F48
+40864,Vivaan Singh,40864@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F29
+40865,Kavya Gupta,40865@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F30
+40866,Ananya Menon,40866@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F03
+40867,Arjun Das,40867@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F04
+40868,Vivaan Nair,40868@campus.edu,Comp,3,2025-2027,B,F,Hostel,F29
+40869,Aditya Joshi,40869@campus.edu,IT,3,2025-2027,C,F,Hostel,F30
+40870,Arjun Iyer,40870@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F03
+40871,Ishaan Iyer,40871@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F04
+40872,Ananya Joshi,40872@campus.edu,Comp,4,2024-2027,C,M,Hostel,F29
+40873,Sai Menon,40873@campus.edu,IT,4,2024-2027,A,M,Hostel,F30
+40874,Sneha Singh,40874@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F03
+40875,Vivaan Rao,40875@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F04
+40876,Aditya Das,40876@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F33
+40877,Meera Das,40877@campus.edu,IT,2,2026-2027,B,F,Hostel,F34
+40878,Meera Iyer,40878@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F07
+40879,Kavya Patel,40879@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F08
+40880,Priya Menon,40880@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F33
+40881,Meera Nair,40881@campus.edu,IT,3,2025-2027,C,M,Hostel,F34
+40882,Meera Iyer,40882@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F07
+40883,Aditya Sharma,40883@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F08
+40884,Aditya Joshi,40884@campus.edu,Comp,4,2024-2027,C,M,Hostel,F33
+40885,Kavya Joshi,40885@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F34
+40886,Vivaan Reddy,40886@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F07
+40887,Sneha Patel,40887@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F08
+40888,Priya Patel,40888@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F37
+40889,Kavya Reddy,40889@campus.edu,IT,2,2026-2027,B,M,Hostel,F38
+40890,Diya Gupta,40890@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F11
+40891,Ishaan Singh,40891@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F12
+40892,Arjun Joshi,40892@campus.edu,Comp,3,2025-2027,B,M,Hostel,F37
+40893,Kavya Sharma,40893@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F38
+40894,Ishaan Nair,40894@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F11
+40895,Ananya Menon,40895@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F12
+40896,Sneha Joshi,40896@campus.edu,Comp,4,2024-2027,C,M,Hostel,F37
+40897,Arjun Reddy,40897@campus.edu,IT,4,2024-2027,A,F,Hostel,F38
+40898,Aditya Iyer,40898@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F11
+40899,Sneha Kumar,40899@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F12
+40900,Ishaan Rao,40900@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F41
+40901,Kavya Singh,40901@campus.edu,IT,2,2026-2027,B,F,Hostel,F42
+40902,Ishaan Menon,40902@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F15
+40903,Priya Menon,40903@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F16
+40904,Vivaan Joshi,40904@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F41
+40905,Ananya Joshi,40905@campus.edu,IT,3,2025-2027,C,M,Hostel,F42
+40906,Ananya Sharma,40906@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F15
+40907,Priya Joshi,40907@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F16
+40908,Vivaan Gupta,40908@campus.edu,Comp,4,2024-2027,C,F,Hostel,F41
+40909,Priya Reddy,40909@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F42
+40910,Kavya Singh,40910@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F15
+40911,Aarav Gupta,40911@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F16
+40912,Aditya Rao,40912@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F45
+40913,Arjun Reddy,40913@campus.edu,IT,2,2026-2027,B,F,Hostel,F46
+40914,Meera Iyer,40914@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F19
+40915,Arjun Reddy,40915@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F20
+40916,Priya Menon,40916@campus.edu,Comp,3,2025-2027,B,M,Hostel,F45
+40917,Sai Sharma,40917@campus.edu,IT,3,2025-2027,C,M,Hostel,F46
+40918,Ananya Iyer,40918@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F19
+40919,Diya Menon,40919@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F20
+40920,Aditya Iyer,40920@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F45
+40921,Priya Nair,40921@campus.edu,IT,4,2024-2027,A,F,Hostel,F46
+40922,Vivaan Nair,40922@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F19
+40923,Arjun Kumar,40923@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F20
+40924,Kavya Sharma,40924@campus.edu,Comp,2,2026-2027,A,F,Hostel,F49
+40925,Arjun Iyer,40925@campus.edu,IT,2,2026-2027,B,F,Hostel,F50
+40926,Kavya Iyer,40926@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F23
+40927,Aditya Sharma,40927@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F24
+40928,Ishaan Gupta,40928@campus.edu,Comp,3,2025-2027,B,M,Hostel,F49
+40929,Meera Patel,40929@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F50
+40930,Priya Singh,40930@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F23
+40931,Sai Das,40931@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F24
+40932,Sai Nair,40932@campus.edu,Comp,4,2024-2027,C,F,Hostel,F49
+40933,Arjun Sharma,40933@campus.edu,IT,4,2024-2027,A,M,Hostel,F50
+40934,Ishaan Gupta,40934@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F23
+40935,Ishaan Iyer,40935@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F24
+40936,Sneha Reddy,40936@campus.edu,Comp,2,2026-2027,A,M,Hostel,F01
+40937,Sai Das,40937@campus.edu,IT,2,2026-2027,B,F,Hostel,F02
+40938,Diya Reddy,40938@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F27
+40939,Aditya Rao,40939@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F28
+40940,Meera Singh,40940@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F01
+40941,Aditya Iyer,40941@campus.edu,IT,3,2025-2027,C,M,Hostel,F02
+40942,Priya Menon,40942@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F27
+40943,Sai Sharma,40943@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F28
+40944,Ananya Patel,40944@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F01
+40945,Meera Reddy,40945@campus.edu,IT,4,2024-2027,A,M,Hostel,F02
+40946,Ishaan Reddy,40946@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F27
+40947,Arjun Gupta,40947@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F28
+40948,Aarav Patel,40948@campus.edu,Comp,2,2026-2027,A,M,Hostel,F05
+40949,Meera Nair,40949@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F06
+40950,Ananya Das,40950@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F31
+40951,Sai Rao,40951@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F32
+40952,Ishaan Sharma,40952@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F05
+40953,Aditya Nair,40953@campus.edu,IT,3,2025-2027,C,M,Hostel,F06
+40954,Meera Patel,40954@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F31
+40955,Diya Das,40955@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F32
+40956,Aditya Patel,40956@campus.edu,Comp,4,2024-2027,C,M,Hostel,F05
+40957,Vivaan Patel,40957@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F06
+40958,Diya Singh,40958@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F31
+40959,Aditya Menon,40959@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F32
+40960,Meera Kumar,40960@campus.edu,Comp,2,2026-2027,A,M,Hostel,F09
+40961,Ishaan Das,40961@campus.edu,IT,2,2026-2027,B,F,Hostel,F10
+40962,Arjun Iyer,40962@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F35
+40963,Ishaan Reddy,40963@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F36
+40964,Meera Gupta,40964@campus.edu,Comp,3,2025-2027,B,M,Hostel,F09
+40965,Ananya Kumar,40965@campus.edu,IT,3,2025-2027,C,M,Hostel,F10
+40966,Meera Iyer,40966@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F35
+40967,Ishaan Kumar,40967@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F36
+40968,Ananya Iyer,40968@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F09
+40969,Priya Reddy,40969@campus.edu,IT,4,2024-2027,A,M,Hostel,F10
+40970,Vivaan Patel,40970@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F35
+40971,Diya Sharma,40971@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F36
+40972,Sneha Gupta,40972@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F13
+40973,Sai Menon,40973@campus.edu,IT,2,2026-2027,B,M,Hostel,F14
+40974,Ananya Kumar,40974@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F39
+40975,Ananya Rao,40975@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F40
+40976,Arjun Kumar,40976@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F13
+40977,Ishaan Rao,40977@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
+40978,Aditya Reddy,40978@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F39
+40979,Aarav Reddy,40979@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F40
+40980,Priya Menon,40980@campus.edu,Comp,4,2024-2027,C,M,Hostel,F13
+40981,Meera Joshi,40981@campus.edu,IT,4,2024-2027,A,F,Hostel,F14
+40982,Aarav Patel,40982@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F39
+40983,Aditya Joshi,40983@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F40
+40984,Aditya Das,40984@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F17
+40985,Priya Reddy,40985@campus.edu,IT,2,2026-2027,B,M,Hostel,F18
+40986,Ishaan Reddy,40986@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F43
+40987,Kavya Nair,40987@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F44
+40988,Aarav Das,40988@campus.edu,Comp,3,2025-2027,B,F,Hostel,F17
+40989,Ananya Iyer,40989@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F18
+40990,Diya Rao,40990@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F43
+40991,Arjun Rao,40991@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F44
+40992,Priya Menon,40992@campus.edu,Comp,4,2024-2027,C,M,Hostel,F17
+40993,Sneha Rao,40993@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F18
+40994,Vivaan Menon,40994@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F43
+40995,Sai Reddy,40995@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F44
+40996,Vivaan Das,40996@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F21
+40997,Priya Iyer,40997@campus.edu,IT,2,2026-2027,B,F,Hostel,F22
+40998,Aarav Joshi,40998@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F47
+40999,Ishaan Iyer,40999@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F48
+41000,Ananya Gupta,41000@campus.edu,Comp,3,2025-2027,B,M,Hostel,F21
+41001,Ishaan Gupta,41001@campus.edu,IT,3,2025-2027,C,F,Hostel,F22
+41002,Aarav Singh,41002@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F47
+41003,Aditya Nair,41003@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F48
+41004,Ananya Singh,41004@campus.edu,Comp,4,2024-2027,C,M,Hostel,F21
+41005,Sneha Nair,41005@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F22
+41006,Ishaan Das,41006@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F47
+41007,Arjun Das,41007@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F48
+41008,Ishaan Rao,41008@campus.edu,Comp,2,2026-2027,A,F,Hostel,F25
+41009,Ishaan Iyer,41009@campus.edu,IT,2,2026-2027,B,F,Hostel,F26
+41010,Vivaan Singh,41010@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F03
+41011,Ishaan Iyer,41011@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F04
+41012,Ishaan Das,41012@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F25
+41013,Ananya Sharma,41013@campus.edu,IT,3,2025-2027,C,M,Hostel,F26
+41014,Meera Nair,41014@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F03
+41015,Kavya Reddy,41015@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F04
+41016,Meera Menon,41016@campus.edu,Comp,4,2024-2027,C,M,Hostel,F25
+41017,Arjun Sharma,41017@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F26
+41018,Aditya Patel,41018@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F03
+41019,Priya Singh,41019@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F04
+41020,Arjun Menon,41020@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F29
+41021,Aarav Joshi,41021@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F30
+41022,Ishaan Nair,41022@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F07
+41023,Sai Rao,41023@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F08
+41024,Vivaan Menon,41024@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F29
+41025,Ishaan Rao,41025@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F30
+41026,Ananya Menon,41026@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F07
+41027,Sai Reddy,41027@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F08
+41028,Sneha Menon,41028@campus.edu,Comp,4,2024-2027,C,F,Hostel,F29
+41029,Arjun Menon,41029@campus.edu,IT,4,2024-2027,A,F,Hostel,F30
+41030,Meera Iyer,41030@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F07
+41031,Arjun Reddy,41031@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F08
+41032,Diya Reddy,41032@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F33
+41033,Meera Gupta,41033@campus.edu,IT,2,2026-2027,B,F,Hostel,F34
+41034,Ishaan Nair,41034@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F11
+41035,Aarav Patel,41035@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F12
+41036,Ananya Gupta,41036@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F33
+41037,Priya Patel,41037@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F34
+41038,Aarav Das,41038@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F11
+41039,Diya Joshi,41039@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F12
+41040,Vivaan Nair,41040@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F33
+41041,Arjun Patel,41041@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F34
+41042,Arjun Patel,41042@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F11
+41043,Ananya Rao,41043@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F12
+41044,Ishaan Das,41044@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F37
+41045,Aditya Rao,41045@campus.edu,IT,2,2026-2027,B,F,Hostel,F38
+41046,Ishaan Kumar,41046@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F15
+41047,Arjun Iyer,41047@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F16
+41048,Aditya Rao,41048@campus.edu,Comp,3,2025-2027,B,M,Hostel,F37
+41049,Sneha Reddy,41049@campus.edu,IT,3,2025-2027,C,F,Hostel,F38
+41050,Meera Sharma,41050@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F15
+41051,Meera Sharma,41051@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F16
+41052,Sai Iyer,41052@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F37
+41053,Priya Nair,41053@campus.edu,IT,4,2024-2027,A,F,Hostel,F38
+41054,Meera Joshi,41054@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F15
+41055,Arjun Rao,41055@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F16
+41056,Ananya Sharma,41056@campus.edu,Comp,2,2026-2027,A,F,Hostel,F41
+41057,Diya Nair,41057@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F42
+41058,Priya Reddy,41058@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F19
+41059,Ananya Reddy,41059@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F20
+41060,Kavya Singh,41060@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F41
+41061,Sai Reddy,41061@campus.edu,IT,3,2025-2027,C,M,Hostel,F42
+41062,Sai Reddy,41062@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F19
+41063,Vivaan Kumar,41063@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F20
+41064,Kavya Das,41064@campus.edu,Comp,4,2024-2027,C,F,Hostel,F41
+41065,Vivaan Das,41065@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F42
+41066,Sneha Singh,41066@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F19
+41067,Priya Gupta,41067@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F20
+41068,Sneha Reddy,41068@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F45
+41069,Arjun Rao,41069@campus.edu,IT,2,2026-2027,B,F,Hostel,F46
+41070,Sneha Singh,41070@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F23
+41071,Ananya Nair,41071@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F24
+41072,Aarav Iyer,41072@campus.edu,Comp,3,2025-2027,B,M,Hostel,F45
+41073,Meera Das,41073@campus.edu,IT,3,2025-2027,C,F,Hostel,F46
+41074,Sai Joshi,41074@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F23
+41075,Sneha Rao,41075@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F24
+41076,Ananya Singh,41076@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F45
+41077,Sneha Sharma,41077@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F46
+41078,Meera Iyer,41078@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F23
+41079,Sneha Rao,41079@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F24
+41080,Ishaan Iyer,41080@campus.edu,Comp,2,2026-2027,A,M,Hostel,F49
+41081,Vivaan Sharma,41081@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F50
+41082,Priya Iyer,41082@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F27
+41083,Vivaan Sharma,41083@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F28
+41084,Sneha Rao,41084@campus.edu,Comp,3,2025-2027,B,F,Hostel,F49
+41085,Priya Gupta,41085@campus.edu,IT,3,2025-2027,C,F,Hostel,F50
+41086,Sai Sharma,41086@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F27
+41087,Meera Joshi,41087@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F28
+41088,Ananya Kumar,41088@campus.edu,Comp,4,2024-2027,C,F,Hostel,F49
+41089,Ishaan Das,41089@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F50
+41090,Vivaan Nair,41090@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F27
+41091,Priya Iyer,41091@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F28
+41092,Arjun Nair,41092@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F01
+41093,Priya Kumar,41093@campus.edu,IT,2,2026-2027,B,F,Hostel,F02
+41094,Kavya Gupta,41094@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F31
+41095,Kavya Rao,41095@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F32
+41096,Kavya Gupta,41096@campus.edu,Comp,3,2025-2027,B,M,Hostel,F01
+41097,Ishaan Singh,41097@campus.edu,IT,3,2025-2027,C,M,Hostel,F02
+41098,Kavya Menon,41098@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F31
+41099,Meera Rao,41099@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F32
+41100,Ishaan Nair,41100@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F01
+41101,Meera Iyer,41101@campus.edu,IT,4,2024-2027,A,M,Hostel,F02
+41102,Diya Das,41102@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F31
+41103,Kavya Patel,41103@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F32
+41104,Diya Joshi,41104@campus.edu,Comp,2,2026-2027,A,F,Hostel,F05
+41105,Vivaan Patel,41105@campus.edu,IT,2,2026-2027,B,F,Hostel,F06
+41106,Ananya Rao,41106@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F35
+41107,Meera Sharma,41107@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F36
+41108,Diya Menon,41108@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F05
+41109,Kavya Kumar,41109@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F06
+41110,Ishaan Sharma,41110@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F35
+41111,Meera Menon,41111@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F36
+41112,Arjun Kumar,41112@campus.edu,Comp,4,2024-2027,C,F,Hostel,F05
+41113,Sai Singh,41113@campus.edu,IT,4,2024-2027,A,F,Hostel,F06
+41114,Aarav Kumar,41114@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F35
+41115,Vivaan Menon,41115@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F36
+41116,Meera Joshi,41116@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F09
+41117,Priya Joshi,41117@campus.edu,IT,2,2026-2027,B,M,Hostel,F10
+41118,Ishaan Iyer,41118@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F39
+41119,Kavya Iyer,41119@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F40
+41120,Priya Menon,41120@campus.edu,Comp,3,2025-2027,B,M,Hostel,F09
+41121,Sneha Iyer,41121@campus.edu,IT,3,2025-2027,C,F,Hostel,F10
+41122,Diya Kumar,41122@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F39
+41123,Diya Gupta,41123@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F40
+41124,Aditya Kumar,41124@campus.edu,Comp,4,2024-2027,C,F,Hostel,F09
+41125,Priya Gupta,41125@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F10
+41126,Meera Iyer,41126@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F39
+41127,Sneha Das,41127@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F40
+41128,Ishaan Singh,41128@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F13
+41129,Aditya Gupta,41129@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F14
+41130,Vivaan Singh,41130@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F43
+41131,Ananya Joshi,41131@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F44
+41132,Meera Rao,41132@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F13
+41133,Ishaan Rao,41133@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
+41134,Arjun Rao,41134@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F43
+41135,Ananya Gupta,41135@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F44
+41136,Diya Das,41136@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F13
+41137,Vivaan Patel,41137@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F14
+41138,Ananya Nair,41138@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F43
+41139,Diya Singh,41139@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F44
+41140,Meera Reddy,41140@campus.edu,Comp,2,2026-2027,A,M,Hostel,F17
+41141,Vivaan Sharma,41141@campus.edu,IT,2,2026-2027,B,M,Hostel,F18
+41142,Aarav Nair,41142@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F47
+41143,Arjun Singh,41143@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F48
+41144,Ishaan Menon,41144@campus.edu,Comp,3,2025-2027,B,F,Hostel,F17
+41145,Aarav Nair,41145@campus.edu,IT,3,2025-2027,C,F,Hostel,F18
+41146,Vivaan Gupta,41146@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F47
+41147,Ishaan Das,41147@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F48
+41148,Sai Nair,41148@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F17
+41149,Meera Das,41149@campus.edu,IT,4,2024-2027,A,M,Hostel,F18
+41150,Aditya Patel,41150@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F47
+41151,Priya Reddy,41151@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F48
+41152,Vivaan Das,41152@campus.edu,Comp,2,2026-2027,A,F,Hostel,F21
+41153,Kavya Reddy,41153@campus.edu,IT,2,2026-2027,B,M,Hostel,F22
+41154,Meera Rao,41154@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F03
+41155,Priya Iyer,41155@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F04
+41156,Aarav Joshi,41156@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F21
+41157,Diya Das,41157@campus.edu,IT,3,2025-2027,C,M,Hostel,F22
+41158,Aarav Das,41158@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F03
+41159,Aarav Gupta,41159@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F04
+41160,Ishaan Menon,41160@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F21
+41161,Sai Singh,41161@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F22
+41162,Kavya Menon,41162@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F03
+41163,Vivaan Reddy,41163@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F04
+41164,Aarav Iyer,41164@campus.edu,Comp,2,2026-2027,A,F,Hostel,F25
+41165,Meera Patel,41165@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F26
+41166,Arjun Iyer,41166@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F07
+41167,Kavya Joshi,41167@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F08
+41168,Ishaan Joshi,41168@campus.edu,Comp,3,2025-2027,B,M,Hostel,F25
+41169,Arjun Iyer,41169@campus.edu,IT,3,2025-2027,C,M,Hostel,F26
+41170,Ishaan Das,41170@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F07
+41171,Kavya Reddy,41171@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F08
+41172,Sneha Das,41172@campus.edu,Comp,4,2024-2027,C,M,Hostel,F25
+41173,Sai Singh,41173@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F26
+41174,Arjun Das,41174@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F07
+41175,Arjun Patel,41175@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F08
+41176,Vivaan Patel,41176@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F29
+41177,Diya Singh,41177@campus.edu,IT,2,2026-2027,B,F,Hostel,F30
+41178,Vivaan Rao,41178@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F11
+41179,Vivaan Gupta,41179@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F12
+41180,Ishaan Singh,41180@campus.edu,Comp,3,2025-2027,B,F,Hostel,F29
+41181,Ishaan Rao,41181@campus.edu,IT,3,2025-2027,C,F,Hostel,F30
+41182,Ananya Patel,41182@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F11
+41183,Aarav Patel,41183@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F12
+41184,Aarav Nair,41184@campus.edu,Comp,4,2024-2027,C,F,Hostel,F29
+41185,Ishaan Reddy,41185@campus.edu,IT,4,2024-2027,A,M,Hostel,F30
+41186,Meera Das,41186@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F11
+41187,Aarav Das,41187@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F12
+41188,Ishaan Rao,41188@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F33
+41189,Vivaan Patel,41189@campus.edu,IT,2,2026-2027,B,F,Hostel,F34
+41190,Meera Singh,41190@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F15
+41191,Meera Reddy,41191@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F16
+41192,Meera Reddy,41192@campus.edu,Comp,3,2025-2027,B,M,Hostel,F33
+41193,Aarav Gupta,41193@campus.edu,IT,3,2025-2027,C,F,Hostel,F34
+41194,Aarav Das,41194@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F15
+41195,Kavya Gupta,41195@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F16
+41196,Diya Das,41196@campus.edu,Comp,4,2024-2027,C,M,Hostel,F33
+41197,Meera Kumar,41197@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F34
+41198,Kavya Kumar,41198@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F15
+41199,Sneha Das,41199@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F16
+41200,Diya Iyer,41200@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F37
+41201,Aditya Menon,41201@campus.edu,IT,2,2026-2027,B,F,Hostel,F38
+41202,Kavya Reddy,41202@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F19
+41203,Arjun Kumar,41203@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F20
+41204,Kavya Reddy,41204@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F37
+41205,Sneha Das,41205@campus.edu,IT,3,2025-2027,C,M,Hostel,F38
+41206,Ishaan Sharma,41206@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F19
+41207,Aditya Kumar,41207@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F20
+41208,Sai Joshi,41208@campus.edu,Comp,4,2024-2027,C,F,Hostel,F37
+41209,Aditya Iyer,41209@campus.edu,IT,4,2024-2027,A,M,Hostel,F38
+41210,Ananya Reddy,41210@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F19
+41211,Meera Sharma,41211@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F20
+41212,Kavya Kumar,41212@campus.edu,Comp,2,2026-2027,A,M,Hostel,F41
+41213,Ishaan Patel,41213@campus.edu,IT,2,2026-2027,B,F,Hostel,F42
+41214,Diya Iyer,41214@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F23
+41215,Priya Nair,41215@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F24
+41216,Arjun Kumar,41216@campus.edu,Comp,3,2025-2027,B,M,Hostel,F41
+41217,Sai Das,41217@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F42
+41218,Sneha Patel,41218@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F23
+41219,Diya Patel,41219@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F24
+41220,Sneha Menon,41220@campus.edu,Comp,4,2024-2027,C,F,Hostel,F41
+41221,Priya Iyer,41221@campus.edu,IT,4,2024-2027,A,M,Hostel,F42
+41222,Priya Menon,41222@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F23
+41223,Sai Iyer,41223@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F24
+41224,Vivaan Patel,41224@campus.edu,Comp,2,2026-2027,A,F,Hostel,F45
+41225,Kavya Reddy,41225@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F46
+41226,Sneha Sharma,41226@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F27
+41227,Aarav Nair,41227@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F28
+41228,Arjun Nair,41228@campus.edu,Comp,3,2025-2027,B,M,Hostel,F45
+41229,Ishaan Singh,41229@campus.edu,IT,3,2025-2027,C,M,Hostel,F46
+41230,Kavya Joshi,41230@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F27
+41231,Arjun Das,41231@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F28
+41232,Kavya Patel,41232@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F45
+41233,Arjun Gupta,41233@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F46
+41234,Ananya Sharma,41234@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F27
+41235,Sai Joshi,41235@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F28
+41236,Sai Iyer,41236@campus.edu,Comp,2,2026-2027,A,M,Hostel,F49
+41237,Aarav Joshi,41237@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F50
+41238,Aarav Joshi,41238@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F31
+41239,Aditya Patel,41239@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F32
+41240,Priya Singh,41240@campus.edu,Comp,3,2025-2027,B,M,Hostel,F49
+41241,Diya Menon,41241@campus.edu,IT,3,2025-2027,C,F,Hostel,F50
+41242,Arjun Das,41242@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F31
+41243,Priya Gupta,41243@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F32
+41244,Sneha Gupta,41244@campus.edu,Comp,4,2024-2027,C,M,Hostel,F49
+41245,Diya Das,41245@campus.edu,IT,4,2024-2027,A,F,Hostel,F50
+41246,Meera Patel,41246@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F31
+41247,Sneha Nair,41247@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F32
+41248,Kavya Gupta,41248@campus.edu,Comp,2,2026-2027,A,F,Hostel,F01
+41249,Aditya Iyer,41249@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F02
+41250,Vivaan Gupta,41250@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F35
+41251,Aarav Patel,41251@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F36
+41252,Sai Rao,41252@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F01
+41253,Priya Reddy,41253@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F02
+41254,Sai Reddy,41254@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F35
+41255,Ishaan Gupta,41255@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F36
+41256,Kavya Rao,41256@campus.edu,Comp,4,2024-2027,C,F,Hostel,F01
+41257,Priya Patel,41257@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F02
+41258,Sneha Rao,41258@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F35
+41259,Aditya Sharma,41259@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F36
+41260,Ishaan Sharma,41260@campus.edu,Comp,2,2026-2027,A,M,Hostel,F05
+41261,Aarav Gupta,41261@campus.edu,IT,2,2026-2027,B,F,Hostel,F06
+41262,Priya Kumar,41262@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F39
+41263,Sneha Joshi,41263@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F40
+41264,Aditya Iyer,41264@campus.edu,Comp,3,2025-2027,B,F,Hostel,F05
+41265,Meera Kumar,41265@campus.edu,IT,3,2025-2027,C,F,Hostel,F06
+41266,Kavya Patel,41266@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F39
+41267,Aarav Iyer,41267@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F40
+41268,Sneha Rao,41268@campus.edu,Comp,4,2024-2027,C,M,Hostel,F05
+41269,Aditya Nair,41269@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F06
+41270,Arjun Reddy,41270@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F39
+41271,Aditya Gupta,41271@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F40
+41272,Priya Iyer,41272@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F09
+41273,Aarav Singh,41273@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F10
+41274,Kavya Das,41274@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F43
+41275,Ananya Nair,41275@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F44
+41276,Vivaan Nair,41276@campus.edu,Comp,3,2025-2027,B,F,Hostel,F09
+41277,Aditya Iyer,41277@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F10
+41278,Arjun Patel,41278@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F43
+41279,Vivaan Singh,41279@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F44
+41280,Meera Das,41280@campus.edu,Comp,4,2024-2027,C,F,Hostel,F09
+41281,Vivaan Joshi,41281@campus.edu,IT,4,2024-2027,A,M,Hostel,F10
+41282,Vivaan Reddy,41282@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F43
+41283,Kavya Reddy,41283@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F44
+41284,Arjun Gupta,41284@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F13
+41285,Meera Kumar,41285@campus.edu,IT,2,2026-2027,B,M,Hostel,F14
+41286,Sneha Joshi,41286@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F47
+41287,Meera Sharma,41287@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F48
+41288,Kavya Menon,41288@campus.edu,Comp,3,2025-2027,B,M,Hostel,F13
+41289,Meera Kumar,41289@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
+41290,Aarav Gupta,41290@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F47
+41291,Ishaan Patel,41291@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F48
+41292,Arjun Reddy,41292@campus.edu,Comp,4,2024-2027,C,F,Hostel,F13
+41293,Ishaan Kumar,41293@campus.edu,IT,4,2024-2027,A,M,Hostel,F14
+41294,Meera Joshi,41294@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F47
+41295,Ananya Nair,41295@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F48
+41296,Arjun Das,41296@campus.edu,Comp,2,2026-2027,A,M,Hostel,F17
+41297,Meera Iyer,41297@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F18
+41298,Sneha Kumar,41298@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F03
+41299,Ananya Menon,41299@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F04
+41300,Sai Gupta,41300@campus.edu,Comp,3,2025-2027,B,M,Hostel,F17
+41301,Priya Menon,41301@campus.edu,IT,3,2025-2027,C,F,Hostel,F18
+41302,Priya Iyer,41302@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F03
+41303,Priya Joshi,41303@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F04
+41304,Sneha Nair,41304@campus.edu,Comp,4,2024-2027,C,M,Hostel,F17
+41305,Priya Menon,41305@campus.edu,IT,4,2024-2027,A,F,Hostel,F18
+41306,Kavya Das,41306@campus.edu,ENTC,4,2024-2027,B,M,Day Scholar,F03
+41307,Meera Patel,41307@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F04
+41308,Diya Menon,41308@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F21
+41309,Ishaan Patel,41309@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F22
+41310,Sai Gupta,41310@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F07
+41311,Ishaan Reddy,41311@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F08
+41312,Sneha Gupta,41312@campus.edu,Comp,3,2025-2027,B,M,Hostel,F21
+41313,Sneha Gupta,41313@campus.edu,IT,3,2025-2027,C,M,Hostel,F22
+41314,Aarav Das,41314@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F07
+41315,Priya Patel,41315@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F08
+41316,Priya Rao,41316@campus.edu,Comp,4,2024-2027,C,M,Hostel,F21
+41317,Aarav Gupta,41317@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F22
+41318,Priya Reddy,41318@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F07
+41319,Diya Iyer,41319@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F08
+41320,Diya Das,41320@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F25
+41321,Sneha Menon,41321@campus.edu,IT,2,2026-2027,B,F,Hostel,F26
+41322,Sai Gupta,41322@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F11
+41323,Sai Reddy,41323@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F12
+41324,Sneha Sharma,41324@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F25
+41325,Aditya Rao,41325@campus.edu,IT,3,2025-2027,C,F,Hostel,F26
+41326,Ananya Joshi,41326@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F11
+41327,Ananya Rao,41327@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F12
+41328,Meera Kumar,41328@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F25
+41329,Meera Nair,41329@campus.edu,IT,4,2024-2027,A,F,Hostel,F26
+41330,Vivaan Rao,41330@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F11
+41331,Sai Sharma,41331@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F12
+41332,Aditya Kumar,41332@campus.edu,Comp,2,2026-2027,A,F,Hostel,F29
+41333,Ishaan Nair,41333@campus.edu,IT,2,2026-2027,B,M,Hostel,F30
+41334,Vivaan Iyer,41334@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F15
+41335,Aditya Singh,41335@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F16
+41336,Ishaan Gupta,41336@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F29
+41337,Kavya Sharma,41337@campus.edu,IT,3,2025-2027,C,M,Hostel,F30
+41338,Sneha Rao,41338@campus.edu,ENTC,3,2025-2027,A,F,Hostel,F15
+41339,Priya Gupta,41339@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F16
+41340,Meera Sharma,41340@campus.edu,Comp,4,2024-2027,C,F,Hostel,F29
+41341,Sai Rao,41341@campus.edu,IT,4,2024-2027,A,M,Hostel,F30
+41342,Ananya Patel,41342@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F15
+41343,Priya Rao,41343@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F16
+41344,Sneha Rao,41344@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F33
+41345,Ananya Das,41345@campus.edu,IT,2,2026-2027,B,M,Hostel,F34
+41346,Sai Patel,41346@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F19
+41347,Aarav Joshi,41347@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F20
+41348,Ishaan Iyer,41348@campus.edu,Comp,3,2025-2027,B,F,Hostel,F33
+41349,Aditya Nair,41349@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F34
+41350,Ananya Patel,41350@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F19
+41351,Vivaan Sharma,41351@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F20
+41352,Diya Das,41352@campus.edu,Comp,4,2024-2027,C,M,Hostel,F33
+41353,Aditya Patel,41353@campus.edu,IT,4,2024-2027,A,F,Hostel,F34
+41354,Kavya Gupta,41354@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F19
+41355,Ishaan Nair,41355@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F20
+41356,Sai Menon,41356@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F37
+41357,Aditya Das,41357@campus.edu,IT,2,2026-2027,B,M,Day Scholar,F38
+41358,Arjun Menon,41358@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F23
+41359,Sai Kumar,41359@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F24
+41360,Vivaan Sharma,41360@campus.edu,Comp,3,2025-2027,B,M,Hostel,F37
+41361,Aarav Menon,41361@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F38
+41362,Diya Joshi,41362@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F23
+41363,Vivaan Sharma,41363@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F24
+41364,Sai Menon,41364@campus.edu,Comp,4,2024-2027,C,F,Hostel,F37
+41365,Aditya Iyer,41365@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F38
+41366,Ishaan Iyer,41366@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F23
+41367,Priya Sharma,41367@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F24
+41368,Meera Sharma,41368@campus.edu,Comp,2,2026-2027,A,F,Hostel,F41
+41369,Ishaan Menon,41369@campus.edu,IT,2,2026-2027,B,M,Hostel,F42
+41370,Diya Gupta,41370@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F27
+41371,Diya Gupta,41371@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F28
+41372,Ananya Rao,41372@campus.edu,Comp,3,2025-2027,B,F,Hostel,F41
+41373,Aditya Patel,41373@campus.edu,IT,3,2025-2027,C,M,Hostel,F42
+41374,Ananya Patel,41374@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F27
+41375,Kavya Sharma,41375@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F28
+41376,Diya Iyer,41376@campus.edu,Comp,4,2024-2027,C,M,Day Scholar,F41
+41377,Arjun Gupta,41377@campus.edu,IT,4,2024-2027,A,F,Hostel,F42
+41378,Ananya Iyer,41378@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F27
+41379,Sneha Gupta,41379@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F28
+41380,Sneha Iyer,41380@campus.edu,Comp,2,2026-2027,A,M,Hostel,F45
+41381,Priya Kumar,41381@campus.edu,IT,2,2026-2027,B,F,Hostel,F46
+41382,Arjun Menon,41382@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F31
+41383,Arjun Gupta,41383@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F32
+41384,Sneha Reddy,41384@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F45
+41385,Arjun Nair,41385@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F46
+41386,Aditya Kumar,41386@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F31
+41387,Aditya Das,41387@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F32
+41388,Meera Rao,41388@campus.edu,Comp,4,2024-2027,C,F,Hostel,F45
+41389,Sneha Sharma,41389@campus.edu,IT,4,2024-2027,A,M,Hostel,F46
+41390,Priya Patel,41390@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F31
+41391,Priya Rao,41391@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F32
+41392,Arjun Iyer,41392@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F49
+41393,Aditya Patel,41393@campus.edu,IT,2,2026-2027,B,F,Hostel,F50
+41394,Kavya Menon,41394@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F35
+41395,Ishaan Singh,41395@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F36
+41396,Priya Gupta,41396@campus.edu,Comp,3,2025-2027,B,F,Hostel,F49
+41397,Aarav Kumar,41397@campus.edu,IT,3,2025-2027,C,F,Hostel,F50
+41398,Meera Iyer,41398@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F35
+41399,Kavya Iyer,41399@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F36
+41400,Ishaan Iyer,41400@campus.edu,Comp,4,2024-2027,C,F,Hostel,F49
+41401,Kavya Iyer,41401@campus.edu,IT,4,2024-2027,A,M,Day Scholar,F50
+41402,Aarav Nair,41402@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F35
+41403,Arjun Rao,41403@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F36
+41404,Sai Reddy,41404@campus.edu,Comp,2,2026-2027,A,M,Hostel,F01
+41405,Sneha Menon,41405@campus.edu,IT,2,2026-2027,B,F,Hostel,F02
+41406,Kavya Rao,41406@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F39
+41407,Arjun Menon,41407@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F40
+41408,Diya Sharma,41408@campus.edu,Comp,3,2025-2027,B,F,Hostel,F01
+41409,Arjun Gupta,41409@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F02
+41410,Priya Patel,41410@campus.edu,ENTC,3,2025-2027,A,M,Day Scholar,F39
+41411,Diya Joshi,41411@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F40
+41412,Diya Kumar,41412@campus.edu,Comp,4,2024-2027,C,F,Hostel,F01
+41413,Meera Patel,41413@campus.edu,IT,4,2024-2027,A,M,Hostel,F02
+41414,Vivaan Singh,41414@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F39
+41415,Diya Reddy,41415@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F40
+41416,Ishaan Menon,41416@campus.edu,Comp,2,2026-2027,A,F,Day Scholar,F05
+41417,Priya Reddy,41417@campus.edu,IT,2,2026-2027,B,F,Hostel,F06
+41418,Kavya Reddy,41418@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F43
+41419,Vivaan Rao,41419@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F44
+41420,Sneha Das,41420@campus.edu,Comp,3,2025-2027,B,F,Hostel,F05
+41421,Ananya Singh,41421@campus.edu,IT,3,2025-2027,C,F,Hostel,F06
+41422,Ananya Sharma,41422@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F43
+41423,Ananya Menon,41423@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F44
+41424,Sneha Rao,41424@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F05
+41425,Sneha Rao,41425@campus.edu,IT,4,2024-2027,A,F,Hostel,F06
+41426,Diya Nair,41426@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F43
+41427,Ananya Menon,41427@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F44
+41428,Diya Iyer,41428@campus.edu,Comp,2,2026-2027,A,M,Hostel,F09
+41429,Diya Gupta,41429@campus.edu,IT,2,2026-2027,B,F,Hostel,F10
+41430,Aarav Nair,41430@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F47
+41431,Aditya Reddy,41431@campus.edu,AI&DS,2,2026-2027,A,F,Day Scholar,F48
+41432,Diya Reddy,41432@campus.edu,Comp,3,2025-2027,B,M,Hostel,F09
+41433,Ishaan Sharma,41433@campus.edu,IT,3,2025-2027,C,F,Hostel,F10
+41434,Ishaan Iyer,41434@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F47
+41435,Vivaan Patel,41435@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F48
+41436,Aditya Iyer,41436@campus.edu,Comp,4,2024-2027,C,F,Hostel,F09
+41437,Ananya Sharma,41437@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F10
+41438,Diya Das,41438@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F47
+41439,Sneha Sharma,41439@campus.edu,AI&DS,4,2024-2027,C,F,Day Scholar,F48
+41440,Arjun Kumar,41440@campus.edu,Comp,2,2026-2027,A,F,Hostel,F13
+41441,Meera Das,41441@campus.edu,IT,2,2026-2027,B,M,Hostel,F14
+41442,Diya Gupta,41442@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F03
+41443,Ishaan Iyer,41443@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F04
+41444,Ananya Joshi,41444@campus.edu,Comp,3,2025-2027,B,F,Hostel,F13
+41445,Ishaan Iyer,41445@campus.edu,IT,3,2025-2027,C,M,Hostel,F14
+41446,Kavya Gupta,41446@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F03
+41447,Sneha Reddy,41447@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F04
+41448,Diya Kumar,41448@campus.edu,Comp,4,2024-2027,C,M,Hostel,F13
+41449,Vivaan Kumar,41449@campus.edu,IT,4,2024-2027,A,M,Hostel,F14
+41450,Vivaan Nair,41450@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F03
+41451,Vivaan Gupta,41451@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F04
+41452,Priya Gupta,41452@campus.edu,Comp,2,2026-2027,A,M,Hostel,F17
+41453,Aditya Reddy,41453@campus.edu,IT,2,2026-2027,B,M,Hostel,F18
+41454,Sai Kumar,41454@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F07
+41455,Diya Iyer,41455@campus.edu,AI&DS,2,2026-2027,A,M,Day Scholar,F08
+41456,Ananya Sharma,41456@campus.edu,Comp,3,2025-2027,B,M,Hostel,F17
+41457,Diya Das,41457@campus.edu,IT,3,2025-2027,C,M,Day Scholar,F18
+41458,Sai Gupta,41458@campus.edu,ENTC,3,2025-2027,A,F,Day Scholar,F07
+41459,Kavya Menon,41459@campus.edu,AI&DS,3,2025-2027,B,M,Day Scholar,F08
+41460,Diya Rao,41460@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F17
+41461,Sneha Singh,41461@campus.edu,IT,4,2024-2027,A,M,Hostel,F18
+41462,Vivaan Das,41462@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F07
+41463,Sai Rao,41463@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F08
+41464,Meera Patel,41464@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F21
+41465,Arjun Patel,41465@campus.edu,IT,2,2026-2027,B,M,Hostel,F22
+41466,Aarav Gupta,41466@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F11
+41467,Aditya Iyer,41467@campus.edu,AI&DS,2,2026-2027,A,F,Hostel,F12
+41468,Sai Patel,41468@campus.edu,Comp,3,2025-2027,B,F,Hostel,F21
+41469,Priya Menon,41469@campus.edu,IT,3,2025-2027,C,F,Day Scholar,F22
+41470,Meera Rao,41470@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F11
+41471,Arjun Reddy,41471@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F12
+41472,Ananya Joshi,41472@campus.edu,Comp,4,2024-2027,C,F,Hostel,F21
+41473,Diya Nair,41473@campus.edu,IT,4,2024-2027,A,M,Hostel,F22
+41474,Aditya Joshi,41474@campus.edu,ENTC,4,2024-2027,B,F,Hostel,F11
+41475,Priya Singh,41475@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F12
+41476,Aditya Sharma,41476@campus.edu,Comp,2,2026-2027,A,M,Hostel,F25
+41477,Sneha Kumar,41477@campus.edu,IT,2,2026-2027,B,F,Day Scholar,F26
+41478,Ananya Singh,41478@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F15
+41479,Diya Menon,41479@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F16
+41480,Aarav Sharma,41480@campus.edu,Comp,3,2025-2027,B,F,Day Scholar,F25
+41481,Sai Sharma,41481@campus.edu,IT,3,2025-2027,C,F,Hostel,F26
+41482,Aditya Joshi,41482@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F15
+41483,Priya Singh,41483@campus.edu,AI&DS,3,2025-2027,B,F,Hostel,F16
+41484,Sneha Singh,41484@campus.edu,Comp,4,2024-2027,C,M,Hostel,F25
+41485,Meera Rao,41485@campus.edu,IT,4,2024-2027,A,F,Day Scholar,F26
+41486,Sai Iyer,41486@campus.edu,ENTC,4,2024-2027,B,M,Hostel,F15
+41487,Aditya Das,41487@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F16
+41488,Aditya Rao,41488@campus.edu,Comp,2,2026-2027,A,M,Hostel,F29
+41489,Ananya Rao,41489@campus.edu,IT,2,2026-2027,B,M,Hostel,F30
+41490,Vivaan Reddy,41490@campus.edu,ENTC,2,2026-2027,C,F,Day Scholar,F19
+41491,Aarav Sharma,41491@campus.edu,AI&DS,2,2026-2027,A,M,Hostel,F20
+41492,Kavya Das,41492@campus.edu,Comp,3,2025-2027,B,M,Day Scholar,F29
+41493,Aditya Rao,41493@campus.edu,IT,3,2025-2027,C,M,Hostel,F30
+41494,Aditya Reddy,41494@campus.edu,ENTC,3,2025-2027,A,M,Hostel,F19
+41495,Ishaan Joshi,41495@campus.edu,AI&DS,3,2025-2027,B,F,Day Scholar,F20
+41496,Ananya Iyer,41496@campus.edu,Comp,4,2024-2027,C,M,Hostel,F29
+41497,Aditya Reddy,41497@campus.edu,IT,4,2024-2027,A,M,Hostel,F30
+41498,Diya Rao,41498@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F19
+41499,Ishaan Patel,41499@campus.edu,AI&DS,4,2024-2027,C,M,Day Scholar,F20
+40011,Meera Reddy,40011@campus.edu,AI&DS,4,2024-2027,C,F,Hostel,F04
+40026,Priya Gupta,40026@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F11
+40086,Diya Patel,40086@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F31
+40121,Meera Nair,40121@campus.edu,IT,2,2026-2027,B,F,Hostel,F42
+40128,Aarav Gupta,40128@campus.edu,Comp,4,2024-2027,C,F,Day Scholar,F41
+40288,Ishaan Rao,40288@campus.edu,Comp,2,2026-2027,A,M,Day Scholar,F45
+40385,Priya Gupta,40385@campus.edu,IT,2,2026-2027,B,M,Hostel,F26
+40395,Arjun Kumar,40395@campus.edu,AI&DS,4,2024-2027,C,M,Hostel,F36
+40530,Diya Kumar,40530@campus.edu,ENTC,2,2026-2027,C,M,Day Scholar,F35
+40632,Arjun Das,40632@campus.edu,Comp,4,2024-2027,C,F,Hostel,F01
+40866,Ananya Menon,40866@campus.edu,ENTC,2,2026-2027,C,M,Hostel,F03
+41030,Meera Iyer,41030@campus.edu,ENTC,4,2024-2027,B,F,Day Scholar,F07
+41051,Meera Sharma,41051@campus.edu,AI&DS,3,2025-2027,B,M,Hostel,F16
+41261,Aarav Gupta,41261@campus.edu,IT,2,2026-2027,B,F,Hostel,F06
+41430,Aarav Nair,41430@campus.edu,ENTC,2,2026-2027,C,F,Hostel,F47
+41489,Ananya Rao,41489@campus.edu,IT,2,2026-2027,B,M,Hostel,F30

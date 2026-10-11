@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import random
 from pathlib import Path
 
@@ -22,6 +23,12 @@ def _write(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="ignore", lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
+
+
+def _stable_rng(seed: int, namespace: str) -> random.Random:
+    """Create an independent random stream that does not shift when the cohort grows."""
+    digest = hashlib.sha256(f"{seed}:{namespace}".encode("utf-8")).digest()
+    return random.Random(int.from_bytes(digest[:8], "big"))
 
 
 def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED) -> dict[str, list[dict]]:
@@ -70,10 +77,11 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
     raw["students"] = [dict(row) for row in students]
     raw["faculty"] = faculty
     for row in students:
-        if rng.random() < 0.01:
+        if _stable_rng(seed, f"registry-duplicate:{row['student_id']}").random() < 0.01:
             raw["students"].append(dict(row))
     for row in students:
         sid, t = row["student_id"], traits[row["student_id"]]
+        rng = _stable_rng(seed, f"source-records:{sid}")
         current_semester = 2 * row["year"] - 1
         alias = rng.choice(DEPT_ALIASES)
         for semester in range(1, current_semester + 1):
@@ -145,7 +153,7 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             aptitude = max(5, min(100, 58 + 8 * t["ability"] + 8 * t["career"] + rng.gauss(0, 11)))
             coding = max(5, min(100, 55 + 7 * t["ability"] + 13 * t["career"] + rng.gauss(0, 13)))
             if t["placement_lag"]:
-                coding = max(8, coding - 24)
+                coding = max(8, coding - 36)
                 aptitude = max(10, aptitude - 10)
             mock = "" if rng.random() < 0.15 else max(1, min(5, round(3.2 + 0.7 * t["career"] + rng.gauss(0, 0.9))))
             raw["placement"].append({" Student ID": f"SCA-{sid} ", "Aptitude": round(aptitude),
@@ -155,10 +163,6 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             faculty_rating = max(1, min(5, round(3.4 + 0.4 * t["diligence"] + 0.2 * t["ability"] + rng.gauss(0, 0.8))))
             raw["feedback"].append({"student_id": f"sca-{sid}", "satisfaction": f"{satisfaction}/5" if rng.random() < 0.08 else satisfaction,
                                     "faculty_rating": faculty_rating, "comment": "Synthetic feedback"})
-    # Deliberate source-system duplicates exercise the same dedupe path used for real imports.
-    for source, fraction in (("academic", .004), ("attendance", .002), ("lms", .01), ("engagement", .015)):
-        count = max(1, round(len(raw[source]) * fraction))
-        raw[source].extend(dict(row) for row in raw[source][:count])
     # A fraction of the per-subject summary source arrives as 0-1 ratios; the rest is percent.
     summary = []
     grouped = {}
@@ -169,9 +173,15 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
         agg[0] += int(row["attended"]); agg[1] += int(row["held"])
     for (sid, semester, subject), (attended, held) in sorted(grouped.items()):
         pct = attended / held if held else 0
+        summary_rng = _stable_rng(seed, f"attendance-summary:{sid}:{semester}:{subject}")
         summary.append({"student_id": sid, "semester": semester, "subject_code": subject,
-                        "attendance": round(pct if rng.random() < .3 else pct * 100, 4)})
+                        "attendance": round(pct if summary_rng.random() < .3 else pct * 100, 4)})
     raw["attendance_summary"] = summary
+    # Duplicate rows are added after derived summaries so they exercise the cleaner without
+    # changing the underlying attendance measurements.
+    for source, fraction in (("academic", .004), ("attendance", .002), ("lms", .01), ("engagement", .015)):
+        count = max(1, round(len(raw[source]) * fraction))
+        raw[source].extend(dict(row) for row in raw[source][:count])
     raw["faculty"] = faculty
     file_columns = {
         "students": ["student_id", "name", "email", "department", "year", "batch", "section", "gender", "residence", "mentor_faculty_id"],

@@ -82,10 +82,16 @@ def _insert_sql(table: str, rows: list[dict]) -> str:
             + f"\nON CONFLICT ({','.join(conflict)}) {action};\n")
 
 
-def _write_sql(payload: dict) -> Path:
+def _write_sql(payload: dict, replace_existing_cohort: bool = False) -> Path:
     lines = ["BEGIN;", "SET LOCAL statement_timeout = '90s';"]
     # Cleaning logs describe the active source snapshot, so replace that snapshot atomically.
     lines.append("DELETE FROM public.data_quality;")
+    if replace_existing_cohort:
+        student_ids = sorted({row["student_id"] for row in payload["students"]})
+        id_list = ",".join(_sql_value(student_id) for student_id in student_ids)
+        for table in ("academics", "attendance", "lms_activity", "engagement", "placement", "skills",
+                      "feedback", "scores", "score_history"):
+            lines.append(f"DELETE FROM public.{table} WHERE student_id IN ({id_list});")
     for table in ("faculty", "students", "academics", "attendance", "lms_activity", "placement", "skills", "feedback", "scores", "score_history", "analytics", "source_stats"):
         lines.append(_insert_sql(table, payload.get(table, [])))
     # Engagement has no natural unique key in the frozen schema. Insert only unseen events so reruns are safe.
@@ -183,15 +189,70 @@ def _upsert_user_rows(users: list[dict], database_url: str) -> None:
         path.unlink(missing_ok=True)
 
 
+def _psql(database_url: str, arguments: list[str], timeout: int = 30) -> subprocess.CompletedProcess:
+    parsed = urllib.parse.urlparse(database_url)
+    if parsed.scheme not in {"postgres", "postgresql"} or not parsed.hostname or not parsed.username:
+        raise RuntimeError("SUPABASE_DB_URL must be a valid PostgreSQL connection URL")
+    password = urllib.parse.unquote(parsed.password or "")
+    if not password:
+        raise RuntimeError("SUPABASE_DB_URL is missing its database password")
+    escape_pgpass = lambda value: value.replace("\\", "\\\\").replace(":", "\\:")
+    pgpass = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="elevra-pgpass-", delete=False)
+    pgpass_path = Path(pgpass.name)
+    try:
+        os.chmod(pgpass_path, 0o600)
+        pgpass.write(":".join(escape_pgpass(value) for value in
+                               (parsed.hostname, str(parsed.port or 5432),
+                                urllib.parse.unquote(parsed.path.lstrip("/")) or "postgres",
+                                urllib.parse.unquote(parsed.username), password)) + "\n")
+        pgpass.flush()
+    finally:
+        pgpass.close()
+    env = os.environ.copy()
+    env["PGPASSFILE"] = str(pgpass_path)
+    query = urllib.parse.parse_qs(parsed.query)
+    env["PGSSLMODE"] = query.get("sslmode", ["require"])[0]
+    command = ["psql", "-h", parsed.hostname, "-p", str(parsed.port or 5432), "-U",
+               urllib.parse.unquote(parsed.username), "-d", urllib.parse.unquote(parsed.path.lstrip("/")) or "postgres",
+               "-X", "-v", "ON_ERROR_STOP=1", *arguments]
+    try:
+        return subprocess.run(command, capture_output=True, text=True, timeout=timeout, env=env)
+    finally:
+        pgpass_path.unlink(missing_ok=True)
+
+
 def _run_psql(database_url: str, sql_path: Path) -> None:
-    result = subprocess.run(["psql", database_url, "-X", "-v", "ON_ERROR_STOP=1", "-f", str(sql_path)],
-                            capture_output=True, text=True, timeout=120)
+    result = _psql(database_url, ["-f", str(sql_path)], timeout=120)
     if result.returncode:
-        detail = re.sub(r"postgres(ql)?://[^\s]+", "<connection-redacted>", result.stderr.strip())
-        raise RuntimeError(f"Postgres seed failed: {detail[-1500:]}")
+        raise RuntimeError(f"Postgres seed failed: {result.stderr.strip()[-1500:]}")
 
 
-def seed_database(payload: dict, create_demo_users: bool = True) -> None:
+def _existing_students(database_url: str) -> list[dict]:
+    fields = ",".join(f"'{column}',s.{column}" for column in TABLES["students"])
+    query = ("SELECT COALESCE(json_agg(json_build_object(" + fields
+             + ") ORDER BY s.student_id)::text, '[]') FROM public.students s")
+    result = _psql(database_url, ["-At", "-c", query])
+    if result.returncode:
+        raise RuntimeError("Could not verify existing student profiles before seeding")
+    try:
+        return json.loads(result.stdout.strip())
+    except json.JSONDecodeError:
+        raise RuntimeError("Could not parse existing student profiles before seeding") from None
+
+
+def _student_profiles_match(existing: list[dict], payload: dict) -> bool:
+    expected_by_id = {row["student_id"]: row for row in payload["students"]}
+    if len(expected_by_id) != len(payload["students"]):
+        return False
+    columns = TABLES["students"]
+    for actual in existing:
+        expected = expected_by_id.get(actual.get("student_id"))
+        if expected is None or any(actual.get(column) != expected.get(column) for column in columns):
+            return False
+    return True
+
+
+def seed_database(payload: dict, create_demo_users: bool = True, replace_existing_cohort: bool = False) -> None:
     env = _load_env()
     database_url = env.get("SUPABASE_DB_URL", "")
     if not database_url:
@@ -208,21 +269,27 @@ def seed_database(payload: dict, create_demo_users: bool = True) -> None:
         # Validate Auth connectivity before the database transaction, without creating any users yet.
         _auth_request(api_url, env["SUPABASE_SERVICE_ROLE_KEY"], "GET", "/auth/v1/admin/users?page=1&per_page=1")
     # Protect existing data: this seed expects the fresh, empty schema verified before the first run.
-    check = subprocess.run(["psql", database_url, "-X", "-v", "ON_ERROR_STOP=1", "-At",
-                            "-c", "select count(*) from public.students"], capture_output=True, text=True, timeout=30)
+    check = _psql(database_url, ["-At", "-c", "select count(*) from public.students"])
     if check.returncode:
         raise RuntimeError("Could not verify the target database before seeding")
     current = int(check.stdout.strip())
     expected_ids = {row["student_id"] for row in payload["students"]}
     # Allow repeat runs for exactly this generated cohort, while refusing to overwrite unrelated students.
     existing_ids = set()
+    replace = False
     if current:
-        result = subprocess.run(["psql", database_url, "-X", "-v", "ON_ERROR_STOP=1", "-At",
-                                 "-c", "select student_id from public.students"], capture_output=True, text=True, timeout=30)
-        existing_ids = set(result.stdout.splitlines())
-        if existing_ids != expected_ids:
+        existing_students = _existing_students(database_url)
+        existing_ids = {student["student_id"] for student in existing_students}
+        profiles_match = _student_profiles_match(existing_students, payload)
+        same_cohort = existing_ids == expected_ids
+        safe_extension = bool(existing_ids) and existing_ids < expected_ids and profiles_match
+        if same_cohort and profiles_match:
+            replace = replace_existing_cohort
+        elif replace_existing_cohort and safe_extension:
+            replace = True
+        else:
             raise RuntimeError("Target already contains a different student cohort; refusing to mix seed data")
-    sql_path = _write_sql(payload)
+    sql_path = _write_sql(payload, replace_existing_cohort=replace)
     try:
         _run_psql(database_url, sql_path)
     finally:
@@ -238,8 +305,12 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skip-demo-users", action="store_true", help="load synthetic data without creating Auth accounts")
+    parser.add_argument("--replace-existing-cohort", action="store_true",
+                        help="replace generated source and score rows for this verified cohort")
     args = parser.parse_args()
     payload_path = ROOT / "pipeline" / "out" / "seed.json"
     if not payload_path.exists():
-        raise SystemExit("Run pipeline/run.py --n 200 --regenerate --no-db first")
-    seed_database(json.loads(payload_path.read_text(encoding="utf-8")), create_demo_users=not args.skip_demo_users)
+        raise SystemExit("Run pipeline/run.py --n <student-count> --regenerate --no-db first")
+    seed_database(json.loads(payload_path.read_text(encoding="utf-8")),
+                  create_demo_users=not args.skip_demo_users,
+                  replace_existing_cohort=args.replace_existing_cohort)

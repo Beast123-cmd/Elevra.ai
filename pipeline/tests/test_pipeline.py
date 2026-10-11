@@ -11,6 +11,7 @@ from pathlib import Path
 from clean.clean import clean_all, normalize_id
 from generate.generate import DEFAULT_STUDENT_COUNT, generate_all
 from run import _build_payload, build_parser, run
+from seed import _student_profiles_match, _write_sql
 from scoring.engine import WEIGHTS, evaluate, pillars_from_metrics, success_score
 
 BASE = {
@@ -78,6 +79,41 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(len({row["student_id"] for row in clean["students"]}), 60)
             self.assertEqual(len(stats), 8)
             self.assertTrue(any(issue["issue"] == "Duplicate source row" for issue in issues))
+
+    def test_existing_student_sources_stay_stable_when_cohort_grows(self):
+        with tempfile.TemporaryDirectory() as smaller_dir, tempfile.TemporaryDirectory() as larger_dir:
+            smaller, _, _ = clean_all(generate_all(Path(smaller_dir), n=60))
+            larger, _, _ = clean_all(generate_all(Path(larger_dir), n=120))
+        smaller_ids = {row["student_id"] for row in smaller["students"]}
+        self.assertEqual(smaller["students"], [row for row in larger["students"] if row["student_id"] in smaller_ids])
+        for table in ("academic", "attendance", "lms", "engagement", "placement", "skills", "feedback"):
+            left = sorted(json.dumps(row, sort_keys=True) for row in smaller[table])
+            right = sorted(json.dumps(row, sort_keys=True) for row in larger[table]
+                           if row["student_id"] in smaller_ids)
+            self.assertEqual(left, right, table)
+
+    def test_cohort_replacement_is_scoped_and_student_guard_detects_mismatch(self):
+        student = {"student_id": "40000", "name": "Synthetic Student", "department": "Comp", "year": 2,
+                   "batch": "2026-2027", "section": "A", "gender": "F", "residence": "Hostel",
+                   "mentor_faculty_id": "F01", "email": "40000@campus.edu"}
+        payload = {"students": [student]}
+        self.assertTrue(_student_profiles_match([dict(student)], payload))
+        changed = {**student, "name": "Unexpected Student"}
+        self.assertFalse(_student_profiles_match([changed], payload))
+        normal_path = _write_sql(payload)
+        try:
+            normal_sql = normal_path.read_text(encoding="utf-8")
+        finally:
+            normal_path.unlink(missing_ok=True)
+        self.assertNotIn("DELETE FROM public.engagement", normal_sql)
+        sql_path = _write_sql(payload, replace_existing_cohort=True)
+        try:
+            sql = sql_path.read_text(encoding="utf-8")
+        finally:
+            sql_path.unlink(missing_ok=True)
+        self.assertIn("DELETE FROM public.engagement WHERE student_id IN ('40000');", sql)
+        self.assertNotIn("DELETE FROM public.students", sql)
+        self.assertLess(sql.index("DELETE FROM public.scores"), sql.index("INSERT INTO public.students"))
 
     def test_payload_matches_database_contract_and_has_demo_personas(self):
         with tempfile.TemporaryDirectory() as raw_dir:
