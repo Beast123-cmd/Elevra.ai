@@ -17,11 +17,6 @@ const LINKS = [
   { href: "/student/notifications", label: "Inbox", icon: Bell },
 ];
 
-export function StudentRouteTitle() {
-  const path = usePathname();
-  return LINKS.find(({ href }) => href === "/student" ? path === href : path.startsWith(href))?.label ?? "Student space";
-}
-
 export function StudentNav() {
   const path = usePathname();
   const router = useRouter();
