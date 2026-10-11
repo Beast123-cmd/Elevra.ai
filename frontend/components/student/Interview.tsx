@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Check, FileText, Mic, MicOff, Send, Upload, Volume2 } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, FileText, Mic, MicOff, Send, ShieldCheck, Upload, Volume2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { fmt } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -204,54 +204,79 @@ export function Interview() {
       <div className="space-y-4">
         {banner}
         <StudentReveal key="interview-intro">
-        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-none">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Start a practice interview</CardTitle>
-            <CardDescription>{TARGET} · Resume based questions · Text answers work without voice</CardDescription>
+        <Card className="overflow-hidden rounded-2xl border-[#d5e2db] bg-white shadow-sm shadow-slate-900/[0.03]">
+          <CardHeader className="space-y-3 border-b border-[#dce7e1] bg-[#f1f6f3] px-5 py-5 sm:px-7">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-[#48665d]">
+              <span className="rounded-full border border-[#d2e2d9] bg-white/80 px-2.5 py-1">{TARGET}</span>
+              <span className="rounded-full border border-[#d2e2d9] bg-white/80 px-2.5 py-1">Resume-based</span>
+              <span className="rounded-full border border-[#d2e2d9] bg-white/80 px-2.5 py-1">Typing by default</span>
+            </div>
+            <div>
+              <CardTitle className="text-lg font-bold leading-tight tracking-tight text-[#172824]">Start a practice interview</CardTitle>
+              <CardDescription className="mt-1.5 text-sm leading-5 text-slate-600">Add your resume to get questions about your experience and projects.</CardDescription>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-xs leading-5 text-slate-500">Your resume is sent to the interview service to create questions. Only a short summary is saved; the uploaded file is not.</p>
-            <div className="rounded-lg border border-[#dce7e1] bg-[#f7faf8] p-3">
+          <CardContent className="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
+            <div className="flex items-start gap-2 rounded-lg bg-[#f7faf8] px-3 py-2.5 text-xs leading-5 text-slate-600">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#39776a]" aria-hidden="true" />
+              <p>Your resume is used to create questions. Only a short summary is saved; the uploaded file is not.</p>
+            </div>
+            <section aria-labelledby="resume-heading" className="space-y-3">
+              <div>
+                <h2 id="resume-heading" className="text-sm font-semibold text-[#172824]">Your resume</h2>
+                <p className="mt-0.5 text-xs text-slate-500">Upload a PDF or paste the text below.</p>
+              </div>
+              <div>
               {pdf ? (
-                <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                  <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-slate-500" /><span className="font-medium">{pdf.name}</span></span>
-                  <button type="button" onClick={() => setPdf(null)} className="text-sm text-slate-600 underline underline-offset-2">Remove</button>
+                <div className="flex min-h-[76px] flex-wrap items-center justify-between gap-3 rounded-xl border border-[#cfe1d8] bg-[#f4f8f5] px-4 py-3">
+                  <span className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white text-[#286a62]"><FileText className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-[#172824]">{pdf.name}</span><span className="text-xs text-slate-500">PDF ready to use</span></span></span>
+                  <button type="button" onClick={() => setPdf(null)} className="rounded-md px-2 py-1 text-xs font-semibold text-slate-600 underline underline-offset-2 hover:text-[#18574e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">Remove</button>
                 </div>
               ) : (
-                <label className="flex cursor-pointer flex-col items-center gap-2 text-center text-sm text-slate-600">
-                  <Upload className="h-5 w-5" />
-                  <span><span className="font-medium text-slate-900 underline underline-offset-2">Upload your resume</span> (PDF, up to 5 MB)</span>
+                <label className="group flex min-h-[76px] cursor-pointer items-center gap-3 rounded-xl border border-dashed border-[#b9d3c8] bg-[#f8fbf9] px-4 py-3 transition-colors hover:border-[#78a99a] hover:bg-[#f1f7f3] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#286a62]/30">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#eaf3ef] text-[#286a62] transition-colors group-hover:bg-white"><Upload className="h-4 w-4" aria-hidden="true" /></span>
+                  <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-[#172824]">Choose a PDF resume</span><span className="mt-0.5 block text-xs text-slate-500">Up to 5 MB</span></span>
+                  <span className="rounded-lg border border-[#d5e2db] bg-white px-3 py-2 text-xs font-semibold text-[#18574e]">Browse</span>
                   <input type="file" accept="application/pdf,.pdf" className="sr-only"
                     onChange={(e) => { void choosePdf(e.target.files?.[0]); e.target.value = ""; }} />
                 </label>
               )}
-            </div>
+              </div>
             <div className={pdf ? "pointer-events-none opacity-50" : ""} aria-disabled={pdf !== null}>
-              <p className="mb-1.5 text-xs font-medium text-slate-600">{pdf ? "Using your PDF" : "Or paste resume text"}</p>
-              <Textarea value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={4} disabled={pdf !== null}
-                placeholder="Education, projects, skills, internships…" aria-label="Resume text" />
-              {!pdf && len > 0 && len < MIN_RESUME && <p className="mt-1 text-xs text-slate-500">Add at least {MIN_RESUME - len} more characters</p>}
+              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5">
+                <label htmlFor="interview-resume-text" className="text-xs font-medium text-slate-600">{pdf ? "Using your PDF" : "Or paste resume text"}</label>
+                {!pdf && <span className="text-[11px] tabular-nums text-slate-400">{len.toLocaleString()} / {MAX_RESUME.toLocaleString()}</span>}
+              </div>
+              <Textarea id="interview-resume-text" value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={4} disabled={pdf !== null}
+                placeholder="Education, projects, skills, internships…" aria-label="Resume text" className="min-h-32 resize-y border-[#dce7e1] bg-white text-sm text-[#172824] shadow-none placeholder:text-slate-400 focus-visible:ring-[#286a62]/30 disabled:bg-slate-50" />
+              {!pdf && len > 0 && len < MIN_RESUME && <p className="mt-1.5 text-xs text-slate-500">Add {MIN_RESUME - len} more characters to continue.</p>}
             </div>
-            <details className="group rounded-lg border border-[#e2ebe6] bg-[#fbfcfb] px-3.5 py-3">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">
-                Optional voice settings
-                <span className="text-xs font-normal text-slate-500">Typing is ready by default</span>
+            </section>
+            <details className="group rounded-xl border border-[#dce7e1] bg-[#fbfcfb] px-4 py-3">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-[#33483f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] [&::-webkit-details-marker]:hidden">
+                <span><span className="block">Voice settings <span className="font-normal text-slate-500">(optional)</span></span><span className="mt-0.5 block text-xs font-normal text-slate-500">You can complete the interview by typing.</span></span>
+                <ChevronDown className="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" aria-hidden="true" />
               </summary>
-              <fieldset className="mt-3 space-y-2 border-t border-[#e2ebe6] pt-3 text-sm">
+              <fieldset className="mt-3 space-y-3 border-t border-[#e2ebe6] pt-3 text-sm">
                 <legend className="sr-only">Voice settings</legend>
                 <label className="flex items-start gap-2 leading-5">
-                  <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} className="mt-0.5 h-4 w-4" />
+                  <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#286a62]" />
                   Speak the interviewer&apos;s questions aloud
                 </label>
                 <label className="flex items-start gap-2 leading-5">
-                  <input type="checkbox" checked={autoListen} onChange={(e) => setAutoListen(e.target.checked)} className="mt-0.5 h-4 w-4" />
+                  <input type="checkbox" checked={autoListen} onChange={(e) => setAutoListen(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#286a62]" />
                   Start listening automatically after each question (Chrome or Edge)
                 </label>
               </fieldset>
             </details>
             {errorBox}
             {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-[#286a62]"><span className="student-loading-dot" aria-hidden="true" /> Reading your resume and preparing the interview…</p>}
-            <Button onClick={start} disabled={busy !== null || !ready}>{busy ? "Preparing…" : "Start interview"}</Button>
+            <div className="flex flex-col gap-3 border-t border-[#edf1ee] pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-5 text-slate-500">{ready ? "Your practice session is ready to begin." : "Add a PDF or at least 20 characters of resume text to continue."}</p>
+              <Button onClick={start} disabled={busy !== null || !ready} className="min-h-11 w-full gap-2 rounded-lg bg-[#18574e] px-5 font-semibold text-white shadow-none hover:bg-[#12473f] disabled:bg-[#e5ece8] disabled:text-slate-500 sm:w-auto">
+                {busy ? "Preparing…" : <>Start interview <ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
+              </Button>
+            </div>
           </CardContent>
         </Card>
         </StudentReveal>
