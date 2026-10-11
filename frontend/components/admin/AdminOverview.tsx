@@ -1,12 +1,12 @@
 "use client";
-import { useMemo, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis,
-} from "recharts";
-import { EmptyState, Kpi } from "@/components/shared/Kpi";
-import { Card } from "@/components/ui/card";
-import { BAND_COLOR, SEGMENT_COLOR } from "@/lib/format";
+import { useMemo, useState } from "react";
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
+import { coverage, SLA_DAYS, type CaseRow, type StudentRow } from "@/components/shared/cases";
+import { chartChrome, usePalette } from "@/components/shared/palette";
+import { Empty, PageHeader, Panel, Stat } from "@/components/shared/ui-kit";
 import { PILLARS, type Insight } from "@/lib/types";
 import { WeeklyBrief } from "./WeeklyBrief";
 import {
@@ -16,33 +16,78 @@ import {
 const PILLAR_SHORT: Record<string, string> = {
   academic: "Academic", attendance: "Attendance", lms: "LMS", placement: "Placement", skills: "Skills", engagement: "Co-curr.", feedback: "Feedback",
 };
-const SELECT = "h-9 rounded-md border border-slate-300 bg-white px-2 text-sm";
+const SELECT = "h-9 rounded-md border border-input bg-card px-2 text-sm";
 
-function heat(v: number | null) {
-  if (v === null) return "#f1f5f9";
-  const t = Math.max(0, Math.min(1, (v - 30) / 60));
-  return `hsl(${Math.round(t * 140)}, 70%, ${92 - t * 22}%)`;
+/** Heat-map cell: below 50 tints toward brick, above toward evergreen, so weak spots stand out without a rainbow. */
+function heat(v: number | null): React.CSSProperties {
+  if (v === null) return { background: "hsl(var(--muted))" };
+  const strength = Math.min(1, Math.abs(v - 55) / 35);
+  const tone = v < 55 ? "var(--risk-red)" : "var(--primary)";
+  return { background: `hsl(${tone} / ${0.08 + strength * 0.32})` };
 }
 
-function RiskBars({ data }: { data: ReturnType<typeof riskBy> }) {
+/** Share of Red, Amber and Green in each group, as one 100% bar per row: easier to compare than stacked counts. */
+function RiskShare({ data }: { data: ReturnType<typeof riskBy> }) {
   return (
-    <ResponsiveContainer width="100%" height={230}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="group" />
-        <YAxis allowDecimals={false} />
-        <Tooltip />
-        <Legend />
-        <Bar isAnimationActive={false} dataKey="Red" stackId="r" fill="#dc2626" />
-        <Bar isAnimationActive={false} dataKey="Amber" stackId="r" fill="#f59e0b" />
-        <Bar isAnimationActive={false} dataKey="Green" stackId="r" fill="#10b981" />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="space-y-3">
+      {data.map((d) => {
+        const pct = (n: number) => (d.total === 0 ? 0 : (n / d.total) * 100);
+        return (
+          <div key={d.group}>
+            <div className="mb-1 flex items-baseline justify-between text-[13px]">
+              <span className="font-medium">{d.group}</span>
+              <span className="tabular text-muted-foreground"><span className="font-semibold text-risk-red">{pct(d.Red).toFixed(0)}% Red</span> · {d.total} students</span>
+            </div>
+            <div className="flex h-2.5 overflow-hidden rounded-sm bg-muted" role="img" aria-label={`${d.group}: ${d.Red} Red, ${d.Amber} Amber, ${d.Green} Green`}>
+              <span className="bg-risk-red" style={{ width: `${pct(d.Red)}%` }} />
+              <span className="bg-highlight" style={{ width: `${pct(d.Amber)}%` }} />
+              <span className="bg-risk-green/70" style={{ width: `${pct(d.Green)}%` }} />
+            </div>
+          </div>
+        );
+      })}
+      <p className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-[1px] bg-risk-red" />Red · needs a check-in</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-[1px] bg-highlight" />Amber · watch</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-[1px] bg-risk-green/70" />Green</span>
+      </p>
+    </div>
   );
 }
 
-export function AdminOverview({ rows, insights = [] }: { rows: OverviewRow[]; insights?: Insight[] }) {
+/** The closed loop in one line: how many students are flagged, and whether anyone is acting on it. */
+function FollowThrough({ rows, cases }: { rows: OverviewRow[]; cases: CaseRow[] | null }) {
+  const asStudents = rows.map((r) => ({ ...r, mentor_faculty_id: null, priority: 0 })) as unknown as StudentRow[];
+  const c = coverage(asStudents, cases ?? []);
+  const steps = [
+    { label: "Students", value: rows.length.toLocaleString(), note: "in this selection" },
+    { label: "Need a check-in", value: c.red.toLocaleString(), note: `${rows.length ? Math.round((c.red / rows.length) * 100) : 0}% flagged Red on academics or placement` },
+    { label: `Contacted in ${SLA_DAYS} days`, value: cases === null ? "–" : c.contacted.toLocaleString(), note: cases === null ? "contact data unavailable" : `${c.pct}% of flagged students`, alert: cases !== null && c.pct < 50 },
+    { label: "Overdue follow-ups", value: cases === null ? "–" : c.overdueFollowUps.toLocaleString(), note: "planned check-ins past their date", alert: c.overdueFollowUps > 0 },
+  ];
+  return (
+    <Panel
+      title="From flag to follow-through"
+      description="Flagging a student only helps if someone reaches out. This is the loop the platform is built to close."
+      actions={<Link href="/admin/workload" className="inline-flex items-center gap-1 text-sm font-medium text-primary no-underline hover:underline">Open Response &amp; workload <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></Link>}
+    >
+      <ol className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
+        {steps.map((s, i) => (
+          <li key={s.label} className="relative bg-card px-4 py-3.5">
+            <p className="flex items-center gap-2 text-[12px] font-medium text-muted-foreground"><span className="tabular font-mono text-[11px]">{String(i + 1).padStart(2, "0")}</span>{s.label}</p>
+            <p className={`tabular mt-1 font-serif text-[30px] font-semibold leading-none ${s.alert ? "text-risk-red" : "text-foreground"}`}>{s.value}</p>
+            <p className="mt-1.5 text-[12px] text-muted-foreground">{s.note}</p>
+          </li>
+        ))}
+      </ol>
+    </Panel>
+  );
+}
+
+export function AdminOverview({ rows, insights = [], cases = null }: { rows: OverviewRow[]; insights?: Insight[]; cases?: CaseRow[] | null }) {
   const router = useRouter();
+  const p = usePalette();
+  const chrome = chartChrome(p);
   const [filters, setFilters] = useState({ department: "All", year: "All", batch: "All" });
   const opts = useMemo(() => filterOptions(rows), [rows]);
   const view = useMemo(() => applyFilters(rows, filters), [rows, filters]);
@@ -52,148 +97,133 @@ export function AdminOverview({ rows, insights = [] }: { rows: OverviewRow[]; in
   const byYear = useMemo(() => riskBy(view, "year"), [view]);
   const points = useMemo(() => quadrantPoints(view), [view]);
   const heatmap = useMemo(() => heatmapByDepartment(view), [view]);
+  const filtered = filters.department !== "All" || filters.year !== "All" || filters.batch !== "All";
 
   const filterSelect = (key: keyof typeof filters, label: string, values: string[]) => (
-    <label className="text-xs text-slate-500">
+    <label className="text-xs font-medium text-muted-foreground">
       {label}
-      <select className={`${SELECT} mt-1 block`} value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}>
+      <select className={`${SELECT} mt-1 block min-w-[88px]`} value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}>
         <option>All</option>
-        {values.map((v) => (
-          <option key={v}>{v}</option>
-        ))}
+        {values.map((v) => <option key={v}>{v}</option>)}
       </select>
     </label>
   );
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end gap-4">
-        <div className="mr-auto">
-          <h1 className="text-2xl font-bold">Institution overview</h1>
-          <p className="text-sm text-slate-500">7 integrated data sources · scores refreshed weekly · click a dot to open a student</p>
-        </div>
-        {filterSelect("department", "Department", opts.departments)}
-        {filterSelect("year", "Year", opts.years)}
-        {filterSelect("batch", "Batch", opts.batches)}
-      </div>
+      <PageHeader
+        eyebrow="Institution"
+        title="Overview"
+        description="Seven campus data sources joined into one record per student, scored weekly. Click any dot in the readiness chart to open that student."
+        actions={
+          <div className="flex flex-wrap items-end gap-2">
+            {filterSelect("department", "Department", opts.departments)}
+            {filterSelect("year", "Year", opts.years)}
+            {filterSelect("batch", "Batch", opts.batches)}
+            {filtered && <button type="button" className="h-9 rounded-md px-2 text-sm text-primary hover:bg-muted" onClick={() => setFilters({ department: "All", year: "All", batch: "All" })}>Clear</button>}
+          </div>
+        }
+      />
 
       <WeeklyBrief rows={rows} />
 
       {view.length === 0 ? (
-        <EmptyState>No students match these filters. Try clearing one.</EmptyState>
+        <Empty>No students match these filters. Try clearing one.</Empty>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-            <Kpi label="Students" value={k.students.toLocaleString()} />
-            <Kpi label="Avg success score" value={k.avgScore?.toFixed(1) ?? "—"} />
-            <Kpi label="Academic risk: Red" value={`${k.academicRedPct}%`} hint="needs a check-in" />
-            <Kpi label="Placement risk: Red" value={`${k.placementRedPct}%`} hint="3rd & 4th years assessed" />
-            <Kpi label="Placement-ready" value={k.placementReadyPct === null ? "—" : `${k.placementReadyPct}%`} hint="readiness ≥ 70" />
+          <FollowThrough rows={view} cases={cases} />
+
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <Stat label="Average success score" value={k.avgScore?.toFixed(1) ?? "–"} note="0–100, seven weighted pillars" />
+            <Stat label="Academic risk: Red" value={`${k.academicRedPct}%`} note="needs a check-in" tone="alert" />
+            <Stat label="Placement risk: Red" value={`${k.placementRedPct}%`} note="3rd and 4th years assessed" tone="alert" />
+            <Stat label="Placement-ready" value={k.placementReadyPct === null ? "–" : `${k.placementReadyPct}%`} note="readiness score 70 or more" tone="good" />
           </div>
 
           {insights.length > 0 && (
-            <div className="grid gap-3 lg:grid-cols-3">
-              {insights.slice(0, 3).map((i) => (
-                <Card key={i.id} className={`p-4 ${i.severity === "critical" ? "border-red-200" : i.severity === "warning" ? "border-amber-200" : ""}`}>
-                  <div className="text-xs font-semibold uppercase text-slate-500">Insight</div>
-                  <div className="mt-1 font-semibold">{i.title}</div>
-                  <p className="mt-1 text-sm text-slate-600">{i.detail}</p>
-                </Card>
-              ))}
-            </div>
+            <Panel title="What the data shows" description="Patterns found by joining the sources. Associations in a synthetic cohort, not proof of cause.">
+              <ol className="divide-y divide-border">
+                {insights.slice(0, 3).map((i, n) => (
+                  <li key={i.id} className="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[2.5rem_14rem_1fr] sm:gap-4">
+                    <span className={`tabular font-serif text-xl font-semibold ${i.severity === "critical" ? "text-risk-red" : i.severity === "warning" ? "text-risk-amber" : "text-primary"}`}>{n + 1}.</span>
+                    <span className="font-semibold">{i.title}</span>
+                    <span className="text-sm leading-relaxed text-muted-foreground">{i.detail}</span>
+                  </li>
+                ))}
+              </ol>
+            </Panel>
           )}
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="p-4">
-              <h2 className="text-sm font-semibold">Success score bands</h2>
-              <p className="mb-2 text-xs text-slate-500">{k.earlyWarning} students show an early-warning LMS drop</p>
-              <ResponsiveContainer width="100%" height={230}>
-                <BarChart data={dist}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="band" />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Bar isAnimationActive={false} dataKey="count" name="Students">
-                    {dist.map((d) => (
-                      <Cell key={d.band} fill={BAND_COLOR[d.band]} />
-                    ))}
+            <Panel title="Success score bands" description={`How ${view.length.toLocaleString()} students are distributed. ${k.earlyWarning} also show an early-warning drop in LMS activity.`}>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={dist} margin={{ top: 20, left: -18, right: 4 }}>
+                  <CartesianGrid {...chrome.grid} />
+                  <XAxis dataKey="band" {...chrome.axis} interval={0} tick={{ ...chrome.axis.tick, fontSize: 11 }} />
+                  <YAxis allowDecimals={false} {...chrome.axis} />
+                  <Tooltip {...chrome.tooltip} />
+                  <Bar isAnimationActive={false} dataKey="count" name="Students" barSize={44}>
+                    {dist.map((d) => <Cell key={d.band} fill={p.band[d.band] ?? p.stone} />)}
+                    <LabelList dataKey="count" position="top" style={{ fill: p.ink, fontSize: 12, fontWeight: 600 }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            </Card>
-            <Card className="p-4">
-              <h2 className="text-sm font-semibold">Academic vs placement readiness</h2>
-              <p className="mb-2 text-xs text-slate-500">3rd & 4th years. Top-left dots are strong academically but not placement-ready.</p>
+            </Panel>
+            <Panel title="Academic vs placement readiness" description="3rd and 4th years. Top-left: strong academically but not yet placement-ready.">
               {points.length === 0 ? (
-                <EmptyState>No assessed students in this selection.</EmptyState>
+                <Empty>No assessed students in this selection.</Empty>
               ) : (
-                <ResponsiveContainer width="100%" height={230}>
-                  <ScatterChart margin={{ left: -10 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" dataKey="x" name="Academic" domain={[0, 100]} />
-                    <YAxis type="number" dataKey="y" name="Placement" domain={[0, 100]} />
-                    <ZAxis range={[28, 28]} />
+                <ResponsiveContainer width="100%" height={240}>
+                  <ScatterChart margin={{ left: -18, right: 8, top: 8 }}>
+                    <CartesianGrid {...chrome.grid} vertical />
+                    <XAxis type="number" dataKey="x" name="Academic" domain={[0, 100]} {...chrome.axis} label={{ value: "Academic", position: "insideBottomRight", offset: -2, fill: p.muted, fontSize: 11 }} />
+                    <YAxis type="number" dataKey="y" name="Placement" domain={[0, 100]} {...chrome.axis} />
+                    <ZAxis range={[22, 22]} />
                     <Tooltip
-                      content={({ payload }) =>
-                        payload?.[0] ? (
-                          <div className="rounded border bg-white p-2 text-xs shadow">
-                            {payload[0].payload.name}
-                            <br />
-                            {payload[0].payload.segment}
-                          </div>
-                        ) : null
-                      }
+                      cursor={{ strokeDasharray: "3 3", stroke: p.grid }}
+                      content={({ payload }) => payload?.[0] ? (
+                        <div className="rounded-md border border-border bg-popover px-2.5 py-1.5 text-xs">
+                          <p className="font-medium">{payload[0].payload.name}</p>
+                          <p className="text-muted-foreground">{payload[0].payload.segment}</p>
+                        </div>
+                      ) : null}
                     />
                     <Scatter isAnimationActive={false} data={points} onClick={(d: { id?: string; payload?: { id: string } }) => router.push(`/faculty/student/${d.payload?.id ?? d.id}`)}>
-                      {points.map((p) => (
-                        <Cell key={p.id} fill={SEGMENT_COLOR[p.segment] ?? "#64748b"} cursor="pointer" />
-                      ))}
+                      {points.map((pt) => <Cell key={pt.id} fill={p.segment[pt.segment] ?? p.stone} fillOpacity={0.75} cursor="pointer" />)}
                     </Scatter>
                   </ScatterChart>
                 </ResponsiveContainer>
               )}
-            </Card>
+            </Panel>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="p-4">
-              <h2 className="text-sm font-semibold">Academic risk by department</h2>
-              <RiskBars data={byDept} />
-            </Card>
-            <Card className="p-4">
-              <h2 className="text-sm font-semibold">Academic risk by year</h2>
-              <RiskBars data={byYear} />
-            </Card>
+            <Panel title="Academic risk by department" description="Share of students in each tier."><RiskShare data={byDept} /></Panel>
+            <Panel title="Academic risk by year" description="Share of students in each tier."><RiskShare data={byYear} /></Panel>
           </div>
 
-          <Card className="p-4">
-            <h2 className="text-sm font-semibold">Department × pillar heatmap</h2>
-            <p className="mb-2 text-xs text-slate-500">Average pillar score (0–100). Students with no data for a pillar are left out of its average.</p>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
+          <Panel title="Department × pillar" description="Average pillar score (0–100). Brick cells are below the cohort's typical level, green above. Students with no data for a pillar are left out.">
+            <div className="-mx-1 overflow-x-auto">
+              <table className="w-full min-w-[560px] border-separate border-spacing-1 text-[13px]">
                 <thead>
                   <tr>
-                    <th className="p-1 text-left">Dept</th>
-                    {PILLARS.map((p) => (
-                      <th key={p} className="p-1">{PILLAR_SHORT[p]}</th>
-                    ))}
+                    <th className="px-2 py-1 text-left text-xs font-medium text-muted-foreground">Department</th>
+                    {PILLARS.map((pl) => <th key={pl} className="px-2 py-1 text-xs font-medium text-muted-foreground">{PILLAR_SHORT[pl]}</th>)}
                   </tr>
                 </thead>
                 <tbody>
                   {heatmap.map((h) => (
                     <tr key={h.department}>
-                      <td className="p-1 font-medium">{h.department}</td>
-                      {PILLARS.map((p) => (
-                        <td key={p} className="p-1 text-center" style={{ background: heat(h[p]) }}>
-                          {h[p] === null ? "—" : h[p]?.toFixed(0)}
-                        </td>
+                      <td className="px-2 py-1.5 font-medium">{h.department}</td>
+                      {PILLARS.map((pl) => (
+                        <td key={pl} className="tabular rounded-sm px-2 py-1.5 text-center" style={heat(h[pl])}>{h[pl] === null ? "–" : h[pl]?.toFixed(0)}</td>
                       ))}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </Card>
+          </Panel>
         </>
       )}
     </div>

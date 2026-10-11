@@ -36,7 +36,7 @@ function download(name: string, text: string) {
   a.href = url; a.download = name; a.click();
   URL.revokeObjectURL(url);
 }
-const FIELD = "w-20 rounded-md border border-slate-300 px-2 py-1 text-sm";
+const FIELD = "w-20 rounded-md border border-input px-2 py-1 text-sm";
 const th = "py-1 pr-3";
 
 export default function EvidencePage() {
@@ -61,8 +61,8 @@ export default function EvidencePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Accreditation evidence</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Accreditation evidence</h1>
+          <p className="text-sm text-muted-foreground">
             Ready-made tables for reviews such as NAAC criterion 2.2: how slow and advanced learners are identified, who mentors whom, and what support was given.
             Generated {today}.
           </p>
@@ -72,7 +72,7 @@ export default function EvidencePage() {
 
       <Card className="p-4 print:border-0">
         <h2 className="text-sm font-semibold">How learners are identified</h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           Each student&apos;s academic score (0 to 100) combines marks, backlogs and trend. Slow learners score below the first cut-off; advanced learners above the second. Change the cut-offs to match your policy.
         </p>
         <div className="mt-2 flex flex-wrap gap-4 text-sm print:hidden">
@@ -98,14 +98,14 @@ export default function EvidencePage() {
         </div>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase text-slate-500"><tr><th className={th}>Department</th><th className={th}>Students</th><th className={th}>Slow</th><th className={th}>Average</th><th className={th}>Advanced</th><th className={th}>Not assessed</th></tr></thead>
+            <thead className="text-xs uppercase text-muted-foreground"><tr><th className={th}>Department</th><th className={th}>Students</th><th className={th}>Slow</th><th className={th}>Average</th><th className={th}>Advanced</th><th className={th}>Not assessed</th></tr></thead>
             <tbody>
               {[...dept.depts, dept.all].map((d) => (
-                <tr key={d.department} className={`border-t border-slate-100 ${d === dept.all ? "font-semibold" : ""}`}>
+                <tr key={d.department} className={`border-t border-border ${d === dept.all ? "font-semibold" : ""}`}>
                   <td className="py-1.5 pr-3">{d.department}</td><td className="pr-3">{d.total}</td>
-                  <td className="pr-3">{d.slow} <span className="text-xs text-slate-500">({d.slowPct}%)</span></td>
+                  <td className="pr-3">{d.slow} <span className="text-xs text-muted-foreground">({d.slowPct}%)</span></td>
                   <td className="pr-3">{d.average}</td>
-                  <td className="pr-3">{d.advanced} <span className="text-xs text-slate-500">({d.advancedPct}%)</span></td>
+                  <td className="pr-3">{d.advanced} <span className="text-xs text-muted-foreground">({d.advancedPct}%)</span></td>
                   <td>{d.notAssessed}</td>
                 </tr>
               ))}
@@ -119,13 +119,13 @@ export default function EvidencePage() {
           <h2 className="text-sm font-semibold">Mentor allocation</h2>
           <Button size="sm" variant="outline" className="print:hidden" onClick={() => download("mentor-allocation.csv", mentorsCsv(mentors))}>Download (CSV)</Button>
         </div>
-        <p className="text-xs text-slate-500">{mentors.filter((m) => m.mentor !== "-").length} mentors, {dept.all.total} students; every student has a named mentor unless listed as unassigned.</p>
+        <p className="text-xs text-muted-foreground">{mentors.filter((m) => m.mentor !== "-").length} mentors, {dept.all.total} students; every student has a named mentor unless listed as unassigned.</p>
         <div className="mt-2 max-h-80 overflow-auto print:max-h-none">
           <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase text-slate-500"><tr><th className={th}>Mentor</th><th className={th}>Department</th><th className={th}>Mentees</th></tr></thead>
+            <thead className="text-xs uppercase text-muted-foreground"><tr><th className={th}>Mentor</th><th className={th}>Department</th><th className={th}>Mentees</th></tr></thead>
             <tbody>
               {mentors.map((m) => (
-                <tr key={m.mentor} className="border-t border-slate-100"><td className="py-1 pr-3">{m.name} ({m.mentor})</td><td className="pr-3">{m.department}</td><td>{m.mentees}</td></tr>
+                <tr key={m.mentor} className="border-t border-border"><td className="py-1 pr-3">{m.name} ({m.mentor})</td><td className="pr-3">{m.department}</td><td>{m.mentees}</td></tr>
               ))}
             </tbody>
           </table>
@@ -141,13 +141,13 @@ export default function EvidencePage() {
           <EmptyState>No support has been logged yet. Mentors log it from a student&apos;s page, and it appears here straight away.</EmptyState>
         ) : (
           <>
-            <p className="text-xs text-slate-500">{support.live} records for {support.students} students; {support.done} completed.</p>
+            <p className="text-xs text-muted-foreground">{support.live} records for {support.students} students; {support.done} completed.</p>
             <ul className="mt-2 text-sm">
-              {support.byType.map(([type, n]) => <li key={type} className="flex justify-between border-t border-slate-100 py-1"><span>{type}</span><span>{n}</span></li>)}
+              {support.byType.map(([type, n]) => <li key={type} className="flex justify-between border-t border-border py-1"><span>{type}</span><span>{n}</span></li>)}
             </ul>
           </>
         )}
-        {support.seeded > 0 && <p className="mt-2 text-xs text-amber-700">{support.seeded} synthetic historical records used for demonstration are excluded from these figures.</p>}
+        {support.seeded > 0 && <p className="mt-2 text-xs text-risk-amber">{support.seeded} synthetic historical records used for demonstration are excluded from these figures.</p>}
       </Card>
     </div>
   );

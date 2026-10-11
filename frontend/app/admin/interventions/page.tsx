@@ -8,6 +8,7 @@ import { EmptyState, Kpi } from "@/components/shared/Kpi";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
+import { chartChrome, usePalette } from "@/components/shared/palette";
 
 interface Row {
   id: number; student_id: string; type: string; status: string; note: string | null;
@@ -15,6 +16,8 @@ interface Row {
 }
 
 export default function InterventionsPage() {
+  const p = usePalette();
+  const chrome = chartChrome(p);
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +41,8 @@ export default function InterventionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Intervention effectiveness</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Intervention effectiveness</h1>
+        <p className="text-sm text-muted-foreground">
           Average change in a student&apos;s success score after each type of support. This shows association, not proof of cause: students are not randomly assigned.
         </p>
       </div>
@@ -53,27 +56,27 @@ export default function InterventionsPage() {
 
       <Card className="p-4">
         <h2 className="text-sm font-semibold">Average score change by intervention type</h2>
-        {synthetic > 0 && <p className="text-xs text-amber-700">Includes {synthetic} synthetic historical examples for demonstration; their score changes are simulated.</p>}
+        {synthetic > 0 && <p className="text-xs text-risk-amber">Includes {synthetic} synthetic historical examples for demonstration; their score changes are simulated.</p>}
         {eff.rows.length === 0 ? (
           <EmptyState>No measured outcomes yet. Log interventions from a student&apos;s page; their effect appears after the next score refresh.</EmptyState>
         ) : (
           <>
             <ResponsiveContainer width="100%" height={Math.max(200, eff.rows.length * 48)}>
               <BarChart data={eff.rows} layout="vertical" margin={{ left: 30, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" unit=" pts" />
-                <YAxis type="category" dataKey="type" width={170} tick={{ fontSize: 12 }} />
-                <ReferenceLine x={0} stroke="#475569" />
-                <Tooltip formatter={(v) => `${Number(v) > 0 ? "+" : ""}${v} pts`} />
+                <CartesianGrid {...chrome.grid} horizontal={false} vertical />
+                <XAxis type="number" unit=" pts" {...chrome.axis} />
+                <YAxis type="category" dataKey="type" width={170} {...chrome.axis} tick={{ ...chrome.axis.tick, fill: p.ink }} />
+                <ReferenceLine x={0} stroke={p.muted} />
+                <Tooltip {...chrome.tooltip} formatter={(v) => `${Number(v) > 0 ? "+" : ""}${v} pts`} />
                 <Bar dataKey="avgChange" name="Average change" isAnimationActive={false}>
                   {eff.rows.map((r) => (
-                    <Cell key={r.type} fill={r.avgChange >= 0 ? "#059669" : "#dc2626"} />
+                    <Cell key={r.type} fill={r.avgChange >= 0 ? p.green : p.brick} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
             <table className="mt-2 w-full text-sm">
-              <thead className="text-left text-xs uppercase text-slate-500">
+              <thead className="text-left text-xs uppercase text-muted-foreground">
                 <tr><th className="p-2">Type</th><th className="p-2 text-right">Students</th><th className="p-2 text-right">Avg change</th><th className="p-2 text-right">Improved</th></tr>
               </thead>
               <tbody>
@@ -94,15 +97,15 @@ export default function InterventionsPage() {
       <Card className="p-4">
         <h2 className="mb-2 text-sm font-semibold">Recently logged</h2>
         {live.length === 0 ? (
-          <p className="text-sm text-slate-500">Nothing logged yet.</p>
+          <p className="text-sm text-muted-foreground">Nothing logged yet.</p>
         ) : (
           <ul className="divide-y text-sm">
             {live.map((r) => (
               <li key={r.id} className="flex flex-wrap gap-3 py-2">
-                <Link href={`/faculty/student/${r.student_id}`} className="font-medium text-blue-700 hover:underline">{r.student_id}</Link>
+                <Link href={`/faculty/student/${r.student_id}`} className="font-medium text-primary hover:underline">{r.student_id}</Link>
                 <span>{r.type}</span>
-                <span className="text-slate-500">{r.note}</span>
-                <span className="ml-auto text-xs text-slate-500">{r.status.replace("_", " ")} · {new Date(r.created_at).toLocaleDateString()}</span>
+                <span className="text-muted-foreground">{r.note}</span>
+                <span className="ml-auto text-xs text-muted-foreground">{r.status.replace("_", " ")} · {new Date(r.created_at).toLocaleDateString()}</span>
               </li>
             ))}
           </ul>

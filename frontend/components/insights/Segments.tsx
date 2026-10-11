@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { SEGMENT_COLOR, fmt } from "@/lib/format";
+import { fmt } from "@/lib/format";
+import { usePalette } from "@/components/shared/palette";
 import { PILLARS, type Cohort, type Pillar } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,19 +49,20 @@ function CompareBar({ label, seg, all }: { label: string; seg: number | null; al
     <div>
       <div className="mb-1 flex justify-between text-sm">
         <span>{label}</span>
-        <span className="tabular-nums text-slate-500">
-          {fmt(seg, 0)} <span className="text-slate-400">vs {fmt(all, 0)} cohort</span>
+        <span className="tabular-nums text-muted-foreground">
+          {fmt(seg, 0)} <span className="text-muted-foreground">vs {fmt(all, 0)} cohort</span>
         </span>
       </div>
-      <div className="relative h-2 rounded-full bg-slate-100">
+      <div className="relative h-2 rounded-full bg-muted">
         <div className="h-2 rounded-full bg-slate-800" style={{ width: `${seg ?? 0}%` }} />
-        {all !== null && <div className="absolute top-[-3px] h-[14px] w-0.5 bg-red-500" style={{ left: `${all}%` }} title="Cohort average" />}
+        {all !== null && <div className="absolute top-[-3px] h-[14px] w-0.5 bg-risk-red" style={{ left: `${all}%` }} title="Cohort average" />}
       </div>
     </div>
   );
 }
 
 function SegmentsView({ data }: { data: SegmentsData }) {
+  const palette = usePalette();
   const [selected, setSelected] = useState<string>(data.defs[0]?.name ?? "");
   const [showAll, setShowAll] = useState(false);
 
@@ -79,7 +81,7 @@ function SegmentsView({ data }: { data: SegmentsData }) {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         {data.students.length.toLocaleString("en-IN")} students in {data.defs.length} groups. Each student belongs to the first group whose rule they match.
       </p>
 
@@ -89,15 +91,15 @@ function SegmentsView({ data }: { data: SegmentsData }) {
             key={d.name}
             onClick={() => { setSelected(d.name); setShowAll(false); }}
             aria-pressed={selected === d.name}
-            className={`rounded-xl border bg-white p-4 text-left transition hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900 ${selected === d.name ? "ring-2 ring-slate-900" : ""}`}
+            className={`rounded-xl border bg-card p-4 text-left transition hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900 ${selected === d.name ? "ring-2 ring-foreground" : ""}`}
           >
             <div className="flex items-start justify-between gap-3">
               <p className="font-medium">{d.name}</p>
-              <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: SEGMENT_COLOR[d.name] ?? "#64748b" }} />
+              <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: palette.segment[d.name] ?? palette.stone }} />
             </div>
             <p className="mt-2 text-3xl font-semibold tabular-nums">{(counts[d.name] ?? 0).toLocaleString("en-IN")}</p>
-            <p className="mt-2 text-xs text-slate-500">Rule: {d.rule}</p>
-            <p className="mt-1 text-xs"><span className="text-slate-500">Action:</span> {d.action}</p>
+            <p className="mt-2 text-xs text-muted-foreground">Rule: {d.rule}</p>
+            <p className="mt-1 text-xs"><span className="text-muted-foreground">Action:</span> {d.action}</p>
           </button>
         ))}
       </div>
@@ -111,7 +113,7 @@ function SegmentsView({ data }: { data: SegmentsData }) {
             </CardHeader>
             <CardContent className="space-y-3">
               {members.length === 0 ? (
-                <p className="text-sm text-slate-500">No students in this group.</p>
+                <p className="text-sm text-muted-foreground">No students in this group.</p>
               ) : (
                 PILLARS.map((k) => <CompareBar key={k} label={PILLAR_LABEL[k]} seg={avg(members, k)} all={avg(data.students, k)} />)
               )}
@@ -125,7 +127,7 @@ function SegmentsView({ data }: { data: SegmentsData }) {
             </CardHeader>
             <CardContent className="overflow-x-auto">
               {members.length === 0 ? (
-                <p className="text-sm text-slate-500">No students match this group right now.</p>
+                <p className="text-sm text-muted-foreground">No students match this group right now.</p>
               ) : (
                 <>
                   <Table>
@@ -143,7 +145,7 @@ function SegmentsView({ data }: { data: SegmentsData }) {
                         <TableRow key={s.student_id}>
                           <TableCell>
                             <Link href={`/faculty/student/${s.student_id}`} className="font-medium underline-offset-2 hover:underline">{s.name}</Link>
-                            <span className="ml-2 font-mono text-xs text-slate-400">{s.student_id}</span>
+                            <span className="ml-2 font-mono text-xs text-muted-foreground">{s.student_id}</span>
                           </TableCell>
                           <TableCell>{s.department}</TableCell>
                           <TableCell>{s.year}</TableCell>
@@ -214,7 +216,7 @@ export function Segments() {
   }
   return (
     <>
-      {mock && <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">Showing sample data (?mock=1).</p>}
+      {mock && <p className="mb-4 rounded-md bg-risk-amber-bg px-3 py-2 text-sm text-risk-amber">Showing sample data (?mock=1).</p>}
       <SegmentsView data={state.data} />
     </>
   );

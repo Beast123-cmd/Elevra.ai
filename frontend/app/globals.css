@@ -2,8 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* IBM Plex, self-hosted (SIL Open Font License). Latin subset. */
+@font-face { font-family: "IBM Plex Sans"; src: url("/fonts/PlexSans-Variable.woff2") format("woff2"); font-weight: 100 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Serif"; src: url("/fonts/PlexSerif-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Serif"; src: url("/fonts/PlexSerif-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "IBM Plex Serif"; src: url("/fonts/PlexSerif-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/PlexMono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("/fonts/PlexMono-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  font-feature-settings: "ss01" off;
 }
 
 @keyframes route-enter {
@@ -128,79 +137,117 @@ body {
   }
 }
 @layer base {
+  /* Elevra "campus annual report" palette. HSL triplets, read by tailwind.config.ts as hsl(var(--x)).
+     See docs/superpowers/specs/2026-10-11-ui-design-system-design.md before changing anything here. */
   :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.141 0.005 285.823);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.141 0.005 285.823);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.141 0.005 285.823);
-    --primary: oklch(0.21 0.006 285.885);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.967 0.001 286.375);
-    --secondary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.967 0.001 286.375);
-    --muted-foreground: oklch(0.552 0.016 285.938);
-    --accent: oklch(0.967 0.001 286.375);
-    --accent-foreground: oklch(0.21 0.006 285.885);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.92 0.004 286.32);
-    --input: oklch(0.92 0.004 286.32);
-    --ring: oklch(0.705 0.015 286.067);
-    --chart-1: oklch(0.871 0.006 286.286);
-    --chart-2: oklch(0.552 0.016 285.938);
-    --chart-3: oklch(0.442 0.017 285.786);
-    --chart-4: oklch(0.37 0.013 285.805);
-    --chart-5: oklch(0.274 0.006 286.033);
-    --radius: 0.5rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.141 0.005 285.823);
-    --sidebar-primary: oklch(0.21 0.006 285.885);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.967 0.001 286.375);
-    --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-    --sidebar-border: oklch(0.92 0.004 286.32);
-    --sidebar-ring: oklch(0.705 0.015 286.067);
+    --background: 42 31.3% 93.7%;
+    --foreground: 153 14.3% 12.4%;
+    --card: 48 38.5% 97.5%;
+    --card-foreground: 153 14.3% 12.4%;
+    --popover: 48 38.5% 97.5%;
+    --popover-foreground: 153 14.3% 12.4%;
+    --primary: 168 50% 23.5%;
+    --primary-foreground: 45 33.3% 95.3%;
+    --secondary: 43 26.9% 89.8%;
+    --secondary-foreground: 153 14.3% 12.4%;
+    --muted: 43 26.9% 89.8%;
+    --muted-foreground: 144 5.2% 37.6%;
+    --accent: 43 26.9% 89.8%;
+    --accent-foreground: 153 14.3% 12.4%;
+    --highlight: 36 63% 44.5%;
+    --destructive: 9 57.7% 41.8%;
+    --destructive-foreground: 45 33.3% 95.3%;
+    --border: 40 20.9% 83.1%;
+    --input: 40 20.9% 78%;
+    --ring: 168 50% 23.5%;
+    --risk-red: 9 57.7% 41.8%;
+    --risk-red-bg: 14 58.1% 91.6%;
+    --risk-amber: 39 74.4% 32.2%;
+    --risk-amber-bg: 42 63% 89.4%;
+    --risk-green: 128 27.2% 33.9%;
+    --risk-green-bg: 107 28% 90.2%;
+    --risk-none: 41 7.8% 40.4%;
+    --risk-none-bg: 43 26.9% 89.8%;
+    --chart-1: 168 50% 23.5%;
+    --chart-2: 36 63% 44.5%;
+    --chart-3: 208 31.1% 35.3%;
+    --chart-4: 9 57.7% 41.8%;
+    --chart-5: 290 18.3% 37.5%;
+    --chart-6: 78 22.5% 44.5%;
+    --radius: 0.375rem;
+    --sidebar: 45 30% 95.5%;
+    --sidebar-foreground: 153 14.3% 12.4%;
+    --sidebar-primary: 168 50% 23.5%;
+    --sidebar-primary-foreground: 45 33.3% 95.3%;
+    --sidebar-accent: 43 26.9% 89.8%;
+    --sidebar-accent-foreground: 153 14.3% 12.4%;
+    --sidebar-border: 40 20.9% 83.1%;
+    --sidebar-ring: 168 50% 23.5%;
   }
   .dark {
-    --background: oklch(0.141 0.005 285.823);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.21 0.006 285.885);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.21 0.006 285.885);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.92 0.004 286.32);
-    --primary-foreground: oklch(0.21 0.006 285.885);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.274 0.006 286.033);
-    --muted-foreground: oklch(0.705 0.015 286.067);
-    --accent: oklch(0.274 0.006 286.033);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.552 0.016 285.938);
-    --chart-1: oklch(0.871 0.006 286.286);
-    --chart-2: oklch(0.552 0.016 285.938);
-    --chart-3: oklch(0.442 0.017 285.786);
-    --chart-4: oklch(0.37 0.013 285.805);
-    --chart-5: oklch(0.274 0.006 286.033);
-    --sidebar: oklch(0.21 0.006 285.885);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.274 0.006 286.033);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.552 0.016 285.938);
+    --background: 150 15.8% 7.5%;
+    --foreground: 86 14.3% 90.4%;
+    --card: 150 15.4% 10.2%;
+    --card-foreground: 86 14.3% 90.4%;
+    --popover: 150 15.4% 10.2%;
+    --popover-foreground: 86 14.3% 90.4%;
+    --primary: 159 28.6% 61%;
+    --primary-foreground: 158 26.8% 8%;
+    --secondary: 153 15.1% 14.3%;
+    --secondary-foreground: 86 14.3% 90.4%;
+    --muted: 153 15.1% 14.3%;
+    --muted-foreground: 136 5.9% 63.7%;
+    --accent: 153 15.1% 14.3%;
+    --accent-foreground: 86 14.3% 90.4%;
+    --highlight: 39 64.4% 62.5%;
+    --destructive: 11 63.1% 67.1%;
+    --destructive-foreground: 158 26.8% 8%;
+    --border: 150 12% 19.6%;
+    --input: 150 12% 24%;
+    --ring: 159 28.6% 61%;
+    --risk-red: 11 63.1% 67.1%;
+    --risk-red-bg: 10 34.9% 16.9%;
+    --risk-amber: 39 64.4% 62.5%;
+    --risk-amber-bg: 39 41.3% 14.7%;
+    --risk-green: 115 28% 65.7%;
+    --risk-green-bg: 128 19.5% 15.1%;
+    --risk-none: 42 8.5% 60.6%;
+    --risk-none-bg: 150 10.3% 15.3%;
+    --chart-1: 159 28.6% 61%;
+    --chart-2: 39 64.4% 62.5%;
+    --chart-3: 209 31% 66.5%;
+    --chart-4: 11 63.1% 67.1%;
+    --chart-5: 286 23.2% 67.8%;
+    --chart-6: 75 32.2% 65.3%;
+    --sidebar: 150 15.8% 9%;
+    --sidebar-foreground: 86 14.3% 90.4%;
+    --sidebar-primary: 159 28.6% 61%;
+    --sidebar-primary-foreground: 158 26.8% 8%;
+    --sidebar-accent: 153 15.1% 14.3%;
+    --sidebar-accent-foreground: 86 14.3% 90.4%;
+    --sidebar-border: 150 12% 19.6%;
+    --sidebar-ring: 159 28.6% 61%;
   }
 }
 @layer base {
   * {
     @apply border-border;
   }
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  .tabular,
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 }

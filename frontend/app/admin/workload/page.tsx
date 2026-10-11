@@ -91,8 +91,8 @@ export default function WorkloadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Response &amp; workload</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Response &amp; workload</h1>
+        <p className="text-sm text-muted-foreground">
           Is every Red student being reached? Target: a conversation within {SLA_DAYS} days. This tracks follow-through, not outcomes.
         </p>
       </div>
@@ -108,7 +108,7 @@ export default function WorkloadPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold">Programme task</h2>
-            <p className="text-xs text-slate-500">Create a planned check-in, due in 3 days, for each Red student who has not been contacted this week.</p>
+            <p className="text-xs text-muted-foreground">Create a planned check-in, due in 3 days, for each Red student who has not been contacted this week.</p>
           </div>
           <Button size="sm" onClick={assignCheckIns} disabled={busy !== null || waiting.length === 0}>
             {busy === "bulk" ? "Creating…" : `Create ${waiting.filter((s) => s.mentor_faculty_id).length} check-in tasks`}
@@ -120,16 +120,16 @@ export default function WorkloadPage() {
         <h2 className="text-sm font-semibold">Caseload by mentor</h2>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase text-slate-500">
+            <thead className="text-xs uppercase text-muted-foreground">
               <tr><th className="py-1 pr-3">Mentor</th><th className="pr-3">Mentees</th><th className="pr-3">Red</th><th className="pr-3">Contacted</th><th className="pr-3">Waiting</th><th>Overdue</th></tr>
             </thead>
             <tbody>
               {loads.map((l) => (
-                <tr key={l.mentor} className="border-t border-slate-100">
+                <tr key={l.mentor} className="border-t border-border">
                   <td className="py-1.5 pr-3">{label(l.mentor)}</td>
                   <td className="pr-3">{l.mentees}</td><td className="pr-3">{l.red}</td><td className="pr-3">{l.contacted}</td>
-                  <td className={`pr-3 ${l.uncontacted > 0 ? "font-medium text-amber-700" : ""}`}>{l.uncontacted}</td>
-                  <td className={l.overdue > 0 ? "font-medium text-red-700" : ""}>{l.overdue}</td>
+                  <td className={`pr-3 ${l.uncontacted > 0 ? "font-medium text-risk-amber" : ""}`}>{l.uncontacted}</td>
+                  <td className={l.overdue > 0 ? "font-medium text-risk-red" : ""}>{l.overdue}</td>
                 </tr>
               ))}
             </tbody>
@@ -139,14 +139,14 @@ export default function WorkloadPage() {
 
       <Card className="p-4">
         <h2 className="text-sm font-semibold">Suggested rebalancing</h2>
-        <p className="text-xs text-slate-500">Moves not-yet-contacted Red students from busier to lighter mentors in the same department. You decide; nothing changes until you apply it.</p>
+        <p className="text-xs text-muted-foreground">Moves not-yet-contacted Red students from busier to lighter mentors in the same department. You decide; nothing changes until you apply it.</p>
         {moves.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">Red caseloads are within 2 students of each other in every department. Nothing to move.</p>
+          <p className="mt-3 text-sm text-muted-foreground">Red caseloads are within 2 students of each other in every department. Nothing to move.</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {moves.map((m) => (
-              <li key={m.student_id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-slate-200 p-2 text-sm">
-                <span><strong>{m.name}</strong>: {label(m.from)} → {label(m.to)}<span className="block text-xs text-slate-500">{m.reason}</span></span>
+              <li key={m.student_id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-2 text-sm">
+                <span><strong>{m.name}</strong>: {label(m.from)} → {label(m.to)}<span className="block text-xs text-muted-foreground">{m.reason}</span></span>
                 <Button size="sm" variant="outline" disabled={busy !== null} onClick={() => applyMove(m)}>{busy === m.student_id ? "Applying…" : "Apply"}</Button>
               </li>
             ))}
