@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BandBadge } from "@/components/shared/badges";
@@ -12,6 +13,12 @@ import { weakestPillars } from "./weakest";
 import { WhatIfPanel } from "./WhatIfPanel";
 import { StudentProgress } from "./StudentPage";
 import { StudentReveal } from "./StudentReveal";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const PlanAnalytics = dynamic(() => import("./PlanAnalytics").then((module) => module.PlanAnalytics), {
+  ssr: false,
+  loading: () => <div className="space-y-3" aria-busy="true" aria-label="Loading your analytics"><div><Skeleton className="h-5 w-56" /><Skeleton className="mt-2 h-4 w-80 max-w-full" /></div><div className="grid gap-4 xl:grid-cols-2"><Skeleton className="h-[22rem] rounded-xl" /><Skeleton className="h-[22rem] rounded-xl" /><Skeleton className="h-56 rounded-xl xl:col-span-2" /></div></div>,
+});
 
 function routeFor(pillar: Pillar): { href: string; label: string } {
   if (pillar === "skills") return { href: "/student/certifications", label: "Browse matching courses" };
@@ -79,91 +86,6 @@ function OtherFocus({ pillar, value }: { pillar: Pillar; value: number }) {
   );
 }
 
-function ProgressAnalytics({ profile }: { profile: Profile }) {
-  const areas = PILLARS
-    .flatMap((pillar) => profile.pillars[pillar] === null ? [] : [{ pillar, value: profile.pillars[pillar] as number }])
-    .sort((a, b) => a.value - b.value);
-  const weeks = profile.weekly;
-  const attendance = weeks.map((week) => week.attendance);
-  const submissions = weeks.map((week) => week.submit_rate === null ? null : week.submit_rate * 100);
-  const chartWidth = 360;
-  const chartHeight = 116;
-  const xAt = (index: number) => weeks.length < 2 ? chartWidth / 2 : 14 + index * (chartWidth - 28) / (weeks.length - 1);
-  const yAt = (value: number) => chartHeight - 12 - (Math.max(0, Math.min(100, value)) / 100) * (chartHeight - 24);
-  const change = (values: (number | null)[]) => {
-    const present = values.filter((value): value is number => value !== null);
-    return present.length < 2 ? null : present[present.length - 1] - present[0];
-  };
-  const attendanceChange = change(attendance);
-  const submissionsChange = change(submissions);
-
-  return (
-    <section aria-labelledby="progress-analytics-heading" className="space-y-3">
-      <div>
-        <h2 id="progress-analytics-heading" className="text-base font-semibold tracking-tight text-[#172824]">Your progress at a glance</h2>
-        <p className="mt-1 text-xs text-slate-500">A quick read of your assessed areas and recent study activity.</p>
-      </div>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.02]">
-          <CardHeader className="px-4 pb-1 pt-4 sm:px-5">
-            <CardTitle className="text-sm text-[#172824]">Scores by area</CardTitle>
-            <CardDescription>{areas.length} of {PILLARS.length} areas assessed · out of 100</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 px-4 pb-4 pt-3 sm:px-5">
-            {areas.length ? areas.map(({ pillar, value }, index) => (
-              <div key={pillar}>
-                <div className="mb-1 flex items-center justify-between gap-3 text-xs">
-                  <span className="min-w-0 truncate text-slate-700">{PILLAR_LABEL[pillar]}{index === 0 ? <span className="ml-2 text-[10px] font-medium text-[#286a62]">Focus first</span> : null}</span>
-                  <span className="shrink-0 font-semibold tabular-nums text-slate-700">{fmt(value, 0)}</span>
-                </div>
-                <StudentProgress value={value} label={`${PILLAR_LABEL[pillar]} score`} />
-              </div>
-            )) : <p className="text-sm text-slate-500">Area scores will appear when records are available.</p>}
-            {profile.missing.length > 0 && <p className="border-t border-slate-100 pt-2 text-[11px] leading-4 text-slate-500">Not assessed yet: {profile.missing.map((pillar) => PILLAR_LABEL[pillar]).join(", ")}.</p>}
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.02]">
-          <CardHeader className="px-4 pb-1 pt-4 sm:px-5">
-            <CardTitle className="text-sm text-[#172824]">Attendance and submissions</CardTitle>
-            <CardDescription>Weekly records for this semester</CardDescription>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 pt-3 sm:px-5">
-            {weeks.some((week) => week.attendance !== null || week.submit_rate !== null) ? (
-              <>
-                <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-600">
-                  <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#286a62]" aria-hidden="true" />Attendance</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#d28a38]" aria-hidden="true" />Assignments submitted</span>
-                </div>
-                <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="h-32 w-full overflow-visible" role="img" aria-label="Weekly attendance and assignment submission rates">
-                  {[0, 50, 100].map((value) => <g key={value}><line x1="10" x2={chartWidth - 10} y1={yAt(value)} y2={yAt(value)} stroke="#e8eeea" strokeWidth="1" /><text x="0" y={yAt(value) + 3} fill="#87938e" fontSize="9">{value}</text></g>)}
-                  {weeks.map((week, index) => {
-                    const next = weeks[index + 1];
-                    return <g key={week.week}>
-                      {next && week.attendance !== null && next.attendance !== null && <line x1={xAt(index)} y1={yAt(week.attendance)} x2={xAt(index + 1)} y2={yAt(next.attendance)} stroke="#286a62" strokeWidth="2.5" strokeLinecap="round" />}
-                      {next && week.submit_rate !== null && next.submit_rate !== null && <line x1={xAt(index)} y1={yAt(week.submit_rate * 100)} x2={xAt(index + 1)} y2={yAt(next.submit_rate * 100)} stroke="#d28a38" strokeWidth="2.5" strokeLinecap="round" />}
-                      {week.attendance !== null && <circle cx={xAt(index)} cy={yAt(week.attendance)} r="3.5" fill="#286a62" />}
-                      {week.submit_rate !== null && <circle cx={xAt(index)} cy={yAt(week.submit_rate * 100)} r="3.5" fill="#d28a38" />}
-                      <text x={xAt(index)} y={chartHeight} textAnchor="middle" fill="#87938e" fontSize="9">{week.week}</text>
-                    </g>;
-                  })}
-                </svg>
-                <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
-                  {[["Attendance", attendanceChange], ["Submissions", submissionsChange]].map(([label, delta]) => (
-                    <div key={label as string} className="rounded-lg bg-[#f4f7f5] px-3 py-2">
-                      <p className="text-[10px] text-slate-500">{label as string} · first to last recorded week</p>
-                      <p className="mt-0.5 text-sm font-semibold tabular-nums text-[#172824]">{typeof delta === "number" ? `${delta > 0 ? "+" : ""}${fmt(delta, 0, " pp")}` : "Not enough weekly data"}</p>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : <p className="py-8 text-sm text-slate-500">Weekly activity will appear when records are available.</p>}
-          </CardContent>
-        </Card>
-      </div>
-    </section>
-  );
-}
 
 function ProgressDetails({ profile }: { profile: Profile }) {
   return (
@@ -266,7 +188,7 @@ export function Improve() {
               </Card>
             )}
 
-            <ProgressAnalytics profile={profile} />
+            <PlanAnalytics profile={profile} />
             {secondary && <OtherFocus pillar={secondary.pillar} value={secondary.value} />}
 
             <section aria-labelledby="score-estimate-heading" className="space-y-3">
