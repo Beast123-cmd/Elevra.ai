@@ -43,6 +43,7 @@ export function StudentProfileProvider({ children }: { children: ReactNode }) {
     if (mock || inFlight.current) return;
     const requestGeneration = generation.current;
     inFlight.current = true;
+    setState({ status: "loading" });
     loadProfile()
       .then((profile) => requestGeneration === generation.current && setState(profile ? { status: "ready", profile } : { status: "empty" }))
       .catch((error: Error) => requestGeneration === generation.current && setState({ status: "error", message: error.message }))

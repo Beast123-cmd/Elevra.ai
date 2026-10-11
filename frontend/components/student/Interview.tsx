@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { speak, stopSpeaking, useLiveTranscription } from "./voice";
+import { StudentReveal } from "./StudentReveal";
+import { StudentNextStep } from "./StudentNextStep";
 
 type Stage = "intro" | "resume" | "technical" | "behavioural" | "wrapup";
 interface Turn { role: "interviewer" | "candidate"; text: string }
@@ -80,8 +82,8 @@ export function Interview() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [resume, setResume] = useState("");
   const [pdf, setPdf] = useState<{ name: string; base64: string } | null>(null);
-  const [voiceOn, setVoiceOn] = useState(true);
-  const [autoListen, setAutoListen] = useState(true);
+  const [voiceOn, setVoiceOn] = useState(false);
+  const [autoListen, setAutoListen] = useState(false);
 
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -202,7 +204,8 @@ export function Interview() {
     return (
       <div className="space-y-4">
         {banner}
-        <Card>
+        <StudentReveal key="interview-intro">
+        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
           <CardHeader>
             <CardTitle>Add your resume</CardTitle>
             <CardDescription>
@@ -233,21 +236,35 @@ export function Interview() {
                 placeholder="Education, projects, skills, internships…" aria-label="Resume text" />
               {!pdf && len > 0 && len < MIN_RESUME && <p className="mt-1 text-xs text-slate-500">Add at least {MIN_RESUME - len} more characters</p>}
             </div>
-            <fieldset className="space-y-2 text-sm">
-              <legend className="mb-1 font-medium">Voice</legend>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} className="h-4 w-4" />
-                Speak the interviewer&apos;s questions aloud
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={autoListen} onChange={(e) => setAutoListen(e.target.checked)} className="h-4 w-4" />
-                Start listening to me automatically after each question (Chrome or Edge)
-              </label>
-            </fieldset>
+            <details className="group rounded-lg border border-[#e2ebe6] bg-[#fbfcfb] px-3.5 py-3">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">
+                Optional voice settings
+                <span className="text-xs font-normal text-slate-500">Typing is ready by default</span>
+              </summary>
+              <fieldset className="mt-3 space-y-2 border-t border-[#e2ebe6] pt-3 text-sm">
+                <legend className="sr-only">Voice settings</legend>
+                <label className="flex items-start gap-2 leading-5">
+                  <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} className="mt-0.5 h-4 w-4" />
+                  Speak the interviewer&apos;s questions aloud
+                </label>
+                <label className="flex items-start gap-2 leading-5">
+                  <input type="checkbox" checked={autoListen} onChange={(e) => setAutoListen(e.target.checked)} className="mt-0.5 h-4 w-4" />
+                  Start listening automatically after each question (Chrome or Edge)
+                </label>
+              </fieldset>
+            </details>
             {errorBox}
-            <Button onClick={start} disabled={busy !== null || !ready}>{busy ? "Reading your resume…" : "Enter the interview room"}</Button>
+            {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-[#286a62]"><span className="student-loading-dot" aria-hidden="true" /> Reading your resume and preparing the interview…</p>}
+            <Button onClick={start} disabled={busy !== null || !ready}>{busy ? "Preparing your interview…" : "Enter the interview room"}</Button>
           </CardContent>
         </Card>
+        </StudentReveal>
+        <StudentNextStep
+          label="AFTER PRACTICE"
+          title="Check campus updates"
+          description="Review placement drives and announcements shared with you."
+          href="/student/notifications"
+        />
       </div>
     );
   }
@@ -265,11 +282,12 @@ export function Interview() {
             The AI interviewer is offline, so you&apos;re getting standard questions for your department. Your answers still count.
           </p>
         )}
+        <StudentReveal key={`interview-room-${sessionId}`}>
         <div className="grid gap-4 lg:grid-cols-[260px_1fr]">
-          <Card className="h-fit">
+          <Card className="h-fit rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
             <CardContent className="space-y-5 p-5">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className={`flex h-20 w-20 items-center justify-center rounded-full bg-blue-900 text-2xl font-semibold text-white transition ${speaking ? "ring-4 ring-blue-300 ring-offset-2 animate-pulse" : ""}`} aria-hidden>
+                <div className={`flex h-20 w-20 items-center justify-center rounded-full bg-[#15564e] text-2xl font-semibold text-white transition ${speaking ? "ring-4 ring-teal-300 ring-offset-2 animate-pulse" : ""}`} aria-hidden>
                   E
                 </div>
                 <p className="font-medium">Elevra</p>
@@ -284,7 +302,7 @@ export function Interview() {
               <ol className="space-y-1.5 text-sm" aria-label="Interview stages">
                 {STAGES.map((s, i) => (
                   <li key={s.key} className={`flex items-center gap-2 ${i === stageIndex ? "font-medium text-slate-900" : i < stageIndex ? "text-slate-500" : "text-slate-400"}`}>
-                    <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${i < stageIndex || (done && i === stageIndex) ? "bg-emerald-600 text-white" : i === stageIndex ? "bg-blue-900 text-white" : "bg-slate-200"}`}>
+                    <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${i < stageIndex || (done && i === stageIndex) ? "bg-emerald-600 text-white" : i === stageIndex ? "bg-[#15564e] text-white" : "bg-slate-200"}`}>
                       {i < stageIndex || (done && i === stageIndex) ? <Check className="h-3 w-3" /> : i + 1}
                     </span>
                     {s.label}
@@ -300,11 +318,11 @@ export function Interview() {
             </CardContent>
           </Card>
 
-          <Card className="flex min-h-[520px] flex-col">
+          <Card className="flex min-h-[520px] flex-col rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
             <div ref={scroller} className="flex-1 space-y-3 overflow-y-auto p-5" style={{ maxHeight: 460 }} aria-live="polite">
               {turns.map((t, i) => (
                 <div key={i} className={`flex ${t.role === "candidate" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${t.role === "candidate" ? "bg-blue-900 text-white" : "bg-slate-100 text-slate-900"}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${t.role === "candidate" ? "bg-[#15564e] text-white" : "bg-[#f0f4f1] text-slate-900"}`}>
                     {t.role === "interviewer" && (
                       <button type="button" onClick={() => { setSpeaking(true); void speak(t.text, !mock, () => setSpeaking(false)); }}
                         className="float-right ml-2 text-slate-400 hover:text-slate-700" aria-label="Play this question again">
@@ -333,7 +351,7 @@ export function Interview() {
                     onChange={(e) => updateDraft(e.target.value)} readOnly={mic.listening} maxLength={MAX_ANSWER} rows={4}
                     onKeyDown={(e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); void send(); } }}
                     placeholder={mic.listening ? "Listening… start speaking. Your words will appear here as you talk." : "Type your answer, or press Speak."}
-                    aria-label="Your answer" disabled={busy !== null} className={mic.listening ? "bg-blue-50/40" : ""} />
+                    aria-label="Your answer" disabled={busy !== null} className={mic.listening ? "bg-[#edf5f1]" : ""} />
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       {mic.supported && (
@@ -355,6 +373,7 @@ export function Interview() {
             </div>
           </Card>
         </div>
+        </StudentReveal>
       </div>
     );
   }
@@ -364,7 +383,7 @@ export function Interview() {
     const delta = result.new_success_score - result.old_success_score;
     const fb = result.feedback;
     const list = (title: string, items: string[], empty: string) => (
-      <Card>
+      <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
         <CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader>
         <CardContent>
           {items.length === 0 ? <p className="text-sm text-slate-500">{empty}</p>
@@ -380,7 +399,8 @@ export function Interview() {
             AI marking was offline, so this score only reflects how complete your answers were. Try again later for full feedback.
           </p>
         )}
-        <Card>
+        <StudentReveal key="interview-result">
+        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
           <CardContent className="grid gap-6 p-6 md:grid-cols-3">
             <div>
               <p className="text-sm text-slate-500">Interview score</p>
@@ -410,6 +430,7 @@ export function Interview() {
             </div>
           </CardContent>
         </Card>
+        </StudentReveal>
         <div className="grid gap-6 md:grid-cols-3">
           {list("What went well", fb.strengths, "Nothing stood out this time.")}
           {list("What to work on", fb.gaps, "No gaps flagged.")}
@@ -429,6 +450,12 @@ export function Interview() {
           <Button asChild><Link href="/student">Back to my dashboard</Link></Button>
           <Button variant="outline" onClick={reset}>Start another interview</Button>
         </div>
+        <StudentNextStep
+          label="NEXT"
+          title="Check campus updates"
+          description="Review placement drives and announcements shared with you."
+          href="/student/notifications"
+        />
       </div>
     );
   }
