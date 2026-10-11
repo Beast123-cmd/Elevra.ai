@@ -29,8 +29,8 @@ export function SearchFilterBar({
 
   return (
     <section aria-label={label} data-tour={dataTour} data-motion-card className="rounded-xl border border-border bg-muted/60 p-3 sm:p-4">
-      <form onSubmit={submit} className="flex min-w-0 gap-2">
-        <label className="relative min-w-0 flex-1">
+      <form onSubmit={submit} className="flex min-w-0 flex-wrap gap-2">
+        <label className="relative min-w-0 basis-full flex-1 sm:basis-0">
           <span className="sr-only">{label}</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
@@ -41,7 +41,7 @@ export function SearchFilterBar({
             className="h-11 w-full rounded-lg border border-input bg-card pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/20"
           />
         </label>
-        <button type="submit" className="inline-flex h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-5">
+        <button type="submit" className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:flex-none sm:px-5">
           Search
         </button>
         <button

@@ -203,6 +203,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
             </div>
             <NavList role={role} path={path} collapsed={false} onNavigate={() => setDrawer(false)} />
+            <div className="mt-auto border-t border-sidebar-border px-1 pt-3">
+              <div className="flex min-h-11 items-center gap-3">
+                <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-muted font-serif text-sm font-semibold text-primary">{initial}</span>
+                <span className="min-w-0 leading-tight">
+                  <span className="block truncate text-xs font-medium">{email || ROLE_LABEL[role]}</span>
+                  <span className="block truncate text-[11px] text-muted-foreground">{ROLE_LABEL[role]}</span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}

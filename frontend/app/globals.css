@@ -26,21 +26,8 @@ body {
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Prevent the full-opacity paint that caused a flash before hydration. */
-.route-transition :is(
-  [data-motion-card],
-  div.rounded-xl.border,
-  section.rounded-xl.border,
-  article.rounded-xl.border,
-  aside.rounded-xl.border,
-  div.rounded-2xl.border,
-  section.rounded-2xl.border,
-  article.rounded-2xl.border,
-  aside.rounded-2xl.border,
-  section.rounded-lg.border[class*="bg-card"],
-  [data-motion-text],
-  h1
-):not([data-student-reveal] *) {
+/* Only initial route content is hidden before its first reveal. Dynamic search/filter results stay stable. */
+.dashboard-motion-pending {
   opacity: 0;
   transform: translate3d(-7px, 0, 0);
 }
@@ -142,12 +129,7 @@ body {
     opacity: 1;
     transform: none;
   }
-  .route-transition :is(
-    [data-motion-card], div.rounded-xl.border, section.rounded-xl.border,
-    article.rounded-xl.border, aside.rounded-xl.border, div.rounded-2xl.border,
-    section.rounded-2xl.border, article.rounded-2xl.border, aside.rounded-2xl.border,
-    section.rounded-lg.border[class*="bg-card"], [data-motion-text], h1
-  ):not([data-student-reveal] *),
+  .dashboard-motion-pending,
   .student-reveal-pending {
     opacity: 1;
     transform: none;
