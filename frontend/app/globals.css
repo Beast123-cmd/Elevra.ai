@@ -26,6 +26,15 @@ body {
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
+@keyframes login-page-enter {
+  from { opacity: .82; transform: translate3d(0, 7px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.login-transition {
+  animation: login-page-enter 520ms cubic-bezier(.22, .61, .36, 1) both;
+}
+
 /* Only initial route content is hidden before its first reveal. Dynamic search/filter results stay stable. */
 .dashboard-motion-pending {
   opacity: 0;
@@ -124,7 +133,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .dashboard-text-reveal,
   .dashboard-card-reveal,
-  .student-reveal-in {
+  .student-reveal-in,
+  .login-transition {
     animation: none;
     opacity: 1;
     transform: none;

@@ -23,6 +23,7 @@ export default function Template({ children }: Readonly<{ children: ReactNode }>
   useTheme();
 
   useLayoutEffect(() => {
+    if (pathname?.startsWith("/login")) return;
     const root = rootRef.current;
     if (!root) return;
     const targets = Array.from(root.querySelectorAll<HTMLElement>(MOTION_TARGETS));
@@ -87,7 +88,7 @@ export default function Template({ children }: Readonly<{ children: ReactNode }>
   const signedOutPage = pathname === "/" || pathname === "/login";
   return (
     <>
-      <div ref={rootRef} className="route-transition">{children}</div>
+      <div ref={rootRef} className={`route-transition ${pathname?.startsWith("/login") ? "login-transition" : ""}`}>{children}</div>
       {signedOutPage && pathname === "/" && <div ref={landingThemeRef} className="fixed left-4 top-4 z-[60]"><ThemeToggle /></div>}
     </>
   );
