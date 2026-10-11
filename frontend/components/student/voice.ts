@@ -56,6 +56,39 @@ export async function speak(text: string, useApi = true, onEnd?: () => void): Pr
   return "none";
 }
 
+// Short acknowledgements played the moment a student sends an answer, so the interviewer responds instantly while the
+// next question is being written. Fetched once in advance and kept as in-memory audio.
+const clips = new Map<string, Promise<string | null>>();
+
+async function fetchClip(text: string): Promise<string | null> {
+  try {
+    const { data } = await createClient().auth.getSession();
+    const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token ?? ""}` },
+      body: JSON.stringify({ text }),
+    });
+    return r.ok ? URL.createObjectURL(await r.blob()) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch the given phrases in the interviewer's voice ahead of time. Safe to call more than once. */
+export function preloadClips(texts: string[]) {
+  texts.forEach((t) => { if (!clips.has(t)) clips.set(t, fetchClip(t)); });
+}
+
+/** Play a preloaded phrase right away. Does nothing if it isn't ready, so it never delays anything. */
+export async function playClip(text: string) {
+  const url = await Promise.race([clips.get(text) ?? Promise.resolve(null), new Promise<null>((r) => setTimeout(() => r(null), 50))]);
+  if (!url) return;
+  stopSpeaking();
+  const audio = new Audio(url);
+  current = audio;
+  audio.play().catch(() => { /* autoplay blocked: skip silently */ });
+}
+
 // ---------------------------------------------------------------------------------------------
 // Speech to text: ElevenLabs Scribe v2 Realtime streamed from the browser, falling back to the
 // browser's own SpeechRecognition (Chrome/Edge) if ElevenLabs is unavailable.
