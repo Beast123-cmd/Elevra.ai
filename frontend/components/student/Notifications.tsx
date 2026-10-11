@@ -17,19 +17,33 @@ const MOCK_NOTES: Note[] = [
   { id: 2, audience: "dept:Comp", title: "Coding contest this weekend", body: "Open to all Computer Engineering students.", created_at: "2026-10-09T09:00:00Z" },
 ];
 
+const pendingLoads = new Map<string, Promise<Note[]>>();
+
 /** Does this notification's audience include the student? Audiences: all | dept:<d> | year:<y> | student:<id>. */
 export function isForStudent(audience: string, p: Pick<Profile, "department" | "year" | "student_id">): boolean {
   return audience === "all" || audience === `dept:${p.department}` || audience === `year:${p.year}` || audience === `student:${p.student_id}`;
 }
 
-async function load(p: Profile): Promise<Note[]> {
-  const { data, error } = await createClient()
-    .from("notifications")
-    .select("id,audience,title,body,created_at")
-    .order("created_at", { ascending: false })
-    .limit(100);
-  if (error) throw new Error(error.message);
-  return ((data ?? []) as Note[]).filter((n) => isForStudent(n.audience, p));
+function load(p: Profile): Promise<Note[]> {
+  const pending = pendingLoads.get(p.student_id);
+  if (pending) return pending;
+
+  const request = (async () => {
+    const { data, error } = await createClient()
+      .from("notifications")
+      .select("id,audience,title,body,created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Note[]).filter((note) => isForStudent(note.audience, p));
+  })();
+
+  pendingLoads.set(p.student_id, request);
+  void request.then(
+    () => { if (pendingLoads.get(p.student_id) === request) pendingLoads.delete(p.student_id); },
+    () => { if (pendingLoads.get(p.student_id) === request) pendingLoads.delete(p.student_id); },
+  );
+  return request;
 }
 
 function Feed({ p }: { p: Profile }) {

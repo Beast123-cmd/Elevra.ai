@@ -40,9 +40,9 @@ export default function NotificationsPage() {
   async function send() {
     if (!audience.ok || !valid) return;
     setSaving(true);
-    const { data: auth } = await supabase.auth.getUser();
+    const { data: auth } = await supabase.auth.getSession();
     const row = { audience: audience.value, title: title.trim(), body: body.trim() };
-    let { error: err } = await supabase.from("notifications").insert({ ...row, created_by: auth.user?.id ?? null });
+    let { error: err } = await supabase.from("notifications").insert({ ...row, created_by: auth.session?.user.id ?? null });
     if (err?.code === "23503") ({ error: err } = await supabase.from("notifications").insert(row)); // creator has no users row yet
     setSaving(false);
     if (err) return toast.error("Could not post the notification. Please try again.");

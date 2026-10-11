@@ -2,7 +2,6 @@
 feeds back into the placement pillar and the Success Score (re-scored with the shared engine)."""
 from __future__ import annotations
 
-import json
 import logging
 from datetime import datetime, timezone
 from typing import TypeVar
@@ -10,9 +9,9 @@ from typing import TypeVar
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from common import settings
 from common.auth import Caller, require_role
 from common.db import db
+from common.llm import generate_json
 from scoring.engine import PILLARS, WEIGHTS, evaluate
 
 T = TypeVar("T", bound=BaseModel)
@@ -63,17 +62,8 @@ class _Marking(BaseModel):
 
 def _gemini_json(prompt: str, schema: type[T]) -> T:
     """Ask Gemini for JSON only and validate it. Raises on any failure so callers can fall back."""
-    if not settings.GEMINI_API_KEY:
-        raise RuntimeError("GEMINI_API_KEY not set")
-    from google import genai
-    from google.genai import types
-
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    resp = client.models.generate_content(
-        model=settings.GEMINI_MODEL, contents=prompt,
-        config=types.GenerateContentConfig(response_mime_type="application/json", temperature=0.4),
-    )
-    return schema.model_validate(json.loads(resp.text))
+    response = generate_json(prompt, max_tokens=700, temperature=0.4, timeout_s=20.0)
+    return schema.model_validate(response)
 
 
 def _fallback_questions(department: str) -> list[str]:
@@ -141,12 +131,13 @@ def rescore(student_id: str, new_mock_avg: float, mock_count: int) -> dict:
     if not rows:
         raise HTTPException(404, "No score found for this student")
     profile = rows[0]["profile"]
-    model = db().table("analytics").select("payload").eq("key", "model").limit(1).execute().data
-    cohort = db().table("analytics").select("payload").eq("key", "cohort").limit(1).execute().data
-    means = (cohort[0]["payload"].get("pillar_means") if cohort else None) or {}
+    analytics = db().table("analytics").select("key,payload").in_("key", ["model", "cohort"]).execute().data or []
+    cards = {row["key"]: row["payload"] for row in analytics}
+    model = cards.get("model")
+    means = (cards.get("cohort", {}).get("pillar_means") or {})
 
     metrics = {**profile["metrics"], "mock": new_mock_avg}
-    r = evaluate(metrics, card=model[0]["payload"] if model else None)
+    r = evaluate(metrics, card=model)
     contributions = contributions_vs_cohort(r["pillars"], means)
 
     new_profile = {**profile, "metrics": metrics, "pillars": r["pillars"], "score": r["score"], "band": r["band"],

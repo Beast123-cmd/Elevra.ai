@@ -21,12 +21,15 @@ export default function AdminPage() {
     const supabase = createClient();
     (async () => {
       try {
-        const all = await fetchAllRows<OverviewRow>((from, to) =>
-          supabase.from("student_unified_view").select(COLUMNS).not("success_score", "is", null).order("student_id").range(from, to) as never,
-        );
+        const [all, insightResult] = await Promise.all([
+          fetchAllRows<OverviewRow>((from, to) =>
+            supabase.from("student_unified_view").select(COLUMNS).not("success_score", "is", null).order("student_id").range(from, to) as never,
+          ),
+          supabase.from("analytics").select("payload").eq("key", "insights").maybeSingle(),
+        ]);
         setRows(all);
-        const { data } = await supabase.from("analytics").select("payload").eq("key", "insights").maybeSingle();
-        setInsights((data?.payload as Insight[] | undefined) ?? []);
+        if (insightResult.error) throw new Error(insightResult.error.message);
+        setInsights((insightResult.data?.payload as Insight[] | undefined) ?? []);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Unknown error");
       }

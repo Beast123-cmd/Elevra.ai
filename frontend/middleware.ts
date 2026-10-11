@@ -11,25 +11,47 @@ const ALLOWED: Record<string, string[]> = {
 };
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+  const path = req.nextUrl.pathname;
+  const area = Object.keys(ALLOWED).find((p) => path.startsWith(p));
+  const shouldCheckAuth = Boolean(area) || path === "/" || path.startsWith("/login");
+
+  // Most public routes do not need an Auth lookup at all.
+  if (!shouldCheckAuth) return NextResponse.next();
+
+  let res = NextResponse.next({ request: req });
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
       getAll: () => req.cookies.getAll(),
-      setAll: (c) => c.forEach(({ name, value, options }) => res.cookies.set(name, value, options)),
+      setAll: (cookiesToSet, headers) => {
+        cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
+        res = NextResponse.next({ request: req });
+        cookiesToSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
+        Object.entries(headers).forEach(([name, value]) => res.headers.set(name, value));
+      },
     },
   });
-  const { data: { user } } = await supabase.auth.getUser();
-  const path = req.nextUrl.pathname;
-  const role = (user?.app_metadata?.role as string | undefined) ?? "";
+  const { data: claimsResult, error } = await supabase.auth.getClaims();
+  const claims = claimsResult?.claims;
+  const userId = claims?.sub;
+  const role = (claims?.app_metadata?.role as string | undefined) ?? "";
+
+  const redirectWithAuthCookies = (destination: string) => {
+    const redirect = NextResponse.redirect(new URL(destination, req.url));
+    res.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+    for (const header of ["cache-control", "expires", "pragma"]) {
+      const value = res.headers.get(header);
+      if (value) redirect.headers.set(header, value);
+    }
+    return redirect;
+  };
 
   if (path === "/" || path.startsWith("/login")) {
-    if (user && role) return NextResponse.redirect(new URL(HOME[role], req.url));
-    return path === "/" ? NextResponse.redirect(new URL("/login", req.url)) : res;
+    if (userId && role) return redirectWithAuthCookies(HOME[role] ?? "/login");
+    return path === "/" ? redirectWithAuthCookies("/login") : res;
   }
-  const area = Object.keys(ALLOWED).find((p) => path.startsWith(p));
   if (!area) return res;
-  if (!user) return NextResponse.redirect(new URL("/login", req.url));
-  if (!ALLOWED[area].includes(role)) return NextResponse.redirect(new URL(HOME[role] ?? "/login", req.url));
+  if (!userId || error) return redirectWithAuthCookies("/login");
+  if (!ALLOWED[area].includes(role)) return redirectWithAuthCookies(HOME[role] ?? "/login");
   return res;
 }
 

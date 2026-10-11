@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useContext, useEffect } from "react";
 import type { Profile } from "@/lib/types";
-import { MOCK_PROFILE } from "./mock-profile";
+import { StudentProfileContext } from "./StudentProfileProvider";
 
 export type ProfileState =
   | { status: "loading" }
@@ -12,32 +10,12 @@ export type ProfileState =
   | { status: "empty" }
   | { status: "ready"; profile: Profile };
 
-async function load(): Promise<Profile | null> {
-  const sb = createClient();
-  const { data: auth } = await sb.auth.getUser();
-  const studentId = auth.user?.app_metadata?.student_id as string | undefined;
-  if (!studentId) throw new Error("This account isn't linked to a student record");
-  const { data, error } = await sb.from("scores").select("profile").eq("student_id", studentId).maybeSingle();
-  if (error) throw new Error(error.message);
-  return (data?.profile as Profile | undefined) ?? null;
-}
-
-/** Loads the signed-in student's own profile. `?mock=1` swaps in sample data for previewing. */
+/** Reads the profile state shared by all student routes. */
 export function useStudentProfile(): { state: ProfileState; mock: boolean } {
-  const mock = useSearchParams().get("mock") === "1";
-  const [state, setState] = useState<ProfileState>({ status: "loading" });
-
+  const value = useContext(StudentProfileContext);
+  if (!value) throw new Error("useStudentProfile must be used inside StudentProfileProvider");
   useEffect(() => {
-    if (mock) {
-      setState({ status: "ready", profile: MOCK_PROFILE });
-      return;
-    }
-    let cancelled = false;
-    load()
-      .then((profile) => !cancelled && setState(profile ? { status: "ready", profile } : { status: "empty" }))
-      .catch((e: Error) => !cancelled && setState({ status: "error", message: e.message }));
-    return () => { cancelled = true; };
-  }, [mock]);
-
-  return { state, mock };
+    if (!value.mock && value.state.status === "loading") value.load();
+  }, [value]);
+  return { state: value.state, mock: value.mock };
 }
