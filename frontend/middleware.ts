@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isTransientAuthError } from "@/components/shared/authErrors";
 
 const HOME: Record<string, string> = { admin: "/admin", faculty: "/faculty", student: "/student" };
 const ALLOWED: Record<string, string[]> = {
@@ -34,10 +35,24 @@ export async function middleware(req: NextRequest) {
       },
     },
   });
-  const { data: claimsResult, error } = await supabase.auth.getClaims();
+  let claimsResult: Awaited<ReturnType<typeof supabase.auth.getClaims>>["data"] = null;
+  let error: { name?: string; message?: string; status?: number } | null = null;
+  try {
+    ({ data: claimsResult, error } = await supabase.auth.getClaims());
+  } catch (e) {
+    error = { name: "Error", message: e instanceof Error ? e.message : "fetch failed" };
+  }
   const claims = claimsResult?.claims;
   const userId = claims?.sub;
   const role = (claims?.app_metadata?.role as string | undefined) ?? "";
+
+  // If the auth server could not be reached we cannot tell whether this person is signed in. A network blip must not
+  // sign anyone out: let the request through (the database still enforces what they may read) and check again next time.
+  const hasSessionCookie = req.cookies.getAll().some((c) => c.name.startsWith("sb-"));
+  if (error && hasSessionCookie && isTransientAuthError(error)) {
+    if (area) res.headers.set("Cache-Control", NO_STORE);
+    return res;
+  }
 
   const redirectWithAuthCookies = (destination: string) => {
     const redirect = NextResponse.redirect(new URL(destination, req.url));
