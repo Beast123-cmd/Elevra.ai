@@ -13,6 +13,7 @@ from generate.generate import DEFAULT_STUDENT_COUNT, generate_all
 from run import _build_payload, build_parser, run
 from seed import _student_profiles_match, _write_sql
 from scoring.engine import WEIGHTS, evaluate, pillars_from_metrics, success_score
+from scoring.model import historical_examples, train_model
 
 BASE = {
     "cgpa": 8.0, "internal_pct": 75.0, "backlogs": 0, "attendance_pct": 88.0,
@@ -124,12 +125,34 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(len(payload["scores"]), 200)
         self.assertEqual(len(payload["source_stats"]), 8)
         self.assertEqual(len(payload["analytics"]), 3)
+        model = next(row["payload"] for row in payload["analytics"] if row["key"] == "model")
+        self.assertEqual(model["metrics"]["n_train"] + model["metrics"]["n_test"], 200)
+        self.assertEqual(len(model["features"]), 7)
+        self.assertIn("synthetic", model["metrics"]["target"])
+        self.assertTrue(any(row["profile"]["model"]["prob"] > 0 for row in payload["scores"]))
         profiles = [row["profile"] for row in payload["scores"]]
         self.assertTrue(any(p["mentor_faculty_id"] == "F01" and p["academic_risk"]["level"] == "Red" for p in profiles))
         self.assertTrue(any(p["mentor_faculty_id"] == "F01" and p["segment"] == "Academic stars, placement unready" for p in profiles))
         self.assertTrue(all(p["placement_risk"]["level"] == "Not assessed" and p["confidence"] < 100
                             for p in profiles if p["year"] == 2))
         json.dumps(payload, allow_nan=False)
+
+    def test_historical_model_is_deterministic_and_rejects_small_cohorts(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            raw = generate_all(Path(raw_dir), n=200)
+            clean, _, _ = clean_all(raw)
+            first = train_model(clean)
+            second = train_model(clean)
+            self.assertEqual(first, second)
+            self.assertGreater(first["metrics"]["auc"], 0.5)
+            self.assertGreater(first["metrics"]["n_test"], 0)
+            examples = historical_examples(clean)
+            low_attendance = [row["label"] for row in examples if row["features"]["attendance_pct"] < 65]
+            other_students = [row["label"] for row in examples if row["features"]["attendance_pct"] >= 65]
+            self.assertGreater(sum(low_attendance) / len(low_attendance), sum(other_students) / len(other_students))
+            small = {key: value[:30] if isinstance(value, list) else value for key, value in clean.items()}
+            with self.assertRaises(ValueError):
+                train_model(small)
 
 
 if __name__ == "__main__":

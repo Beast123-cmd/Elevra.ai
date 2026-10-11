@@ -70,6 +70,7 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             "low_attendance": index == 8 or rng.random() < 0.15,
             "drop": False if index == 4 else rng.random() < 0.13,
             "placement_lag": index == 4 or rng.random() < 0.18,
+            "demo_star": index == 4,
             "gender": gender,
         }
     by_id = {row["student_id"]: row for row in students}
@@ -92,8 +93,13 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
                 internal = max(0, min(40, round((base + rng.gauss(0, 9)) * 0.4)))
                 external = ""
                 if completed:
-                    fail = rng.random() < (0.25 if is_low else 0.065)
+                    # Preserve the deliberately high-performing guided-demo student.
+                    fail = not t["demo_star"] and rng.random() < (0.25 if is_low else 0.065)
                     total = max(0, min(100, round(base + rng.gauss(0, 11))))
+                    if fail:
+                        # Make the planted attendance/backlog relationship visible in exam marks.
+                        internal = min(internal, 39)
+                        total = rng.randint(internal, 39)
                     external = "AB" if fail and rng.random() < 0.05 else max(0, min(60, total - internal))
                     if rng.random() < 0.004:
                         external = "NA"
@@ -153,7 +159,7 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             aptitude = max(5, min(100, 58 + 8 * t["ability"] + 8 * t["career"] + rng.gauss(0, 11)))
             coding = max(5, min(100, 55 + 7 * t["ability"] + 13 * t["career"] + rng.gauss(0, 13)))
             if t["placement_lag"]:
-                coding = max(8, coding - 36)
+                coding = max(8, coding - 42)
                 aptitude = max(10, aptitude - 10)
             mock = "" if rng.random() < 0.15 else max(1, min(5, round(3.2 + 0.7 * t["career"] + rng.gauss(0, 0.9))))
             raw["placement"].append({" Student ID": f"SCA-{sid} ", "Aptitude": round(aptitude),
