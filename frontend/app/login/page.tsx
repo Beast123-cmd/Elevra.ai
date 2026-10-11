@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,6 @@ const DEMO = [
 type Role = (typeof ROLES)[number]["value"];
 
 export default function LoginPage() {
-  const router = useRouter();
   const [role, setRole] = useState<Role>("student");
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
@@ -49,8 +47,8 @@ export default function LoginPage() {
         toast.error(`This account is not registered as ${expectedRole}. Choose the matching role and try again.`);
         return;
       }
-      router.replace("/");
-      router.refresh();
+      // full page load: the server verifies the new session and sends the person to their own home
+      window.location.assign("/");
     } catch {
       toast.error("Sign-in is unavailable right now. Please try again.");
     } finally {
