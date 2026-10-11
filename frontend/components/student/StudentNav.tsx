@@ -50,8 +50,8 @@ export function StudentNav({
 
   return (
     <aside className={`sticky top-0 z-30 flex min-w-0 flex-col border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-sm md:sticky md:h-screen md:border-b-0 md:border-r md:bg-white md:py-5 md:backdrop-blur-none ${collapsed ? "md:px-2" : "md:px-3.5"}`}>
-      <div className="flex h-9 shrink-0 items-center justify-between gap-1">
-      <Link href="/student" className={`flex min-w-0 items-center gap-2.5 text-slate-900 no-underline ${collapsed ? "justify-center px-0.5" : "px-2.5"}`} aria-label="Elevra student home">
+      <div className={`flex h-9 shrink-0 items-center gap-1 ${collapsed ? "justify-center" : "justify-between"}`}>
+      <Link href="/student" className={`flex min-w-0 items-center gap-2.5 text-slate-900 no-underline ${collapsed ? "md:hidden" : "px-2.5"}`} aria-label="Elevra student home">
         <BrandMark compact />
         <span className={`${collapsed ? "md:hidden" : ""} text-base font-semibold tracking-[-.045em]`}>elevra<span className="font-medium text-[#718078]">.ai</span></span>
       </Link>
