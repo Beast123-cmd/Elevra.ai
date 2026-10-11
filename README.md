@@ -94,7 +94,9 @@ pip install -r backend/requirements.txt
 #    The random seed is fixed, so everyone gets the same data. Add --no-db to write local files only.
 python pipeline/run.py --regenerate
 
-# 4. API (PYTHONPATH must include pipeline/, because the what-if endpoint imports the scoring engine)
+# 4. API. On Windows just run  .un-api.ps1  from the repository root (it creates the environment, installs
+#    dependencies and starts the server on port 8000). Elsewhere:
+#    (PYTHONPATH must include pipeline/, because the what-if endpoint imports the scoring engine)
 cd backend && PYTHONPATH=../pipeline:. uvicorn main:app --port 8000      # http://localhost:8000/health
 
 # 5. web app
