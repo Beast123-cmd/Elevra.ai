@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { StudentNav } from "@/components/student/StudentNav";
 import { useStudentProfile } from "@/components/student/useStudentProfile";
+import { Interview } from "@/components/student/Interview";
 
 export function StudentWorkspace({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -80,6 +81,7 @@ export function StudentWorkspace({ children }: { children: ReactNode }) {
           </Button>
         </header>
         {children}
+        <Interview />
       </div>
       <style jsx global>{`
         [data-student-theme="light"] { background-color: #f5f6f1; color: #25332e; }
