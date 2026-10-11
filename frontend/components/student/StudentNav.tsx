@@ -7,6 +7,8 @@ const LINKS = [
   { href: "/student", label: "Home" },
   { href: "/student/improve", label: "Improve" },
   { href: "/student/certifications", label: "Certifications" },
+  { href: "/student/interview", label: "Mock interview" },
+  { href: "/student/notifications", label: "Notifications" },
 ];
 
 export function StudentNav() {

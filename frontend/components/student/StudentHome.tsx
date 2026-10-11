@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PILLAR_LABEL } from "./playbook";
 import { useStudentProfile } from "./useStudentProfile";
+import { WhatIfPanel } from "./WhatIfPanel";
 
 function RiskCard({ title, risk }: { title: string; risk: Risk }) {
   const notAssessed = risk.level === "Not assessed";
@@ -145,6 +146,8 @@ function Dashboard({ p }: { p: Profile }) {
           )}
         </div>
       </div>
+
+      <WhatIfPanel profile={p} />
     </div>
   );
 }
