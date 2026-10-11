@@ -2,14 +2,15 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
 from clean.clean import clean_all, normalize_id
-from generate.generate import generate_all
-from run import _build_payload
+from generate.generate import DEFAULT_STUDENT_COUNT, generate_all
+from run import _build_payload, build_parser, run
 from scoring.engine import WEIGHTS, evaluate, pillars_from_metrics, success_score
 
 BASE = {
@@ -51,6 +52,12 @@ class ScoringTests(unittest.TestCase):
 
 
 class PipelineTests(unittest.TestCase):
+    def test_default_cohort_size_is_consistent(self):
+        self.assertEqual(DEFAULT_STUDENT_COUNT, 1500)
+        self.assertEqual(inspect.signature(generate_all).parameters["n"].default, DEFAULT_STUDENT_COUNT)
+        self.assertEqual(inspect.signature(run).parameters["n"].default, DEFAULT_STUDENT_COUNT)
+        self.assertEqual(build_parser().parse_args([]).n, DEFAULT_STUDENT_COUNT)
+
     def test_ids_normalize_all_specified_formats(self):
         self.assertEqual([normalize_id(value) for value in (" SCA-42178 ", "sca42178", "42178@CAMPUS.EDU")],
                          ["42178", "42178", "42178"])

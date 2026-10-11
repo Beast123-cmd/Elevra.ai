@@ -6,6 +6,8 @@ import random
 from pathlib import Path
 
 SEED = 42
+MAX_STUDENTS = 1500
+DEFAULT_STUDENT_COUNT = MAX_STUDENTS
 DEPARTMENTS = ("Comp", "IT", "ENTC", "AI&DS")
 DEPT_ALIASES = ("Computer", "COMP", "Comp Engg", "IT", "E&TC", "ENTC", "AIDS", "AI & DS")
 SOURCE_NAMES = ("students", "academic", "attendance", "lms", "engagement", "placement", "skills", "feedback")
@@ -22,9 +24,9 @@ def _write(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
-def generate_all(out_dir: Path, n: int = 200, seed: int = SEED) -> dict[str, list[dict]]:
-    if n < 1 or n > 1500:
-        raise ValueError("n must be between 1 and 1500")
+def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED) -> dict[str, list[dict]]:
+    if n < 1 or n > MAX_STUDENTS:
+        raise ValueError(f"n must be between 1 and {MAX_STUDENTS}")
     rng = random.Random(seed)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

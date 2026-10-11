@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from clean.clean import clean_all
-from generate.generate import DEPARTMENTS, generate_all
+from generate.generate import DEFAULT_STUDENT_COUNT, DEPARTMENTS, generate_all
 from scoring.engine import PILLARS, WEIGHTS, evaluate, success_score
 
 RAW_DIR = ROOT / "data" / "raw"
@@ -305,7 +305,7 @@ def _build_insights(profiles: list[dict], cohort_score: float) -> list[dict]:
     ]
 
 
-def run(n: int = 200, regenerate: bool = False) -> dict:
+def run(n: int = DEFAULT_STUDENT_COUNT, regenerate: bool = False) -> dict:
     raw = generate_all(RAW_DIR, n=n)
     clean, issues, stats = clean_all(raw)
     payload = _build_payload(clean, issues, stats, n)
@@ -315,11 +315,17 @@ def run(n: int = 200, regenerate: bool = False) -> dict:
     return payload
 
 
-def main() -> None:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--n", type=int, default=1500, help="number of synthetic students (1–1500)")
+    parser.add_argument("--n", type=int, default=DEFAULT_STUDENT_COUNT,
+                        help=f"number of synthetic students (1–{DEFAULT_STUDENT_COUNT})")
     parser.add_argument("--regenerate", action="store_true", help="rewrite deterministic raw CSV sources")
     parser.add_argument("--no-db", action="store_true", help="write local outputs only")
+    return parser
+
+
+def main() -> None:
+    parser = build_parser()
     args = parser.parse_args()
     payload = run(n=args.n, regenerate=args.regenerate)
     print(json.dumps(payload["summary"], sort_keys=True))
