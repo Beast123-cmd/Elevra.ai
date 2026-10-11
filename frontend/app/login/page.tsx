@@ -86,9 +86,9 @@ export default function LoginPage() {
         </div>
 
         <Tabs value={role} onValueChange={(value) => setRole(value as Role)} className="mt-6">
-          <TabsList className="grid h-10 w-full grid-cols-3 rounded-md bg-[#f1f4f1] p-1">
+          <TabsList className="grid h-12 w-full grid-cols-3 rounded-md bg-[#f1f4f1] p-1">
             {ROLES.map((item) => (
-              <TabsTrigger key={item.value} value={item.value} className="h-8 rounded text-xs font-medium text-slate-600 data-[state=active]:bg-white data-[state=active]:text-[#154e49] data-[state=active]:shadow-sm">
+              <TabsTrigger key={item.value} value={item.value} className="h-10 rounded text-xs font-medium text-slate-600 data-[state=active]:bg-white data-[state=active]:text-[#154e49] data-[state=active]:shadow-sm">
                 {item.label}
               </TabsTrigger>
             ))}
@@ -119,7 +119,7 @@ export default function LoginPage() {
           <p className="mt-3 text-center text-[11px] leading-4 text-slate-500">Demo workspaces use synthetic campus records.</p>
           <div className="mt-3 grid grid-cols-2 gap-2">
             {DEMO.map((demo) => (
-              <Button key={demo.email} type="button" variant="outline" className="h-9 min-w-0 justify-center border-slate-200 px-2 text-[11px] font-medium text-slate-700 hover:border-[#b8cec3] hover:bg-[#f5f8f5] hover:text-[#154e49]" disabled={busy} onClick={() => signInDemo(demo.email, demo.role)}>
+              <Button key={demo.email} type="button" variant="outline" className="h-11 min-w-0 justify-center border-slate-200 px-2 text-[10px] font-medium text-slate-700 hover:border-[#b8cec3] hover:bg-[#f5f8f5] hover:text-[#154e49] sm:text-[11px]" disabled={busy} onClick={() => signInDemo(demo.email, demo.role)}>
                 <span className="truncate">{demo.label}</span>
               </Button>
             ))}

@@ -11,7 +11,7 @@ export default function Home() {
           <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-[#154e49] text-base font-semibold text-white">e</span>
           <span className="text-[17px] font-bold tracking-[-.04em]">elevra<span className="font-medium text-slate-500">.ai</span></span>
         </Link>
-        <Link href="/login" className="inline-flex h-10 items-center gap-2 rounded-md bg-[#154e49] px-4 text-sm font-semibold text-white no-underline transition-colors hover:bg-[#103e3a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2">
+        <Link href="/login" className="inline-flex h-11 items-center gap-2 rounded-md bg-[#154e49] px-4 text-sm font-semibold text-white no-underline transition-colors hover:bg-[#103e3a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2">
           Sign in <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </header>
@@ -21,7 +21,7 @@ export default function Home() {
           <p className="mb-5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.16em] text-[#286a62]">
             <span className="h-px w-7 bg-[#286a62]" aria-hidden="true" /> Student success, seen clearly
           </p>
-          <h1 className="text-[42px] font-semibold leading-[1.04] tracking-[-.055em] text-[#172824] sm:text-[56px] lg:text-[64px]">
+          <h1 className="max-w-[12ch] text-[clamp(2.4rem,7.2vw,4rem)] font-semibold leading-[1.04] tracking-[-.055em] text-[#172824]">
             Better support starts with the full picture.
           </h1>
           <p className="mt-6 max-w-[480px] text-[16px] leading-7 text-slate-600 sm:text-[17px]">

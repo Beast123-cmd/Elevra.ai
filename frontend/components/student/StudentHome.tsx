@@ -33,21 +33,21 @@ function Dashboard({ profile }: { profile: Profile }) {
       <header className="mb-6 flex flex-col gap-1 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-[#286a62]">Your student space</p>
-          <h1 className="mt-1 text-[25px] font-semibold tracking-[-.04em] text-[#172824] sm:text-[29px]">Hi, {profile.name}</h1>
+          <h1 className="mt-1 break-words text-[clamp(1.5rem,5vw,1.85rem)] font-semibold tracking-[-.04em] text-[#172824]">Hi, {profile.name}</h1>
           <p className="mt-1 text-sm text-slate-500">A clear view of your progress and what to focus on next.</p>
         </div>
         <p className="text-xs text-slate-500">{profile.department} <span className="px-1.5 text-slate-300">/</span> Year {profile.year}</p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
-        <Card className="overflow-hidden rounded-xl border-[#dce4df] shadow-sm shadow-slate-900/[0.025]">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-[1.15fr_.85fr]">
+        <Card className="min-w-0 overflow-hidden rounded-xl border-[#dce4df] shadow-sm shadow-slate-900/[0.025]">
           <CardContent className="p-5 sm:p-7">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs font-semibold text-slate-700">Your success score</p>
               <span className="rounded-full bg-[#f1f5f1] px-2.5 py-1 text-[11px] font-medium text-[#315c50]">{profile.band}</span>
             </div>
             <div className="mt-5 flex items-end gap-2">
-              <span className="text-[58px] font-semibold leading-[.9] tracking-[-.07em] tabular-nums text-[#172824] sm:text-[68px]" style={{ color: BAND_COLOR[profile.band] ?? "#172824" }}>{fmt(profile.score, 1)}</span>
+              <span className="text-[clamp(3.5rem,13vw,4.25rem)] font-semibold leading-[.9] tracking-[-.07em] tabular-nums text-[#172824]" style={{ color: BAND_COLOR[profile.band] ?? "#172824" }}>{fmt(profile.score, 1)}</span>
               <span className="pb-1 text-sm text-slate-500">/ 100</span>
             </div>
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#edf1ed]" role="progressbar" aria-label="Success score" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.max(0, Math.min(100, profile.score))}>
@@ -64,7 +64,7 @@ function Dashboard({ profile }: { profile: Profile }) {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-[#dce4df] bg-[#f4f7f4] shadow-sm shadow-slate-900/[0.02]">
+        <Card className="min-w-0 rounded-xl border-[#dce4df] bg-[#f4f7f4] shadow-sm shadow-slate-900/[0.02]">
           <CardContent className="flex h-full flex-col p-5 sm:p-7">
             <p className="text-xs font-semibold text-[#286a62]">A good place to start</p>
             <h2 className="mt-3 text-[19px] font-semibold leading-snug tracking-[-.025em] text-[#172824]">
@@ -89,7 +89,7 @@ function Dashboard({ profile }: { profile: Profile }) {
           {SUMMARY.map(({ key, label, icon: Icon, href, suffix }) => {
             const value = profile.pillars[key];
             return (
-              <Link key={key} href={href} className="group rounded-lg border border-[#e0e6e1] bg-white p-4 no-underline transition-colors hover:border-[#b8cec3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2 sm:p-5">
+              <Link key={key} href={href} className="group min-w-0 rounded-lg border border-[#e0e6e1] bg-white p-4 no-underline transition-colors hover:border-[#b8cec3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2 sm:p-5">
                 <div className="flex items-center gap-2 text-xs font-medium text-slate-600"><Icon className="h-4 w-4 text-[#5d8177]" aria-hidden="true" />{label}</div>
                 <div className="mt-4 text-[27px] font-semibold leading-none tracking-[-.04em] tabular-nums text-[#172824]">
                   {value === null || value === undefined ? <span className="text-sm font-medium tracking-normal text-slate-400">Not assessed yet</span> : <>{fmt(value, 0)}{suffix}</>}

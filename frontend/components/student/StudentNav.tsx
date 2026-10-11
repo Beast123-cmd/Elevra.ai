@@ -43,7 +43,7 @@ export function StudentNav() {
         <span className="text-base font-bold tracking-tight">elevra</span>
       </Link>
       <p className="mb-2 mt-7 hidden px-2.5 text-[9px] font-semibold uppercase tracking-[.1em] text-slate-400 md:block">Student space</p>
-      <nav aria-label="Student pages" className="mt-2 flex gap-1 overflow-x-auto md:mt-0 md:grid md:gap-1">
+      <nav aria-label="Student pages" className="mt-3 grid grid-cols-3 gap-1 md:mt-0 md:grid-cols-1 md:gap-1.5">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const active = href === "/student" ? path === href : path.startsWith(href);
           return (
@@ -51,10 +51,10 @@ export function StudentNav() {
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex h-9 shrink-0 items-center gap-2.5 rounded-md px-2.5 text-[11px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:w-full ${active ? "bg-teal-50 text-teal-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+              className={`flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[10px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:flex-row md:justify-start md:gap-2.5 md:px-2.5 md:py-0 md:text-[11px] md:w-full ${active ? "bg-teal-50 text-teal-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
             >
               <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-800" : "text-slate-400"}`} aria-hidden="true" />
-              <span>{label}</span>
+              <span className="max-w-full truncate">{label}</span>
             </Link>
           );
         })}
@@ -65,7 +65,7 @@ export function StudentNav() {
           <p className="mt-0.5 text-[9px] text-slate-500">Your records and next steps</p>
         </div>
         {signOutError && <span role="alert" className="text-xs text-red-700">Couldn&apos;t sign out. Try again.</span>}
-        <Button variant="ghost" size="sm" className="ml-auto text-slate-600" onClick={signOut} disabled={signingOut}>
+        <Button variant="ghost" size="sm" className="ml-auto min-h-11 text-slate-600" onClick={signOut} disabled={signingOut}>
           <LogOut className="h-4 w-4" aria-hidden="true" />
           {signingOut ? "Signing out…" : "Sign out"}
         </Button>
