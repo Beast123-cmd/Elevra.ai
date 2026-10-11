@@ -69,7 +69,7 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
   }
 
   return (
-    <Card className="space-y-3 p-4">
+    <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] space-y-3 p-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h2 className="text-sm font-semibold">Interventions</h2>

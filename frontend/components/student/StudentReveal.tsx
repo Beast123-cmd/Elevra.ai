@@ -1,20 +1,25 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 
-export function StudentReveal({ children, className = "", delayMs = 0 }: { children: ReactNode; className?: string; delayMs?: number }) {
+export function StudentReveal({ children, className = "", animate = true }: { children: ReactNode; className?: string; delayMs?: number; animate?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = ref.current;
-    if (!element || !("IntersectionObserver" in window)) return;
+    if (!animate || !element) return;
+    if (!("IntersectionObserver" in window)) {
+      element.classList.remove("student-reveal-pending");
+      return;
+    }
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
       element.classList.add("student-reveal-in");
+      element.classList.remove("student-reveal-pending");
       observer.disconnect();
     }, { threshold: 0.08, rootMargin: "0px 0px -24px 0px" });
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
-  const style: CSSProperties = delayMs > 0 ? { animationDelay: `${delayMs}ms` } : {};
-  return <div ref={ref} className={className} style={style}>{children}</div>;
+  }, [animate]);
+  const classes = [animate ? "student-reveal-pending" : "", className].filter(Boolean).join(" ");
+  return <div ref={ref} data-student-reveal className={classes}>{children}</div>;
 }

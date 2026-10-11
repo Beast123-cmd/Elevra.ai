@@ -1,7 +1,7 @@
 "use client";
 import {
   Activity, Award, BarChart3, Bell, BookOpen, CalendarDays, ClipboardCheck, Compass, Database, FileCheck2, House, Inbox, ListChecks,
-  LogOut, Menu, MessageSquareText, Mic2, Moon, PanelLeftClose, PanelLeftOpen, PieChart, ShieldCheck, Sun, Trophy, Users, X, type LucideIcon,
+  LogOut, Menu, MessageSquareText, Mic2, PanelLeftClose, PanelLeftOpen, PieChart, ShieldCheck, Trophy, Users, X, type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,9 +10,8 @@ import { BrandMark } from "@/components/shared/Brand";
 import { getIdentity, signOutAndLeave } from "@/components/shared/session";
 import { createClient } from "@/lib/supabase/client";
 import { currentLabel, isActive, NAV, roleFromPath, type IconName, type ShellRole } from "./nav";
-import { StudentSearch } from "./StudentSearch";
 import { useApiStatus } from "./useApiStatus";
-import { useTheme } from "./theme";
+import { ThemeToggle } from "./ThemeToggle";
 
 const ICONS: Record<IconName, LucideIcon> = {
   overview: BarChart3, workload: Activity, interventions: ClipboardCheck, notifications: Bell, queue: ListChecks,
@@ -41,11 +40,13 @@ function NavList({ role, path, collapsed, onNavigate }: { role: ShellRole; path:
                 onClick={onNavigate}
                 aria-current={on ? "page" : undefined}
                 title={collapsed ? item.label : undefined}
-                className={`group relative flex min-h-10 items-center gap-3 rounded-md px-3 text-sm no-underline transition-colors ${
-                  on ? "bg-card font-medium text-foreground shadow-[inset_2px_0_0_hsl(var(--primary))]" : "text-muted-foreground hover:bg-card/70 hover:text-foreground"
+                className={`group relative flex min-h-11 items-center gap-3 overflow-hidden rounded-lg px-3 text-sm no-underline transition-[background-color,color,transform,box-shadow] duration-200 ease-out active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset motion-reduce:transform-none motion-reduce:transition-none ${
+                  on
+                    ? "bg-primary/10 font-semibold text-foreground shadow-[inset_3px_0_0_hsl(var(--primary))]"
+                    : "text-muted-foreground hover:translate-x-0.5 hover:bg-card/80 hover:text-foreground focus-visible:bg-card/80"
                 } ${collapsed ? "lg:justify-center lg:px-0" : ""}`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${on ? "text-primary" : ""}`} aria-hidden="true" />
+                <Icon className={`h-[18px] w-[18px] shrink-0 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none ${on ? "text-primary" : ""}`} aria-hidden="true" />
                 <span className={`truncate ${collapsed ? "lg:sr-only" : ""}`}>{item.label}</span>
               </Link>
             );
@@ -77,7 +78,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState<string>("");
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(false);
-  const [theme, toggleTheme] = useTheme();
   const apiStatus = useApiStatus();
   const drawerRef = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -116,34 +116,29 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const label = currentLabel(path, role);
-  const staff = role !== "student";
   const initial = (email[0] ?? ROLE_LABEL[role][0]).toUpperCase();
 
   return (
-    <div className={`min-h-screen bg-background lg:grid ${collapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[244px_minmax(0,1fr)]"}`}>
+    <div className={`min-h-screen bg-background lg:grid lg:transition-[grid-template-columns] lg:duration-300 lg:ease-out motion-reduce:transition-none ${collapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[244px_minmax(0,1fr)]"}`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-card focus:px-3 focus:py-2">Skip to content</a>
 
       {/* desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen flex-col border-r border-sidebar-border bg-sidebar px-3 py-4 lg:flex">
-        <div className={`mb-6 flex items-center ${collapsed ? "justify-center" : "justify-between px-1"}`}>
-          <Link href={NAV[role][0].items[0].href} className="no-underline" aria-label="Elevra home"><Wordmark hideText={collapsed} /></Link>
-          {!collapsed && (
-            <button type="button" onClick={toggleCollapsed} className="grid h-8 w-8 place-items-center rounded-md text-muted-foreground hover:bg-card" aria-label="Collapse sidebar">
-              <PanelLeftClose className="h-4 w-4" aria-hidden="true" />
+        <div className={`mb-6 flex min-h-10 items-center ${collapsed ? "justify-center" : "justify-between px-1"}`}>
+          {collapsed ? (
+            <button type="button" onClick={toggleCollapsed} className="grid h-10 w-10 place-items-center rounded-lg text-muted-foreground transition-[background-color,color,transform] duration-200 hover:bg-card hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none" aria-label="Expand sidebar">
+              <PanelLeftOpen className="h-4 w-4" aria-hidden="true" />
             </button>
+          ) : (
+            <>
+              <Link href={NAV[role][0].items[0].href} className="no-underline" aria-label="Elevra home"><Wordmark /></Link>
+              <button type="button" onClick={toggleCollapsed} className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition-[background-color,color,transform] duration-200 hover:bg-card hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none" aria-label="Collapse sidebar">
+                <PanelLeftClose className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </>
           )}
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto"><NavList role={role} path={path} collapsed={collapsed} /></div>
-        {collapsed && (
-          <button type="button" onClick={toggleCollapsed} className="mx-auto grid h-9 w-9 place-items-center rounded-md text-muted-foreground hover:bg-card" aria-label="Expand sidebar">
-            <PanelLeftOpen className="h-4 w-4" aria-hidden="true" />
-          </button>
-        )}
-        {!collapsed && (
-          <p className="mt-4 border-t border-sidebar-border px-2 pt-3 text-[11px] leading-relaxed text-muted-foreground">
-            Flags are prompts for a conversation, not judgements.
-          </p>
-        )}
       </aside>
 
       <div className="flex min-w-0 flex-col">
@@ -154,11 +149,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
             <span className="truncate text-sm font-medium lg:hidden">{label ?? "Elevra"}</span>
-            <div className="hidden flex-1 md:block">{staff && <StudentSearch />}</div>
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
-              <button type="button" onClick={toggleTheme} className="grid h-10 w-10 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} aria-pressed={theme === "dark"}>
-                {theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
-              </button>
               <div className="hidden items-center gap-2.5 border-l border-border pl-3 sm:flex">
                 <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full bg-muted font-serif text-sm font-semibold text-primary">{initial}</span>
                 <span className="hidden max-w-[180px] leading-tight md:block">
@@ -166,12 +157,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <span className="block text-[11px] text-muted-foreground">{ROLE_LABEL[role]}</span>
                 </span>
               </div>
+              <ThemeToggle className="mr-1" />
               <button type="button" onClick={signOutAndLeave} className="flex h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Sign out">
                 <LogOut className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Sign out</span>
               </button>
             </div>
           </div>
-          {staff && <div className="px-3 pb-2 md:hidden"><StudentSearch /></div>}
         </header>
 
         {apiStatus === "down" && (
@@ -183,8 +174,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        <main id="main" className="mx-auto w-full max-w-[1320px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+        <main id="main" className={`mx-auto w-full max-w-[1320px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8 ${role !== "student" ? "!pb-24" : ""}`}>{children}</main>
       </div>
+
+      {role !== "student" && (
+        <Link href="/insights/assistant" aria-label="Ask Elevra" title="Ask Elevra"
+          className="fixed bottom-4 right-4 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-primary px-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-slate-900/20 transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-y-0 sm:px-4 motion-reduce:transform-none">
+          <MessageSquareText className="h-5 w-5" aria-hidden="true" /><span>Ask</span>
+        </Link>
+      )}
 
       {/* mobile and tablet drawer */}
       {drawer && (

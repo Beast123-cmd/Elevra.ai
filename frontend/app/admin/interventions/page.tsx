@@ -41,10 +41,7 @@ export default function InterventionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Intervention effectiveness</h1>
-        <p className="text-sm text-muted-foreground">
-          Average change in a student&apos;s success score after each type of support. This shows association, not proof of cause: students are not randomly assigned.
-        </p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">Intervention effectiveness</h1>
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -54,7 +51,7 @@ export default function InterventionsPage() {
         <Kpi label="Still open" value={open.toLocaleString()} hint="planned or in progress" />
       </div>
 
-      <Card className="p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <h2 className="text-sm font-semibold">Average score change by intervention type</h2>
         {synthetic > 0 && <p className="text-xs text-risk-amber">Includes {synthetic} synthetic historical examples for demonstration; their score changes are simulated.</p>}
         {eff.rows.length === 0 ? (
@@ -94,7 +91,7 @@ export default function InterventionsPage() {
         )}
       </Card>
 
-      <Card className="p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <h2 className="mb-2 text-sm font-semibold">Recently logged</h2>
         {live.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nothing logged yet.</p>

@@ -4,11 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { fmt } from "@/lib/format";
-import { usePalette } from "@/components/shared/palette";
 import { PILLARS, type Cohort, type Pillar } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
+import { Pagination } from "@/components/shared/Pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { mockSegments, SEGMENT_DEFS, type SegmentDef, type SegmentsData, type StudentRow } from "./segments-mock";
 
@@ -62,110 +63,109 @@ function CompareBar({ label, seg, all }: { label: string; seg: number | null; al
 }
 
 function SegmentsView({ data }: { data: SegmentsData }) {
-  const palette = usePalette();
   const [selected, setSelected] = useState<string>(data.defs[0]?.name ?? "");
-  const [showAll, setShowAll] = useState(false);
+  const [query, setQuery] = useState("");
+  const [department, setDepartment] = useState("All");
+  const [year, setYear] = useState("All");
+  const [page, setPage] = useState(1);
 
   const counts = useMemo(() => {
-    const c: Record<string, number> = {};
-    data.students.forEach((s) => { if (s.segment) c[s.segment] = (c[s.segment] ?? 0) + 1; });
-    return c;
+    const result: Record<string, number> = {};
+    data.students.forEach((student) => { if (student.segment) result[student.segment] = (result[student.segment] ?? 0) + 1; });
+    return result;
   }, [data.students]);
-
-  const members = useMemo(
-    () => data.students.filter((s) => s.segment === selected).sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0)),
-    [data.students, selected],
-  );
-  const def = data.defs.find((d) => d.name === selected);
-  const visible = showAll ? members : members.slice(0, SHOWN);
+  const departments = useMemo(() => Array.from(new Set(data.students.map((student) => student.department))).sort(), [data.students]);
+  const years = useMemo(() => Array.from(new Set(data.students.map((student) => String(student.year)))).sort(), [data.students]);
+  const members = useMemo(() => {
+    const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return data.students
+      .filter((student) => student.segment === selected)
+      .filter((student) => department === "All" || student.department === department)
+      .filter((student) => year === "All" || String(student.year) === year)
+      .filter((student) => words.every((word) => `${student.name} ${student.student_id}`.toLowerCase().includes(word)))
+      .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+  }, [data.students, selected, department, year, query]);
+  const def = data.defs.find((item) => item.name === selected);
+  const visible = members.slice((page - 1) * SHOWN, page * SHOWN);
+  const activeFilters = Number(selected !== data.defs[0]?.name) + Number(department !== "All") + Number(year !== "All");
+  useEffect(() => { setPage(1); }, [selected, department, year, query]);
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-muted-foreground">
-        {data.students.length.toLocaleString("en-IN")} students in {data.defs.length} groups. Each student belongs to the first group whose rule they match.
-      </p>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data.defs.map((d) => (
-          <button
-            key={d.name}
-            onClick={() => { setSelected(d.name); setShowAll(false); }}
-            aria-pressed={selected === d.name}
-            className={`rounded-xl border bg-card p-4 text-left transition hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-900 ${selected === d.name ? "ring-2 ring-foreground" : ""}`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <p className="font-medium">{d.name}</p>
-              <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: palette.segment[d.name] ?? palette.stone }} />
+    <div className="space-y-4">
+      <SearchFilterBar
+        label="Find students by segment"
+        placeholder="Search students by name or ID"
+        value={query}
+        onChange={setQuery}
+        activeFilters={activeFilters}
+        onClear={() => { setQuery(""); setSelected(data.defs[0]?.name ?? ""); setDepartment("All"); setYear("All"); }}
+        filters={<>
+          <label className="grid gap-1 text-xs font-medium text-muted-foreground">Segment
+            <select value={selected} onChange={(event) => setSelected(event.target.value)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground">
+              {data.defs.map((item) => <option key={item.name} value={item.name}>{item.name} ({counts[item.name] ?? 0})</option>)}
+            </select>
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-muted-foreground">Department
+            <select value={department} onChange={(event) => setDepartment(event.target.value)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground">
+              <option>All</option>{departments.map((item) => <option key={item}>{item}</option>)}
+            </select>
+          </label>
+          <label className="grid gap-1 text-xs font-medium text-muted-foreground">Year
+            <select value={year} onChange={(event) => setYear(event.target.value)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground">
+              <option>All</option>{years.map((item) => <option key={item}>{item}</option>)}
+            </select>
+          </label>
+          {def && (
+            <div className="space-y-3 rounded-lg border border-border bg-card p-3 sm:col-span-2">
+              <div>
+                <p className="text-sm font-semibold text-foreground">{def.name}</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{def.rule}</p>
+                <p className="text-xs leading-5"><span className="text-muted-foreground">Recommended action:</span> {def.action}</p>
+              </div>
+              {members.length > 0 && (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {PILLARS.map((pillar) => <CompareBar key={pillar} label={PILLAR_LABEL[pillar]} seg={avg(members, pillar)} all={avg(data.students, pillar)} />)}
+                </div>
+              )}
             </div>
-            <p className="mt-2 text-3xl font-semibold tabular-nums">{(counts[d.name] ?? 0).toLocaleString("en-IN")}</p>
-            <p className="mt-2 text-xs text-muted-foreground">Rule: {d.rule}</p>
-            <p className="mt-1 text-xs"><span className="text-muted-foreground">Action:</span> {d.action}</p>
-          </button>
-        ))}
+          )}
+        </>}
+      />
+
+      <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+        <p><span className="font-semibold text-foreground">{members.length}</span> students in {selected}</p>
+        <p>{data.students.length.toLocaleString("en-IN")} students across {data.defs.length} segments</p>
       </div>
 
-      {def && (
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">{def.name}</CardTitle>
-              <CardDescription>Average score in each area. The red line is the whole-cohort average.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {members.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No students in this group.</p>
-              ) : (
-                PILLARS.map((k) => <CompareBar key={k} label={PILLAR_LABEL[k]} seg={avg(members, k)} all={avg(data.students, k)} />)
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-base">Students in this group</CardTitle>
-              <CardDescription>Highest priority first. Open a student for the full picture.</CardDescription>
-            </CardHeader>
-            <CardContent className="overflow-x-auto">
-              {members.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No students match this group right now.</p>
-              ) : (
-                <>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Student</TableHead>
-                        <TableHead>Dept</TableHead>
-                        <TableHead>Year</TableHead>
-                        <TableHead className="text-right">Score</TableHead>
-                        <TableHead className="text-right">Priority</TableHead>
+      <Card data-pagination-root className="scroll-mt-24 rounded-xl border-border shadow-sm shadow-slate-900/[0.02]">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Students in this segment</CardTitle>
+          <CardDescription>Highest priority first. Open a student for the full picture.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {members.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">No students match these filters.</p>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Dept</TableHead><TableHead>Year</TableHead><TableHead className="text-right">Score</TableHead><TableHead className="text-right">Priority</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {visible.map((student) => (
+                      <TableRow key={student.student_id}>
+                        <TableCell><Link href={`/faculty/student/${student.student_id}`} className="font-medium underline-offset-2 hover:underline">{student.name}</Link><span className="ml-2 font-mono text-xs text-muted-foreground">{student.student_id}</span></TableCell>
+                        <TableCell>{student.department}</TableCell><TableCell>{student.year}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmt(student.success_score, 1)}</TableCell><TableCell className="text-right tabular-nums">{fmt(student.priority, 1)}</TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {visible.map((s) => (
-                        <TableRow key={s.student_id}>
-                          <TableCell>
-                            <Link href={`/faculty/student/${s.student_id}`} className="font-medium underline-offset-2 hover:underline">{s.name}</Link>
-                            <span className="ml-2 font-mono text-xs text-muted-foreground">{s.student_id}</span>
-                          </TableCell>
-                          <TableCell>{s.department}</TableCell>
-                          <TableCell>{s.year}</TableCell>
-                          <TableCell className="text-right tabular-nums">{fmt(s.success_score, 1)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{fmt(s.priority, 1)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  {members.length > SHOWN && (
-                    <button onClick={() => setShowAll((v) => !v)} className="mt-3 text-sm font-medium underline underline-offset-2">
-                      {showAll ? "Show fewer" : `Show all ${members.length}`}
-                    </button>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <Pagination page={page} totalItems={members.length} pageSize={SHOWN} label="Segment student pages" onPageChange={setPage} />
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -62,8 +62,8 @@ export function StudentSearch() {
   const showList = open && studentFilter(q) !== null;
 
   return (
-    <div ref={box} className="relative w-full max-w-sm">
-      <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+    <div ref={box} className="relative w-full max-w-xl">
+      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
       <input
         type="search"
         role="combobox"
@@ -76,10 +76,10 @@ export function StudentSearch() {
         onChange={(e) => { setQ(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKey}
-        className="h-9 w-full rounded-md border border-input bg-card pl-8 pr-3 text-sm placeholder:text-muted-foreground"
+        className="h-11 w-full rounded-lg border border-input bg-card pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/20"
       />
       {showList && (
-        <ul id={listId} role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-md border border-border bg-popover py-1 text-sm shadow-lg">
+        <ul id={listId} role="listbox" className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-border bg-popover py-1.5 text-sm shadow-xl shadow-slate-900/10">
           {state === "loading" && hits.length === 0 && <li className="px-3 py-2 text-muted-foreground">Searching…</li>}
           {state === "error" && <li className="px-3 py-2 text-muted-foreground">Search is unavailable right now.</li>}
           {state === "idle" && hits.length === 0 && <li className="px-3 py-2 text-muted-foreground">No student matches “{q.trim()}”.</li>}
@@ -90,7 +90,7 @@ export function StudentSearch() {
               aria-selected={i === active}
               onMouseDown={(e) => { e.preventDefault(); go(h); }}
               onMouseEnter={() => setActive(i)}
-              className={`flex cursor-pointer items-baseline justify-between gap-3 px-3 py-2 ${i === active ? "bg-muted" : ""}`}
+              className={`mx-1 flex cursor-pointer items-baseline justify-between gap-3 rounded-lg px-3 py-2.5 transition-colors ${i === active ? "bg-muted" : ""}`}
             >
               <span className="truncate font-medium">{h.name}</span>
               <span className="shrink-0 font-mono text-xs text-muted-foreground">{h.student_id} · {h.department} · Y{h.year}</span>

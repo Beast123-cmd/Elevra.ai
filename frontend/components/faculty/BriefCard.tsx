@@ -33,7 +33,7 @@ export function BriefCard({ profile }: { profile: Profile }) {
   const label = (s: "ai" | "template" | "local") => (s === "ai" ? "AI-written · every figure checked against the profile" : "Standard summary");
 
   return (
-    <Card className="space-y-3 p-4">
+    <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] space-y-3 p-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h2 className="text-sm font-semibold">Mentor brief</h2>

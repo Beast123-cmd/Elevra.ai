@@ -55,11 +55,10 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Placement notifications</h1>
-        <p className="text-sm text-muted-foreground">Post drives, deadlines and workshops. Students see them in their notifications feed.</p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">Placement notifications</h1>
       </div>
 
-      <Card className="space-y-3 p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] space-y-3 p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-sm">
             Audience
@@ -107,7 +106,7 @@ export default function NotificationsPage() {
         <Button disabled={!valid || saving} onClick={send}>{saving ? "Posting…" : "Post notification"}</Button>
       </Card>
 
-      <Card className="p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <h2 className="mb-2 text-sm font-semibold">Recent notifications</h2>
         {error ? (
           <EmptyState>Could not load notifications: {error}</EmptyState>

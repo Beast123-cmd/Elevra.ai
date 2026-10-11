@@ -1,38 +1,53 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+
+import { useCallback, useLayoutEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
+type ThemePreference = Theme | "system";
 const KEY = "elevra-theme";
 const LEGACY_KEY = "elevra-student-theme";
 
-function read(): Theme {
+function getPreference(): ThemePreference {
   try {
-    const v = window.localStorage.getItem(KEY) ?? window.localStorage.getItem(LEGACY_KEY);
-    return v === "dark" ? "dark" : "light";
+    const value = window.localStorage.getItem(KEY) ?? window.localStorage.getItem(LEGACY_KEY);
+    if (value === "light" || value === "dark") return value;
   } catch {
-    return "light";
+    // Follow the device preference when browser storage is unavailable.
   }
+  return "system";
 }
 
-/** Light or dark for the whole app: the `dark` class on <html> switches every token in globals.css. */
+function resolve(preference: ThemePreference, darkSystem: boolean): Theme {
+  return preference === "system" ? (darkSystem ? "dark" : "light") : preference;
+}
+
+function apply(theme: Theme, preference: ThemePreference) {
+  document.documentElement.classList.toggle("dark", theme === "dark");
+  document.documentElement.classList.toggle("light", preference === "light");
+}
+
+/** Shared appearance preference. A stored Light/Dark choice wins; otherwise follow the device. */
 export function useTheme(): [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>("light");
 
-  useEffect(() => {
-    const t = read();
-    setTheme(t);
-    document.documentElement.classList.toggle("dark", t === "dark");
+  useLayoutEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const sync = () => {
+      const preference = getPreference();
+      const next = resolve(preference, media.matches);
+      setTheme(next);
+      apply(next, preference);
+    };
+    sync();
+    media.addEventListener?.("change", sync);
+    return () => media.removeEventListener?.("change", sync);
   }, []);
 
   const toggle = useCallback(() => {
-    setTheme((prev) => {
-      const next: Theme = prev === "dark" ? "light" : "dark";
-      document.documentElement.classList.toggle("dark", next === "dark");
-      try {
-        window.localStorage.setItem(KEY, next);
-      } catch {
-        // the theme still applies for this visit when storage is blocked
-      }
+    setTheme((current) => {
+      const next: Theme = current === "dark" ? "light" : "dark";
+      try { window.localStorage.setItem(KEY, next); } catch { /* Applies for this visit if storage is blocked. */ }
+      apply(next, next);
       return next;
     });
   }, []);

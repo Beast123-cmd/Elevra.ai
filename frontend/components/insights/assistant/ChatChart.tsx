@@ -23,10 +23,13 @@ export function ChatChart({ spec }: { spec: ChartSpec }) {
   const isStatus = spec.series.every((s) => s in STATUS);
   const colour = (s: string, i: number) => (isStatus ? STATUS[s] : spec.series.length === 1 ? SINGLE : CATEGORICAL[i % CATEGORICAL.length]);
   const many = spec.data.length > 8;
+  const horizontal = spec.type === "bars" && (many || spec.data.some((d) => d.label.length > 9));
+  const chartHeight = horizontal ? Math.min(480, Math.max(230, spec.data.length * 34 + 62)) : many ? 256 : 208;
+  const shortLabel = (label: string) => label.length > 17 ? `${label.slice(0, 16)}…` : label;
   return (
     <figure className="min-w-0 rounded-lg border border-[#e2ebe6] bg-white p-3">
       <figcaption className="mb-2 text-xs font-semibold text-[#172824]">{pretty(spec.title)}</figcaption>
-      <div className={many ? "h-64" : "h-52"}>
+      <div style={{ height: chartHeight }}>
         <ResponsiveContainer width="100%" height="100%">
           {spec.type === "line" ? (
             <LineChart data={spec.data} margin={{ top: 6, right: 10, bottom: 0, left: -18 }}>
@@ -40,11 +43,21 @@ export function ChatChart({ spec }: { spec: ChartSpec }) {
               ))}
             </LineChart>
           ) : (
-            <BarChart data={spec.data} margin={{ top: 6, right: 10, bottom: many ? 40 : 0, left: -18 }}>
-              <CartesianGrid stroke="#e8efeb" vertical={false} />
-              <XAxis dataKey="label" tick={AXIS} tickLine={false} axisLine={{ stroke: "#cbd5e1" }} interval={0}
-                angle={many ? -35 : 0} textAnchor={many ? "end" : "middle"} height={many ? 50 : 24} />
-              <YAxis tick={AXIS} tickLine={false} axisLine={false} />
+            <BarChart data={spec.data} layout={horizontal ? "vertical" : "horizontal"}
+              margin={{ top: 6, right: 10, bottom: 0, left: horizontal ? 0 : -18 }}>
+              <CartesianGrid stroke="#e8efeb" vertical={!horizontal} horizontal={horizontal} />
+              {horizontal ? (
+                <>
+                  <XAxis type="number" tick={AXIS} tickLine={false} axisLine={{ stroke: "#cbd5e1" }} />
+                  <YAxis type="category" dataKey="label" tick={AXIS} tickLine={false} axisLine={false}
+                    width={104} interval={0} tickFormatter={shortLabel} />
+                </>
+              ) : (
+                <>
+                  <XAxis dataKey="label" tick={AXIS} tickLine={false} axisLine={{ stroke: "#cbd5e1" }} />
+                  <YAxis tick={AXIS} tickLine={false} axisLine={false} />
+                </>
+              )}
               <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} formatter={(v: number, n: string) => [v, pretty(n)]} cursor={{ fill: "#f1f6f3" }} />
               {spec.series.length > 1 && <Legend wrapperStyle={{ fontSize: 11 }} formatter={pretty} />}
               {spec.series.map((s, i) => (

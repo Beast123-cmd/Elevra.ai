@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { ExternalLink, LayoutGrid, List as ListIcon, Search, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ExternalLink, LayoutGrid, List as ListIcon } from "lucide-react";
+import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
+import { Pagination } from "@/components/shared/Pagination";
 import { ProfileGate } from "./ProfileGate";
 import { StudentReveal } from "./StudentReveal";
 import { CERTIFICATIONS, PILLAR_LABEL, type Certification } from "./playbook";
@@ -9,13 +11,14 @@ import { weakestPillars } from "./weakest";
 import { matchesEveryWord } from "./catalogSearch";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
-import { GROUP_LABEL, recommend, weakestSkills, type Group, type Recommendation, type SkillRow } from "./recommend";
+import { GROUP_LABEL, recommend, type Group, type Recommendation, type SkillRow } from "./recommend";
 import { useStudentProfile } from "./useStudentProfile";
 
 type ViewMode = "grid" | "list";
 type CourseResult = Recommendation<Certification> & { relevant: boolean };
 type Provider = Certification["provider"] | "All providers";
 type Topic = string;
+const PAGE_SIZE = 27;
 
 const PROVIDER_SURFACE: Record<Certification["provider"], string> = {
   Coursera: "border-border bg-muted",
@@ -92,6 +95,13 @@ function CertificationsBody({ profile }: { profile: Profile }) {
   const [provider, setProvider] = useState<Provider>("All providers");
   const [topic, setTopic] = useState<Topic>("All topics");
   const [view, setView] = useState<ViewMode>("grid");
+  const [resultsRefined, setResultsRefined] = useState(false);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQuery(searchText.trim().toLowerCase()), 180);
+    return () => window.clearTimeout(timer);
+  }, [searchText]);
 
   const weak = weakestPillars(profile).map(({ pillar }) => pillar);
   const placementWeak = weak.includes("placement");
@@ -106,22 +116,18 @@ function CertificationsBody({ profile }: { profile: Profile }) {
   // `recommend` already sorts best match first; searching keeps that order.
   const filtered = Boolean(query || provider !== "All providers" || topic !== "All topics");
   const personalised = !filtered && skills !== null && skills.length > 0;
-  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setQuery(searchText.trim().toLowerCase());
-  };
-  const clearFilters = () => { setSearchText(""); setQuery(""); setProvider("All providers"); setTopic("All topics"); };
-  const resultKey = `${query}-${provider}-${topic}-${view}`;
-  const lows = skills ? weakestSkills(skills, 3) : [];
-  const strongest = skills && skills.length ? [...skills].sort((a, b) => b.level - a.level)[0] : null;
+  useEffect(() => { setPage(1); }, [query, provider, topic]);
+  const clearFilters = () => { setResultsRefined(true); setSearchText(""); setQuery(""); setProvider("All providers"); setTopic("All topics"); };
+  const activeFilterCount = Number(provider !== "All providers") + Number(topic !== "All topics");
+  const pageResults = results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const groups = (["gap", "placement", "deeper", "other"] as Group[])
-    .map((g) => ({ g, items: results.filter((r) => r.group === g).slice(0, g === "other" ? 6 : 4) }))
+    .map((g) => ({ g, items: pageResults.filter((r) => r.group === g) }))
     .filter(({ items }) => items.length > 0);
   const renderList = (items: CourseResult[]) => (
     <ul className={view === "grid" ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3" : "space-y-2"} aria-label="Certification results">
       {items.map((item, index) => (
         <li key={item.course.title}>
-          <StudentReveal key={`${resultKey}-${item.course.title}`} delayMs={Math.min(index, 8) * 45} className="h-full">
+          <StudentReveal animate={!resultsRefined} delayMs={Math.min(index, 3) * 90} className="h-full">
             <CourseCard {...item} compact={view === "list"} />
           </StudentReveal>
         </li>
@@ -130,47 +136,33 @@ function CertificationsBody({ profile }: { profile: Profile }) {
   );
 
   return (
-          <div className="space-y-4">
+          <div data-pagination-root className="scroll-mt-24 space-y-4">
             <h2 className="text-lg font-bold leading-tight tracking-tight text-foreground">Certifications</h2>
-            {personalised && (
-              <section aria-label="Based on your skills" className="rounded-xl border border-border bg-card p-4">
-                <p className="text-sm font-semibold text-foreground">Picked from your skill levels</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Lowest: {lows.map((l) => `${l.skill} (${Math.round(l.level)})`).join(", ")}.
-                  {strongest ? ` Strongest: ${strongest.skill} (${Math.round(strongest.level)}).` : ""} Courses below match your level, so you are not given a beginner course in something you already do well.
-                </p>
-              </section>
-            )}
-            <section aria-label="Find a certification" className="rounded-xl border border-border bg-muted/60 p-3 sm:p-4">
-              <form onSubmit={submitSearch} className="flex flex-col gap-2 sm:flex-row">
-                <label className="relative min-w-0 flex-1">
-                  <span className="sr-only">Search courses</span>
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                  <input value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder="Search skills, courses, or providers"
-                    className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20" />
-                </label>
-                <button type="submit" className="h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Search</button>
-              </form>
-              <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
-                <label className="min-w-0 flex-1">
-                  <span className="sr-only">Filter by provider</span>
-                  <select value={provider} onChange={(event) => setProvider(event.target.value as Provider)} className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
+            <SearchFilterBar
+              label="Find a certification"
+              placeholder="Search skills, courses, or providers"
+              value={searchText}
+              onChange={(value) => { setResultsRefined(true); setSearchText(value); }}
+              onSearch={() => { setResultsRefined(true); setQuery(searchText.trim().toLowerCase()); }}
+              activeFilters={activeFilterCount}
+              onClear={clearFilters}
+              filters={<>
+                <label className="grid gap-1 text-xs font-medium text-muted-foreground">Provider
+                  <select value={provider} onChange={(event) => { setResultsRefined(true); setProvider(event.target.value as Provider); }} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
                     <option>All providers</option>{providers.map((name) => <option key={name}>{name}</option>)}
                   </select>
                 </label>
-                <label className="min-w-0 flex-1">
-                  <span className="sr-only">Filter by topic</span>
-                  <select value={topic} onChange={(event) => setTopic(event.target.value)} className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
+                <label className="grid gap-1 text-xs font-medium text-muted-foreground">Topic
+                  <select value={topic} onChange={(event) => { setResultsRefined(true); setTopic(event.target.value); }} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
                     <option>All topics</option>{topics.map((name) => <option key={name}>{name}</option>)}
                   </select>
                 </label>
-                {filtered && <button type="button" onClick={clearFilters} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg px-3 text-sm font-medium text-primary hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4" aria-hidden="true" />Clear</button>}
-              </div>
-            </section>
+              </>}
+            />
 
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p aria-live="polite" className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{results.length}</span> courses for {profile.department}</p>
-              <ViewToggle value={view} onChange={setView} />
+              <ViewToggle value={view} onChange={(nextView) => { setResultsRefined(true); setView(nextView); }} />
             </div>
 
             {results.length ? (
@@ -183,13 +175,14 @@ function CertificationsBody({ profile }: { profile: Profile }) {
                     </section>
                   ))}
                 </div>
-              ) : renderList(results)
+              ) : renderList(pageResults)
             ) : (
               <div className="rounded-xl border border-border bg-card px-5 py-10 text-center">
                 <p className="font-medium text-foreground">No courses found</p>
                 {filtered && <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-primary underline underline-offset-2">Clear filters</button>}
               </div>
             )}
+            <Pagination page={page} totalItems={results.length} pageSize={PAGE_SIZE} label="Certification pages" onPageChange={setPage} />
           </div>
   );
 }

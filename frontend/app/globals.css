@@ -15,20 +15,48 @@ body {
   font-feature-settings: "ss01" off;
 }
 
-@keyframes route-enter {
-  from {
-    opacity: 0.82;
-    transform: translate3d(0, 8px, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+/* Shared dashboard entrance: small left-to-right movement, once per viewport entry. */
+@keyframes dashboard-text-enter {
+  from { opacity: 0; transform: translate3d(-5px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-.route-transition {
-  animation: route-enter 380ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+@keyframes dashboard-card-enter {
+  from { opacity: 0; transform: translate3d(-7px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Prevent the full-opacity paint that caused a flash before hydration. */
+.route-transition :is(
+  [data-motion-card],
+  div.rounded-xl.border,
+  section.rounded-xl.border,
+  article.rounded-xl.border,
+  aside.rounded-xl.border,
+  div.rounded-2xl.border,
+  section.rounded-2xl.border,
+  article.rounded-2xl.border,
+  aside.rounded-2xl.border,
+  section.rounded-lg.border[class*="bg-card"],
+  [data-motion-text],
+  h1
+):not([data-student-reveal] *) {
+  opacity: 0;
+  transform: translate3d(-7px, 0, 0);
+}
+
+.student-reveal-pending {
+  opacity: 0;
+  transform: translate3d(-7px, 0, 0);
+}
+
+.dashboard-text-reveal {
+  animation: dashboard-text-enter 760ms cubic-bezier(.22, .61, .36, 1) both;
+}
+
+.dashboard-card-reveal,
+.student-reveal-in {
+  animation: dashboard-card-enter 880ms cubic-bezier(.22, .61, .36, 1) both;
 }
 
 @keyframes student-data-flow {
@@ -42,7 +70,7 @@ body {
   flex: 0 0 7px;
   border-radius: 999px;
   background: hsl(var(--primary));
-  animation: student-data-flow 1.1s ease-in-out infinite;
+  animation: student-data-flow 1.8s ease-in-out infinite;
 }
 
 .student-progress-track {
@@ -58,7 +86,7 @@ body {
   height: 100%;
   border-radius: inherit;
   background: hsl(var(--primary));
-  animation: student-loading-flow 1.5s ease-in-out infinite;
+  animation: student-loading-flow 2.2s ease-in-out infinite;
 }
 
 @keyframes student-loading-flow {
@@ -68,7 +96,7 @@ body {
 
 .student-value-flow {
   transform-origin: left center;
-  animation: student-value-in 850ms cubic-bezier(.2, .7, .2, 1) both;
+  animation: student-value-in 900ms cubic-bezier(.22, 1, .36, 1) both;
 }
 
 .what-if-slider > span:first-child {
@@ -106,27 +134,29 @@ body {
   to { transform: scaleX(1); }
 }
 
-@keyframes student-reveal {
-  from { opacity: .72; transform: translate3d(0, 12px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-
-.student-reveal-in {
-  animation: student-reveal 520ms cubic-bezier(.2, .7, .2, 1) both;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .route-transition {
+  .dashboard-text-reveal,
+  .dashboard-card-reveal,
+  .student-reveal-in {
     animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .route-transition :is(
+    [data-motion-card], div.rounded-xl.border, section.rounded-xl.border,
+    article.rounded-xl.border, aside.rounded-xl.border, div.rounded-2xl.border,
+    section.rounded-2xl.border, article.rounded-2xl.border, aside.rounded-2xl.border,
+    section.rounded-lg.border[class*="bg-card"], [data-motion-text], h1
+  ):not([data-student-reveal] *),
+  .student-reveal-pending {
+    opacity: 1;
+    transform: none;
   }
   .student-loading-dot {
     animation: none;
   }
   .student-progress-track > span,
   .student-value-flow {
-    animation: none;
-  }
-  .student-reveal-in {
     animation: none;
   }
 }
@@ -228,6 +258,54 @@ body {
     --sidebar-border: 150 12% 19.6%;
     --sidebar-ring: 159 28.6% 61%;
   }
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not(.dark) {
+    color-scheme: dark;
+    --background: 150 15.8% 7.5%;
+    --foreground: 86 14.3% 90.4%;
+    --card: 150 15.4% 10.2%;
+    --card-foreground: 86 14.3% 90.4%;
+    --popover: 150 15.4% 10.2%;
+    --popover-foreground: 86 14.3% 90.4%;
+    --primary: 159 28.6% 61%;
+    --primary-foreground: 158 26.8% 8%;
+    --secondary: 153 15.1% 14.3%;
+    --secondary-foreground: 86 14.3% 90.4%;
+    --muted: 153 15.1% 14.3%;
+    --muted-foreground: 136 5.9% 63.7%;
+    --accent: 153 15.1% 14.3%;
+    --accent-foreground: 86 14.3% 90.4%;
+    --highlight: 39 64.4% 62.5%;
+    --destructive: 11 63.1% 67.1%;
+    --destructive-foreground: 158 26.8% 8%;
+    --border: 150 12% 19.6%;
+    --input: 150 12% 24%;
+    --ring: 159 28.6% 61%;
+    --risk-red: 11 63.1% 67.1%;
+    --risk-red-bg: 10 34.9% 16.9%;
+    --risk-amber: 39 64.4% 62.5%;
+    --risk-amber-bg: 39 41.3% 14.7%;
+    --risk-green: 115 28% 65.7%;
+    --risk-green-bg: 128 19.5% 15.1%;
+    --risk-none: 42 8.5% 60.6%;
+    --risk-none-bg: 150 10.3% 15.3%;
+    --chart-1: 159 28.6% 61%;
+    --chart-2: 39 64.4% 62.5%;
+    --chart-3: 209 31% 66.5%;
+    --chart-4: 11 63.1% 67.1%;
+    --chart-5: 286 23.2% 67.8%;
+    --chart-6: 75 32.2% 65.3%;
+    --sidebar: 150 15.8% 9%;
+    --sidebar-foreground: 86 14.3% 90.4%;
+    --sidebar-primary: 159 28.6% 61%;
+    --sidebar-primary-foreground: 158 26.8% 8%;
+    --sidebar-accent: 153 15.1% 14.3%;
+    --sidebar-accent-foreground: 86 14.3% 90.4%;
+    --sidebar-border: 150 12% 19.6%;
+    --sidebar-ring: 159 28.6% 61%;
+  }
+}
+
 }
 @layer base {
   * {
@@ -238,6 +316,9 @@ body {
   }
   html.dark {
     color-scheme: dark;
+  }
+  html.light {
+    color-scheme: light;
   }
   body {
     @apply bg-background text-foreground;
@@ -250,4 +331,53 @@ body {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
+}
+
+/* Device theme is the default until someone chooses Light or Dark. */
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not(.dark) { color-scheme: dark; }
+}
+
+/* Signed-out pages share the same theme preference as the dashboards. */
+html.dark .route-transition > main:has(.landing-page) {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+html.dark .landing-page [class*="bg-white"],
+html.dark .landing-page [class*="bg-[#f"],
+html.dark .landing-page [class*="bg-[#e"],
+html.dark .landing-page [class*="bg-[#d"] {
+  background-color: hsl(var(--card)) !important;
+}
+html.dark .landing-page [class*="border-[#"] {
+  border-color: hsl(var(--border)) !important;
+}
+html.dark .landing-page [class*="text-[#172824]"],
+html.dark .landing-page [class*="text-[#173f38]"],
+html.dark .landing-page [class*="text-[#154e49]"],
+html.dark .landing-page [class*="text-[#1c564c]"] {
+  color: hsl(var(--foreground)) !important;
+}
+html.dark .landing-page [class*="text-slate-"] {
+  color: hsl(var(--muted-foreground)) !important;
+}
+html.dark body:has(#login-heading) main {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+html.dark body:has(#login-heading) section[aria-labelledby="login-heading"] {
+  border-color: hsl(var(--border)) !important;
+  background-color: hsl(var(--card)) !important;
+}
+html.dark body:has(#login-heading) [class*="bg-white"],
+html.dark body:has(#login-heading) [class*="bg-[#f"] {
+  background-color: hsl(var(--muted)) !important;
+}
+html.dark body:has(#login-heading) [class*="text-slate-"],
+html.dark body:has(#login-heading) [class*="text-[#172824]"] {
+  color: hsl(var(--foreground)) !important;
+}
+html.dark body:has(#login-heading) [class*="border-slate-"],
+html.dark body:has(#login-heading) [class*="border-[#e0e6e1]"] {
+  border-color: hsl(var(--border)) !important;
 }
