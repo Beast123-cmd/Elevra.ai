@@ -8,6 +8,7 @@ import { coverage, SLA_DAYS, type CaseRow, type StudentRow } from "@/components/
 import { chartChrome, usePalette } from "@/components/shared/palette";
 import { Empty, PageHeader, Panel } from "@/components/shared/ui-kit";
 import { Funnel, MiniRing, VisualStat } from "@/components/shared/viz";
+import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
 import { PILLARS, type Insight } from "@/lib/types";
 import { WeeklyBrief } from "./WeeklyBrief";
 import {
@@ -17,8 +18,6 @@ import {
 const PILLAR_SHORT: Record<string, string> = {
   academic: "Academic", attendance: "Attendance", lms: "LMS", placement: "Placement", skills: "Skills", engagement: "Co-curr.", feedback: "Feedback",
 };
-const SELECT = "h-9 rounded-md border border-input bg-card px-2 text-sm";
-
 /** Heat-map cell: below 50 tints toward brick, above toward evergreen, so weak spots stand out without a rainbow. */
 function heat(v: number | null): React.CSSProperties {
   if (v === null) return { background: "hsl(var(--muted))" };
@@ -84,25 +83,23 @@ export function AdminOverview({ rows, insights = [], cases = null }: { rows: Ove
   const p = usePalette();
   const chrome = chartChrome(p);
   const [filters, setFilters] = useState({ department: "All", year: "All", batch: "All" });
+  const [query, setQuery] = useState("");
   const opts = useMemo(() => filterOptions(rows), [rows]);
-  const view = useMemo(() => applyFilters(rows, filters), [rows, filters]);
+  const view = useMemo(() => {
+    const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return applyFilters(rows, filters).filter((student) => {
+      const searchable = `${student.name} ${student.student_id}`.toLowerCase();
+      return words.every((word) => searchable.includes(word));
+    });
+  }, [rows, filters, query]);
   const k = useMemo(() => kpis(view), [view]);
   const dist = useMemo(() => bandDistribution(view), [view]);
   const byDept = useMemo(() => riskBy(view, "department"), [view]);
   const byYear = useMemo(() => riskBy(view, "year"), [view]);
   const points = useMemo(() => quadrantPoints(view), [view]);
   const heatmap = useMemo(() => heatmapByDepartment(view), [view]);
-  const filtered = filters.department !== "All" || filters.year !== "All" || filters.batch !== "All";
-
-  const filterSelect = (key: keyof typeof filters, label: string, values: string[]) => (
-    <label className="text-xs font-medium text-muted-foreground">
-      {label}
-      <select className={`${SELECT} mt-1 block min-w-[88px]`} value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}>
-        <option>All</option>
-        {values.map((v) => <option key={v}>{v}</option>)}
-      </select>
-    </label>
-  );
+  const activeFilterCount = Number(filters.department !== "All") + Number(filters.year !== "All") + Number(filters.batch !== "All");
+  const clearFilters = () => { setQuery(""); setFilters({ department: "All", year: "All", batch: "All" }); };
 
   return (
     <div className="space-y-6">
@@ -110,14 +107,31 @@ export function AdminOverview({ rows, insights = [], cases = null }: { rows: Ove
         eyebrow="Institution"
         title="Overview"
         description="Seven campus data sources joined into one record per student, scored weekly. Click any dot in the readiness chart to open that student."
-        actions={
-          <div className="flex flex-wrap items-end gap-2">
-            {filterSelect("department", "Department", opts.departments)}
-            {filterSelect("year", "Year", opts.years)}
-            {filterSelect("batch", "Batch", opts.batches)}
-            {filtered && <button type="button" className="h-9 rounded-md px-2 text-sm text-primary hover:bg-muted" onClick={() => setFilters({ department: "All", year: "All", batch: "All" })}>Clear</button>}
-          </div>
-        }
+      />
+
+      <SearchFilterBar
+        label="Search students"
+        placeholder="Search by student name or ID"
+        value={query}
+        onChange={setQuery}
+        onSearch={() => setQuery((current) => current.trim())}
+        activeFilters={activeFilterCount}
+        onClear={clearFilters}
+        filters={(
+          <>
+            {([
+              ["department", "Department", opts.departments],
+              ["year", "Year", opts.years],
+              ["batch", "Batch", opts.batches],
+            ] as const).map(([key, label, values]) => (
+              <label key={key} className="grid gap-1 text-xs font-medium text-muted-foreground">{label}
+                <select className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground" value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}>
+                  <option>All</option>{values.map((value) => <option key={value}>{value}</option>)}
+                </select>
+              </label>
+            ))}
+          </>
+        )}
       />
 
       <WeeklyBrief rows={rows} />

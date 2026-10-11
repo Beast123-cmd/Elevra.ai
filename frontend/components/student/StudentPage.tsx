@@ -12,7 +12,7 @@ export function StudentPage({
   width?: "wide" | "reading";
 }) {
   return (
-    <main className={`mx-auto w-full ${width === "reading" ? "max-w-4xl" : "max-w-[1120px]"} px-4 py-6 sm:px-6 sm:py-8 lg:px-10`}>
+    <main className={`mx-auto w-full ${width === "reading" ? "max-w-4xl" : "max-w-[1120px]"} px-4 py-4 sm:px-6 sm:py-5 lg:px-10`}>
       <h1 className="sr-only">{title}</h1>
       {children}
     </main>

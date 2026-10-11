@@ -62,16 +62,12 @@ export default function EvidencePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Accreditation evidence</h1>
-          <p className="text-sm text-muted-foreground">
-            Ready-made tables for reviews such as NAAC criterion 2.2: how slow and advanced learners are identified, who mentors whom, and what support was given.
-            Generated {today}.
-          </p>
+          <h1 className="text-lg font-bold leading-tight tracking-tight">Accreditation evidence</h1>
         </div>
         <Button size="sm" variant="outline" className="print:hidden" onClick={() => window.print()}>Print this page</Button>
       </div>
 
-      <Card className="p-4 print:border-0">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4 print:border-0">
         <h2 className="text-sm font-semibold">How learners are identified</h2>
         <p className="text-xs text-muted-foreground">
           Each student&apos;s academic score (0 to 100) combines marks, backlogs and trend. Slow learners score below the first cut-off; advanced learners above the second. Change the cut-offs to match your policy.
@@ -105,7 +101,7 @@ export default function EvidencePage() {
         </div>
       </section>
 
-      <Card className="p-4 print:border-0">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4 print:border-0">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Slow and advanced learners by department</h2>
           <Button size="sm" variant="outline" className="print:hidden" onClick={() => download("learners.csv", learnersCsv(data.learners.filter((l) => classify(l.academic, t) !== "Average"), t))}>
@@ -131,7 +127,7 @@ export default function EvidencePage() {
         </div>
       </Card>
 
-      <Card className="p-4 print:border-0">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4 print:border-0">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Mentor allocation</h2>
           <Button size="sm" variant="outline" className="print:hidden" onClick={() => download("mentor-allocation.csv", mentorsCsv(mentors))}>Download (CSV)</Button>
@@ -149,7 +145,7 @@ export default function EvidencePage() {
         </div>
       </Card>
 
-      <Card className="p-4 print:border-0">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4 print:border-0">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Support given</h2>
           <Button size="sm" variant="outline" className="print:hidden" onClick={() => download("support-log.csv", supportCsv(data.support))} disabled={support.live === 0}>Download log (CSV)</Button>

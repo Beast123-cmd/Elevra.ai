@@ -2,10 +2,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/shared/Kpi";
+import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
+import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { describeApiError } from "@/components/shared/apiErrors";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
@@ -17,8 +18,9 @@ interface FacultyRow { faculty_id: string; name: string; department: string }
 interface Created { email: string; role: Role; temp_password: string; student_id: string | null; faculty_id: string | null; record_created: boolean }
 const DEPARTMENTS = ["Comp", "IT", "ENTC", "AI&DS"];
 const NEW_FACULTY = "__new";
+const PAGE_SIZE = 25;
 
-const FIELD = "h-9 w-full rounded-md border border-input bg-card px-3 text-sm";
+const FIELD = "h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-ring/20";
 
 export default function UsersPage() {
   const supabase = createClient();
@@ -26,6 +28,8 @@ export default function UsersPage() {
   const [faculty, setFaculty] = useState<FacultyRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState<Role | "All">("All");
+  const [accountsPage, setAccountsPage] = useState(1);
 
   const EMPTY = { email: "", name: "", role: "student" as Role, student_id: "", faculty_id: "", department: "", year: "", mentor: "" };
   const [form, setForm] = useState(EMPTY);
@@ -33,6 +37,7 @@ export default function UsersPage() {
   const [created, setCreated] = useState<Created | null>(null);
 
   const [q, setQ] = useState("");
+  const [studentDepartment, setStudentDepartment] = useState("All");
   const [matches, setMatches] = useState<StudentRow[]>([]);
   const [mentorFor, setMentorFor] = useState<Record<string, string>>({});
 
@@ -76,11 +81,12 @@ export default function UsersPage() {
   async function search() {
     const term = q.trim();
     if (!term) return setMatches([]);
-    const { data } = await supabase
+    let request = supabase
       .from("students")
       .select("student_id,name,department,year,mentor_faculty_id")
-      .or(`student_id.ilike.%${term}%,name.ilike.%${term}%`)
-      .limit(12);
+      .or(`student_id.ilike.%${term}%,name.ilike.%${term}%`);
+    if (studentDepartment !== "All") request = request.eq("department", studentDepartment);
+    const { data } = await request.limit(12);
     setMatches((data ?? []) as StudentRow[]);
   }
 
@@ -97,19 +103,20 @@ export default function UsersPage() {
   }
 
   const needle = filter.trim().toLowerCase();
-  const shown = (users ?? []).filter((u) => !needle || `${u.email} ${u.role} ${u.student_id ?? ""} ${u.faculty_id ?? ""}`.toLowerCase().includes(needle));
+  const shown = (users ?? []).filter((u) => (roleFilter === "All" || u.role === roleFilter) && (!needle || `${u.email} ${u.role} ${u.student_id ?? ""} ${u.faculty_id ?? ""}`.toLowerCase().includes(needle)));
+  const pageUsers = shown.slice((accountsPage - 1) * PAGE_SIZE, accountsPage * PAGE_SIZE);
+  useEffect(() => { setAccountsPage(1); }, [filter, roleFilter]);
   const canCreate = form.email && form.name && (form.role === "admin"
     || (form.role === "student" ? form.student_id || (form.department && form.year) : form.faculty_id && (form.faculty_id !== NEW_FACULTY || form.department)));
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">User management</h1>
-        <p className="text-sm text-muted-foreground">There is no self sign-up. Admins create every student and faculty login and assign mentors.</p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">User management</h1>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="space-y-3 p-4">
+        <Card data-motion-card className="space-y-3 rounded-xl border-border p-4 shadow-sm shadow-slate-900/[0.02]">
           <h2 className="text-sm font-semibold">Create account</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <input className={FIELD} placeholder="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -161,12 +168,30 @@ export default function UsersPage() {
           </Button>
         </Card>
 
-        <Card className="space-y-3 p-4">
+        <Card data-motion-card className="space-y-3 rounded-xl border-border p-4 shadow-sm shadow-slate-900/[0.02]">
           <h2 className="text-sm font-semibold">Assign mentor</h2>
-          <div className="flex gap-2">
-            <Input placeholder="Search student by id or name" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} />
-            <Button variant="outline" onClick={search}>Search</Button>
-          </div>
+          <SearchFilterBar
+            label="Find a student to assign a mentor"
+            placeholder="Search by student ID or name"
+            value={q}
+            onChange={setQ}
+            onSearch={() => { void search(); }}
+            activeFilters={Number(studentDepartment !== "All")}
+            onClear={() => {
+              setQ("");
+              setStudentDepartment("All");
+              setMatches([]);
+            }}
+            filters={(
+              <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                Department
+                <select className={FIELD} value={studentDepartment} onChange={(e) => setStudentDepartment(e.target.value)}>
+                  <option value="All">All departments</option>
+                  {DEPARTMENTS.map((department) => <option key={department} value={department}>{department}</option>)}
+                </select>
+              </label>
+            )}
+          />
           {matches.length === 0 ? (
             <p className="text-sm text-muted-foreground">{q ? "No students found." : "Search for a student to change their mentor."}</p>
           ) : (
@@ -191,10 +216,31 @@ export default function UsersPage() {
         </Card>
       </div>
 
-      <Card className="p-4">
-        <div className="mb-3 flex flex-wrap items-center gap-3">
-          <h2 className="text-sm font-semibold">Accounts{users ? ` (${users.length})` : ""}</h2>
-          <Input className="ml-auto max-w-xs" placeholder="Filter by email, role or id" value={filter} onChange={(e) => setFilter(e.target.value)} />
+      <Card data-motion-card data-pagination-root className="scroll-mt-24 rounded-xl border-border p-4 shadow-sm shadow-slate-900/[0.02]">
+        <h2 className="mb-3 text-sm font-semibold">Accounts{users ? ` (${users.length})` : ""}</h2>
+        <div className="mb-4">
+          <SearchFilterBar
+            label="Search accounts"
+            placeholder="Search email, role, or ID"
+            value={filter}
+            onChange={setFilter}
+            activeFilters={Number(roleFilter !== "All")}
+            onClear={() => {
+              setFilter("");
+              setRoleFilter("All");
+            }}
+            filters={(
+              <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                Role
+                <select className={FIELD} value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as Role | "All")}>
+                  <option value="All">All roles</option>
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </label>
+            )}
+          />
         </div>
         {error ? (
           <EmptyState>Could not load users: {error}</EmptyState>
@@ -209,7 +255,7 @@ export default function UsersPage() {
                 <tr><th className="p-2">Email</th><th className="p-2">Role</th><th className="p-2">Linked record</th><th className="p-2">Created</th></tr>
               </thead>
               <tbody>
-                {shown.map((u) => (
+                {pageUsers.map((u) => (
                   <tr key={u.id} className="border-t">
                     <td className="p-2">{u.email}</td>
                     <td className="p-2 capitalize">{u.role}</td>
@@ -221,6 +267,7 @@ export default function UsersPage() {
             </table>
           </div>
         )}
+        <Pagination page={accountsPage} totalItems={shown.length} pageSize={PAGE_SIZE} label="Account pages" onPageChange={setAccountsPage} />
       </Card>
 
       <Dialog open={created !== null} onOpenChange={(o) => !o && setCreated(null)}>

@@ -112,7 +112,7 @@ export function Funnel({ steps }: { steps: FunnelStep[] }) {
 /** A figure with a picture: the number, a ring or bar beside it, and a short note. */
 export function VisualStat({ label, value, note, visual }: { label: string; value: ReactNode; note?: ReactNode; visual: ReactNode }) {
   return (
-    <div className="flex min-w-0 items-center gap-4 rounded-lg border border-border bg-card px-4 py-3.5">
+    <div className="flex min-w-0 items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 shadow-sm shadow-slate-900/[0.02]">
       <div className="shrink-0">{visual}</div>
       <div className="min-w-0">
         <p className="text-[12px] font-medium text-muted-foreground">{label}</p>

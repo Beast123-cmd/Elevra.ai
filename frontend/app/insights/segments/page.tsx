@@ -5,8 +5,7 @@ export default function Page() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Student segments</h1>
-        <p className="text-muted-foreground">Groups of students who need the same kind of support, with a recommended action for each.</p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">Student segments</h1>
       </header>
       <Suspense fallback={null}>
         <Segments />

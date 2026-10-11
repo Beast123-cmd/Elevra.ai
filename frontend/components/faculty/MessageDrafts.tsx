@@ -36,7 +36,7 @@ export function MessageDrafts({ profile }: { profile: Profile }) {
   const label = draft?.source === "ai" ? "AI-written · checked against the profile" : "Standard draft";
 
   return (
-    <Card className="space-y-3 p-4" aria-label="Message drafts">
+    <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] space-y-3 p-4" aria-label="Message drafts">
       <div>
         <h2 className="text-sm font-semibold">Write to this student</h2>
         <p className="text-xs text-muted-foreground">Pick a message, edit it, and send it yourself. Nothing is sent from here.</p>

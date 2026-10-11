@@ -4,12 +4,12 @@ import { useMemo, useState } from "react";
 import { BandBadge, RiskBadge } from "@/components/shared/badges";
 import { contactState, isRed, type CaseRow, type ContactState } from "@/components/shared/cases";
 import { EmptyState } from "@/components/shared/Kpi";
+import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
+import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { filterQueue, toCsv, topReasons, type QueueFilters, type QueueRow } from "./queue";
 
-const FIELD = "mt-1 block h-9 w-full rounded-md border border-input bg-card px-2 text-sm";
-const SHOW_MAX = 200;
+const PAGE_SIZE = 25;
 const RISK_OPTIONS: QueueFilters["risk"][] = ["Any", "Needs contact", "Academic Red", "Placement Red", "Early warning"];
 
 function download(name: string, text: string) {
@@ -28,6 +28,7 @@ function LastContact({ state, red }: { state: ContactState; red: boolean }) {
 
 export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[]; cases: CaseRow[]; showMentorFilter: boolean }) {
   const [f, setF] = useState<QueueFilters>({ q: "", year: "All", risk: "Any", segment: "All", mentor: "All", hideContacted: false });
+  const [page, setPage] = useState(1);
 
   const states = useMemo(() => {
     const now = new Date();
@@ -39,11 +40,17 @@ export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[
   const years = uniq(rows.map((r) => String(r.year)));
   const segments = uniq(rows.map((r) => r.segment));
   const mentors = uniq(rows.map((r) => r.mentor_faculty_id));
+  const activeFilterCount = Number(f.year !== "All") + Number(f.segment !== "All") + Number(f.mentor !== "All") + Number(f.risk !== "Any") + Number(f.hideContacted);
+  const updateFilters = (next: QueueFilters | ((current: QueueFilters) => QueueFilters)) => {
+    setF(next);
+    setPage(1);
+  };
+  const pageRows = shown.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const select = (key: "year" | "segment" | "mentor", label: string, values: string[]) => (
-    <label className="text-xs text-muted-foreground">
+    <label className="grid gap-1 text-xs font-medium text-muted-foreground">
       {label}
-      <select className={FIELD} value={f[key]} onChange={(e) => setF({ ...f, [key]: e.target.value })}>
+      <select className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground" value={f[key]} onChange={(e) => updateFilters({ ...f, [key]: e.target.value })}>
         <option>All</option>
         {values.map((v) => (
           <option key={v}>{v}</option>
@@ -61,50 +68,49 @@ export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[
         </p>
       </div>
 
-      <Card className="p-4">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-6">
-          <label className="col-span-2 text-xs text-muted-foreground">
-            Search
-            <input className={FIELD} placeholder="Name or student id" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} />
-          </label>
-          {select("year", "Year", years)}
-          <label className="text-xs text-muted-foreground">
-            Show
-            <select className={FIELD} value={f.risk} onChange={(e) => setF({ ...f, risk: e.target.value as QueueFilters["risk"] })}>
-              {RISK_OPTIONS.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </label>
-          {select("segment", "Segment", segments)}
-          {showMentorFilter && select("mentor", "Mentor", mentors)}
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={f.hideContacted} onChange={(e) => setF({ ...f, hideContacted: e.target.checked })} />
-            Hide students contacted in the last 7 days
-          </label>
+      <div className="space-y-2">
+        <SearchFilterBar
+          label="Search mentees"
+          placeholder="Search by name or student ID"
+          value={f.q}
+          onChange={(q) => updateFilters((current) => ({ ...current, q }))}
+          activeFilters={activeFilterCount}
+          onClear={() => updateFilters({ q: "", year: "All", risk: "Any", segment: "All", mentor: "All", hideContacted: false })}
+          filters={<>
+            {select("year", "Year", years)}
+            <label className="grid gap-1 text-xs font-medium text-muted-foreground">Risk
+              <select className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground" value={f.risk} onChange={(e) => updateFilters({ ...f, risk: e.target.value as QueueFilters["risk"] })}>
+                {RISK_OPTIONS.map((v) => <option key={v}>{v}</option>)}
+              </select>
+            </label>
+            {select("segment", "Segment", segments)}
+            {showMentorFilter && select("mentor", "Mentor", mentors)}
+            <label className="flex min-h-10 items-center gap-2 text-sm text-foreground sm:col-span-2">
+              <input type="checkbox" checked={f.hideContacted} onChange={(e) => updateFilters({ ...f, hideContacted: e.target.checked })} />
+              Hide students contacted in the last 7 days
+            </label>
+          </>}
+        />
+        <div className="flex items-center justify-between gap-3 text-sm">
           <span className="text-muted-foreground">{shown.length} students</span>
-          <Button className="ml-auto" size="sm" disabled={shown.length === 0} onClick={() => download("action-queue.csv", toCsv(shown))}>
-            Export CSV
-          </Button>
+          <Button size="sm" disabled={shown.length === 0} onClick={() => download("action-queue.csv", toCsv(shown))}>Export CSV</Button>
         </div>
-      </Card>
+      </div>
 
       {shown.length === 0 ? (
         <EmptyState>
           {rows.length === 0 ? "No mentees are assigned to you yet. Ask an admin to assign mentees." : "No students match these filters. Try clearing one."}
         </EmptyState>
       ) : (
-        <div className="rounded-lg border border-border bg-card">
+        <div data-pagination-root className="scroll-mt-24 rounded-lg border border-border bg-card">
           {/* phones: one card per student, the same facts in reading order */}
           <ol className="divide-y divide-border md:hidden">
-            {shown.slice(0, SHOW_MAX).map((s, i) => (
+            {pageRows.map((s, i) => (
               <li key={s.student_id} className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <Link className="font-medium text-primary hover:underline" href={`/faculty/student/${s.student_id}`}>
-                      <span className="tabular mr-1.5 font-mono text-xs text-muted-foreground">{i + 1}.</span>{s.name}
+                      <span className="tabular mr-1.5 font-mono text-xs text-muted-foreground">{(page - 1) * PAGE_SIZE + i + 1}.</span>{s.name}
                     </Link>
                     <p className="text-xs text-muted-foreground">{s.student_id} · {s.department} · Y{s.year}{s.mentor_faculty_id ? ` · ${s.mentor_faculty_id}` : ""}</p>
                   </div>
@@ -137,9 +143,9 @@ export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {shown.slice(0, SHOW_MAX).map((s, i) => (
+              {pageRows.map((s, i) => (
                 <tr key={s.student_id} className="align-top transition-colors hover:bg-muted/40">
-                  <td className="tabular p-3 font-mono text-xs text-muted-foreground">{i + 1}</td>
+                  <td className="tabular p-3 font-mono text-xs text-muted-foreground">{(page - 1) * PAGE_SIZE + i + 1}</td>
                   <td className="p-3">
                     <Link className="font-medium text-primary hover:underline" href={`/faculty/student/${s.student_id}`}>{s.name}</Link>
                     <div className="text-xs text-muted-foreground">{s.student_id} · {s.department} · Y{s.year}{s.mentor_faculty_id ? ` · ${s.mentor_faculty_id}` : ""}</div>
@@ -165,9 +171,7 @@ export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[
             </tbody>
           </table>
           </div>
-          {shown.length > SHOW_MAX && (
-            <p className="border-t border-border p-3 text-xs text-muted-foreground">Showing the top {SHOW_MAX} by priority. Narrow the filters or export the CSV for all {shown.length}.</p>
-          )}
+          <div className="px-3 pb-4"><Pagination page={page} totalItems={shown.length} pageSize={PAGE_SIZE} label="Mentee pages" onPageChange={setPage} /></div>
         </div>
       )}
     </div>

@@ -75,7 +75,7 @@ export function MyWeek({ rows, cases, onChanged }: { rows: QueueRow[]; cases: Ca
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-4">
+        <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
           <h3 className="text-sm font-semibold">Start with these {today.length > 0 ? today.length : ""}</h3>
           <p className="mb-2 text-xs text-muted-foreground">The most urgent flagged students nobody has contacted this week. A short list on purpose.</p>
           {today.length === 0 ? (
@@ -99,7 +99,7 @@ export function MyWeek({ rows, cases, onChanged }: { rows: QueueRow[]; cases: Ca
           )}
         </Card>
 
-        <Card className="p-4">
+        <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
           <h3 className="text-sm font-semibold">Follow-ups</h3>
           <p className="mb-2 text-xs text-muted-foreground">Open interventions with a date. Log one from a student&apos;s page and set a follow-up date.</p>
           {!hasFollowUps ? (

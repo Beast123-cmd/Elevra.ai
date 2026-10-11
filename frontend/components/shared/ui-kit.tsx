@@ -5,13 +5,12 @@ import type { Tier } from "@/lib/types";
  * Page building blocks for the "campus annual report" look: serif titles, hairline panels, figures that line up.
  * Every colour comes from the tokens in app/globals.css, so light and dark both work without overrides.
  */
-export function PageHeader({ title, description, eyebrow, actions }: { title: string; description?: ReactNode; eyebrow?: string; actions?: ReactNode }) {
+export function PageHeader({ title, eyebrow, actions }: { title: string; description?: ReactNode; eyebrow?: string; actions?: ReactNode }) {
   return (
     <header className="mb-6 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         {eyebrow && <p className="mb-1 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">{eyebrow}</p>}
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] text-foreground sm:text-[30px]">{title}</h1>
-        {description && <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">{description}</p>}
+        <h1 data-motion-text className="text-lg font-bold leading-tight tracking-tight text-foreground">{title}</h1>
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
     </header>
@@ -22,9 +21,9 @@ export function Panel({ title, description, actions, children, className = "", p
   title?: ReactNode; description?: ReactNode; actions?: ReactNode; children?: ReactNode; className?: string; padded?: boolean; id?: string;
 }) {
   return (
-    <section id={id} className={`min-w-0 rounded-lg border border-border bg-card ${className}`}>
+    <section id={id} data-motion-card className={`min-w-0 rounded-xl border border-border bg-card shadow-sm shadow-slate-900/[0.02] ${className}`}>
       {(title || actions) && (
-        <div className={`flex flex-wrap items-start justify-between gap-3 ${padded ? "px-5 pt-4" : "px-5 py-4"}`}>
+        <div className={`flex flex-wrap items-start justify-between gap-3 ${padded ? "px-4 pt-4" : "px-4 py-3.5"}`}>
           <div className="min-w-0">
             {title && <h2 className="text-[15px] font-semibold text-foreground">{title}</h2>}
             {description && <p className="mt-0.5 text-[13px] leading-relaxed text-muted-foreground">{description}</p>}
@@ -32,7 +31,7 @@ export function Panel({ title, description, actions, children, className = "", p
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </div>
       )}
-      <div className={padded ? "p-5 pt-3" : ""}>{children}</div>
+      <div className={padded ? "p-4 pt-3" : ""}>{children}</div>
     </section>
   );
 }
@@ -41,7 +40,7 @@ export function Panel({ title, description, actions, children, className = "", p
 export function Stat({ label, value, note, tone = "default" }: { label: string; value: ReactNode; note?: ReactNode; tone?: "default" | "alert" | "good" }) {
   const color = tone === "alert" ? "text-risk-red" : tone === "good" ? "text-risk-green" : "text-foreground";
   return (
-    <div className="min-w-0 rounded-lg border border-border bg-card px-4 py-3.5">
+    <div data-motion-card className="min-w-0 rounded-xl border border-border bg-card px-4 py-3.5 shadow-sm shadow-slate-900/[0.02]">
       <p className="text-[12px] font-medium text-muted-foreground">{label}</p>
       <p className={`tabular mt-1 font-serif text-[28px] font-semibold leading-none tracking-[-0.02em] ${color}`}>{value}</p>
       {note && <p className="mt-1.5 text-[12px] leading-snug text-muted-foreground">{note}</p>}

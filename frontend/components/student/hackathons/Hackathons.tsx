@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { ExternalLink, LayoutGrid, List as ListIcon, MapPin, RefreshCw, Search, Trophy, Users } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ExternalLink, LayoutGrid, List as ListIcon, MapPin, RefreshCw, Trophy, Users } from "lucide-react";
 import type { Profile } from "@/lib/types";
-import { Card, CardContent } from "@/components/ui/card";
+import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
+import { Pagination } from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileGate } from "../ProfileGate";
 import { StudentReveal } from "../StudentReveal";
@@ -33,19 +34,6 @@ const EVENT_SURFACE: Record<HackathonKind, string> = {
 };
 
 const suits = (h: Hackathon, dept: string) => h.departments.length === 0 || h.departments.includes(dept);
-
-function YourRecord({ profile }: { profile: Profile }) {
-  const count = Number(profile.metrics.hackathons ?? 0);
-  return (
-    <Card className="rounded-xl border-risk-amber/30 bg-risk-amber-bg shadow-none">
-      <CardContent className="flex items-center gap-3 px-4 py-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-risk-amber-bg text-risk-amber"><Trophy className="h-4 w-4" aria-hidden="true" /></span>
-        <p className="text-sm text-foreground"><span className="font-semibold tabular-nums text-foreground">{count}</span> verified hackathon{count === 1 ? "" : "s"} on your record</p>
-        <span className="ml-auto hidden text-xs text-muted-foreground sm:block">Share participation proof with your mentor to add it</span>
-      </CardContent>
-    </Card>
-  );
-}
 
 function EventCard({ event, compact = false }: { event: Hackathon; compact?: boolean }) {
   return (
@@ -79,7 +67,7 @@ function ViewToggle({ value, onChange }: { value: ViewMode; onChange: (mode: Vie
   );
 }
 
-function EventCatalog({ profile, query, kind, format, scope, view }: { profile: Profile; query: string; kind: KindFilter; format: FormatFilter; scope: Scope; view: ViewMode }) {
+function EventCatalog({ profile, query, kind, format, scope, view, animate }: { profile: Profile; query: string; kind: KindFilter; format: FormatFilter; scope: Scope; view: ViewMode; animate: boolean }) {
   const events = HACKATHONS
     .filter((event) => scope === "all" || suits(event, profile.department))
     .filter((event) => kind === "All types" || (kind === "Coding contests" ? event.kind === "Coding contest" : event.kind !== "Coding contest"))
@@ -93,7 +81,7 @@ function EventCatalog({ profile, query, kind, format, scope, view }: { profile: 
         <ul className={view === "grid" ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3" : "space-y-2"} aria-label="Hackathon results">
           {events.map((event, index) => (
             <li key={event.name}>
-              <StudentReveal key={`${query}-${scope}-${kind}-${format}-${view}-${event.name}`} delayMs={Math.min(index, 8) * 45} className="h-full">
+              <StudentReveal animate={animate} delayMs={Math.min(index, 3) * 90} className="h-full">
                 <EventCard event={event} compact={view === "list"} />
               </StudentReveal>
             </li>
@@ -116,48 +104,51 @@ export function AnnualEvents() {
   const [format, setFormat] = useState<FormatFilter>("Any format");
   const [scope, setScope] = useState<Scope>("branch");
   const [view, setView] = useState<ViewMode>("grid");
-  const hasFilters = Boolean(query || kind !== "All types" || format !== "Any format" || scope !== "branch");
+  const [resultsRefined, setResultsRefined] = useState(false);
 
-  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setQuery(searchText.trim());
-  };
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQuery(searchText.trim()), 180);
+    return () => window.clearTimeout(timer);
+  }, [searchText]);
+
   const clearFilters = () => {
+    setResultsRefined(true);
     setSearchText("");
     setQuery("");
     setKind("All types");
     setFormat("Any format");
     setScope("branch");
   };
+  const activeFilterCount = Number(kind !== "All types") + Number(format !== "Any format") + Number(scope !== "branch");
 
   return (
     <ProfileGate>
       {(profile) => (
         <div className="space-y-5">
-          <section aria-label="Search annual events" className="rounded-xl border border-risk-amber/30 bg-risk-amber-bg p-3 sm:p-4">
-            <form onSubmit={submitSearch} className="flex flex-col gap-2 sm:flex-row">
-              <label className="relative min-w-0 flex-1">
-                <span className="sr-only">Search annual events and platforms</span>
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-risk-amber" aria-hidden="true" />
-                <input value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder="Search events, organisers, or skills"
-                  className="h-11 w-full rounded-lg border border-risk-amber/30 bg-card pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-risk-amber focus:ring-2 focus:ring-risk-amber/25" />
+          <SearchFilterBar
+            label="Search annual events and platforms"
+            placeholder="Search events, organisers, or skills"
+            value={searchText}
+            onChange={(value) => { setResultsRefined(true); setSearchText(value); }}
+            onSearch={() => { setResultsRefined(true); setQuery(searchText.trim()); }}
+            activeFilters={activeFilterCount}
+            onClear={clearFilters}
+            filters={<>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Event type
+                <select value={kind} onChange={(event) => { setResultsRefined(true); setKind(event.target.value as KindFilter); }} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20"><option>All types</option><option>Hackathons</option><option>Coding contests</option></select>
               </label>
-              <button type="submit" className="h-11 rounded-lg bg-risk-amber-bg px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-risk-amber-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-risk-amber focus-visible:ring-offset-2">Search</button>
-            </form>
-            <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-              <label><span className="sr-only">Filter by event type</span><select value={kind} onChange={(event) => setKind(event.target.value as KindFilter)} className="h-10 w-full rounded-lg border border-risk-amber/30 bg-card px-3 text-sm text-foreground outline-none focus:border-risk-amber focus:ring-2 focus:ring-risk-amber/25"><option>All types</option><option>Hackathons</option><option>Coding contests</option></select></label>
-              <label><span className="sr-only">Filter by participation format</span><select value={format} onChange={(event) => setFormat(event.target.value as FormatFilter)} className="h-10 w-full rounded-lg border border-risk-amber/30 bg-card px-3 text-sm text-foreground outline-none focus:border-risk-amber focus:ring-2 focus:ring-risk-amber/25"><option>Any format</option><option>Team</option><option>Solo</option></select></label>
-              {hasFilters && <button type="button" onClick={clearFilters} className="h-10 rounded-lg px-3 text-sm font-medium text-risk-amber hover:bg-card">Clear</button>}
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">Search checks every word. Choose cards or a compact list below.</p>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Format
+                <select value={format} onChange={(event) => { setResultsRefined(true); setFormat(event.target.value as FormatFilter); }} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20"><option>Any format</option><option>Team</option><option>Solo</option></select>
+              </label>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Events
+                <select value={scope} onChange={(event) => { setResultsRefined(true); setScope(event.target.value as Scope); }} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20"><option value="branch">For {profile.department}</option><option value="all">All events</option></select>
+              </label>
+            </>}
+          />
+          <section aria-label="Annual event display controls" className="flex flex-wrap items-center justify-end gap-3">
+            <ViewToggle value={view} onChange={(nextView) => { setResultsRefined(true); setView(nextView); }} />
           </section>
-          <section aria-label="Annual event display controls" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-risk-amber/30 bg-risk-amber-bg px-4 py-3">
-            <div role="group" aria-label="Annual event relevance" className="flex rounded-lg bg-risk-amber-bg p-1">
-              {(["branch", "all"] as const).map((value) => <button key={value} type="button" aria-pressed={scope === value} onClick={() => setScope(value)} className={`min-h-9 rounded-md px-3 text-xs transition-colors ${scope === value ? "bg-card font-medium text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{value === "branch" ? `For ${profile.department}` : "All events"}</button>)}
-            </div>
-            <ViewToggle value={view} onChange={setView} />
-          </section>
-          <EventCatalog profile={profile} query={query} kind={kind} format={format} scope={scope} view={view} />
+          <EventCatalog profile={profile} query={query} kind={kind} format={format} scope={scope} view={view} animate={!resultsRefined} />
         </div>
       )}
     </ProfileGate>
@@ -166,35 +157,30 @@ export function AnnualEvents() {
 
 // ---------- Live feed: hackathons collected daily by the backend agent (analytics['hackathons']) ----------
 
-type LiveChip = "india" | "online" | "contests";
-const LIVE_CHIPS: { key: LiveChip; label: string }[] = [
-  { key: "india", label: "In India" }, { key: "online", label: "Online" }, { key: "contests", label: "Coding contests" },
-];
-const LIVE_PAGE = 9;
+type LiveLocation = "Any location" | "In India" | "Online";
+const LIVE_PAGE = 27;
 
-function LiveCard({ event, department }: { event: LiveHackathon; department: string }) {
+function LiveCard({ event }: { event: LiveHackathon }) {
   const due = countdown(event);
   const place = event.mode === "Online" ? "Online" : [event.mode, event.location].filter(Boolean).join(" · ");
   return (
-    <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-muted p-4 transition duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-md hover:shadow-slate-900/[0.06] motion-reduce:transform-none motion-reduce:transition-none">
+    <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-muted p-3 transition duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-md hover:shadow-slate-900/[0.06] motion-reduce:transform-none motion-reduce:transition-none">
       <span className={`absolute inset-x-0 top-0 h-1 ${due?.urgent ? "bg-risk-red-bg" : "bg-risk-amber-bg"}`} aria-hidden="true" />
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-primary">{event.source}</span>
-        {event.kind === "Coding contest" && <span className="rounded-full bg-risk-amber-bg px-2.5 py-1 text-[11px] font-semibold text-risk-amber">Coding contest</span>}
-        {event.departments.includes(department) && event.departments.length < 4 && <span className="rounded-full bg-risk-amber-bg px-2.5 py-1 text-[11px] font-medium text-risk-amber">For {department}</span>}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="rounded-full bg-card px-2 py-0.5 text-[11px] font-semibold text-primary">{event.source}</span>
+        {event.kind === "Coding contest" && <span className="rounded-full bg-risk-amber-bg px-2 py-0.5 text-[11px] font-semibold text-risk-amber">Coding contest</span>}
       </div>
-      <h3 className="mt-3 text-base font-semibold leading-snug text-foreground">{event.title}</h3>
-      {event.organiser && <p className="mt-1 text-xs text-muted-foreground">{event.organiser}</p>}
-      {event.summary && <p className="mt-3 text-sm leading-5 text-muted-foreground">{event.summary}</p>}
-      <div className="mt-3 space-y-1 text-xs text-muted-foreground">
-        {place && <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{place}</p>}
-        {event.team && <p className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" aria-hidden="true" />{event.team === "1" ? "Solo" : `Team of ${event.team}`}</p>}
-        {event.prize && <p className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5" aria-hidden="true" />Prizes: {event.prize}</p>}
+      <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-snug text-foreground">{event.title}</h3>
+      {event.organiser && event.organiser.toLowerCase() !== event.source.toLowerCase() && <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{event.organiser}</p>}
+      {event.summary && <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">{event.summary}</p>}
+      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        {place && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />{place}</span>}
+        {event.team && <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />{event.team === "1" ? "Solo" : `Team ${event.team}`}</span>}
+        {event.prize && <span className="inline-flex items-center gap-1"><Trophy className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />{event.prize}</span>}
       </div>
-      {due && <p className={`mt-3 w-fit rounded-md px-2 py-1 text-xs font-semibold ${due.urgent ? "bg-risk-red-bg text-risk-red" : "bg-risk-amber-bg text-risk-amber"}`}>{due.text}</p>}
-      <div className="min-h-4 flex-1" aria-hidden="true" />
+      {due && <p className={`mt-2 text-xs font-semibold ${due.urgent ? "text-risk-red" : "text-risk-amber"}`}>{due.text}</p>}
       <a href={event.url} target="_blank" rel="noopener noreferrer"
-        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg bg-muted px-3 text-sm font-semibold text-primary transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        className="mt-auto inline-flex min-h-9 w-full items-center justify-center gap-2 pt-3 text-sm font-semibold text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         View &amp; register <ExternalLink className="h-4 w-4" aria-hidden="true" />
       </a>
     </article>
@@ -203,11 +189,10 @@ function LiveCard({ event, department }: { event: LiveHackathon; department: str
 
 type LiveState = { status: "loading" } | { status: "error" } | { status: "ready"; feed: HackathonFeed | null };
 
-function LiveFeed({ profile, query, kind, format }: { profile: Profile; query: string; kind: KindFilter; format: FormatFilter }) {
+function LiveFeed({ profile, query, kind, format, scope, location }: { profile: Profile; query: string; kind: KindFilter; format: FormatFilter; scope: Scope; location: LiveLocation }) {
   const [state, setState] = useState<LiveState>({ status: "loading" });
-  const [scope, setScope] = useState<Scope>("branch");
-  const [chip, setChip] = useState<LiveChip | null>(null);
-  const [shown, setShown] = useState(LIVE_PAGE);
+  const [shown, setShown] = useState(1);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -223,13 +208,13 @@ function LiveFeed({ profile, query, kind, format }: { profile: Profile; query: s
     if (state.status !== "ready" || !state.feed) return [];
     return state.feed.items
       .filter((e) => scope === "all" || e.departments.includes(profile.department))
-      .filter((e) => !chip || (chip === "india" && e.india) || (chip === "online" && e.mode === "Online") || (chip === "contests" && e.kind === "Coding contest"))
+      .filter((e) => location === "Any location" || (location === "In India" ? e.india : e.mode === "Online"))
       .filter((e) => kind === "All types" || (kind === "Coding contests" ? e.kind === "Coding contest" : e.kind !== "Coding contest"))
       .filter((e) => matchesFormatFilter(format, e.team))
       .filter((e) => matchesEveryWord(query, [e.title, e.organiser, e.source, e.kind, e.mode, e.location, e.themes.join(" "), e.prize, e.departments.join(" "), e.summary].filter(Boolean).join(" ")));
-  }, [state, scope, chip, profile.department, query, kind, format]);
+  }, [state, scope, location, profile.department, query, kind, format]);
 
-  useEffect(() => { setShown(LIVE_PAGE); }, [scope, chip, query, kind, format]);
+  useEffect(() => { setShown(1); }, [scope, location, query, kind, format]);
 
   if (state.status === "loading") {
     return <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-56 rounded-xl" />)}</div>;
@@ -256,45 +241,29 @@ function LiveFeed({ profile, query, kind, format }: { profile: Profile; query: s
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <div role="group" aria-label="Live event relevance" className="flex rounded-lg bg-muted p-1">
-            {(["branch", "all"] as const).map((value) => (
-              <button key={value} type="button" aria-pressed={scope === value} onClick={() => setScope(value)}
-                className={`min-h-9 rounded-md px-3 text-xs transition-colors ${scope === value ? "bg-card font-medium text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
-                {value === "branch" ? `For ${profile.department}` : "All open"}
-              </button>
-            ))}
-          </div>
-          {LIVE_CHIPS.map((c) => (
-            <button key={c.key} type="button" aria-pressed={chip === c.key} onClick={() => setChip(chip === c.key ? null : c.key)}
-              className={`min-h-9 rounded-full px-3 text-xs font-medium ring-1 ring-inset transition-colors ${chip === c.key ? "bg-primary text-primary-foreground ring-ring" : "bg-card text-muted-foreground ring-border hover:text-foreground"}`}>
-              {c.label}
-            </button>
-          ))}
-        </div>
+      <div className="flex justify-end">
         <p className="text-xs text-muted-foreground">Updated {ago(feed.generated_at)} · {sources.join(", ")}{feed.refreshing ? " · updating now" : ""}</p>
       </div>
+      <div ref={resultsRef} className="scroll-mt-6">
       <p aria-live="polite" className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{items.length}</span> open now · closing soonest first</p>
       {items.length ? (
         <>
-          <StudentReveal key={`${scope}-${chip}`}>
+          <StudentReveal>
             <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Open hackathons">
-              {items.slice(0, shown).map((event) => <li key={event.id}><LiveCard event={event} department={profile.department} /></li>)}
+              {items.slice((shown - 1) * LIVE_PAGE, shown * LIVE_PAGE).map((event) => <li key={event.id}><LiveCard event={event} /></li>)}
             </ul>
           </StudentReveal>
-          {items.length > shown && (
-            <button type="button" onClick={() => setShown((n) => n + LIVE_PAGE)}
-              className="w-full rounded-lg border border-border bg-card py-2.5 text-sm font-semibold text-primary hover:bg-muted">
-              Show more ({items.length - shown} left)
-            </button>
-          )}
+          <Pagination page={shown} totalItems={items.length} pageSize={LIVE_PAGE} label="Hackathon pages" onPageChange={(page) => {
+            setShown(page);
+            requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+          }} />
         </>
       ) : (
         <div className="rounded-xl border border-border bg-card px-5 py-8 text-center text-sm text-muted-foreground">
-          {query ? "No results found" : "Nothing open in this filter right now. Try “All open” or another chip."}
+          {query ? "No results found" : "Nothing open for these filters right now."}
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -304,57 +273,65 @@ export function Hackathons() {
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<KindFilter>("All types");
   const [format, setFormat] = useState<FormatFilter>("Any format");
-  const hasFilters = Boolean(query || kind !== "All types" || format !== "Any format");
-  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setQuery(searchText.trim());
-  };
+  const [scope, setScope] = useState<Scope>("branch");
+  const [location, setLocation] = useState<LiveLocation>("Any location");
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQuery(searchText.trim()), 180);
+    return () => window.clearTimeout(timer);
+  }, [searchText]);
+
   const clearSearchAndFilters = () => {
     setSearchText("");
     setQuery("");
     setKind("All types");
     setFormat("Any format");
+    setScope("branch");
+    setLocation("Any location");
   };
+  const activeFilterCount = Number(kind !== "All types") + Number(format !== "Any format") + Number(scope !== "branch") + Number(location !== "Any location");
 
   return (
     <ProfileGate>
       {(profile) => (
         <div className="space-y-6">
           <h2 className="text-lg font-bold leading-tight tracking-tight text-foreground">Hackathons</h2>
-          <YourRecord profile={profile} />
-          <section aria-label="Search hackathons" className="rounded-xl border border-border bg-muted/60 p-3 sm:p-4">
-            <form onSubmit={submitSearch} className="flex flex-col gap-2 sm:flex-row">
-              <label className="relative min-w-0 flex-1">
-                <span className="sr-only">Search all hackathons and contests</span>
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                <input value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder="Search events, organisers, or skills"
-                  className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/20" />
-              </label>
-              <button type="submit" className="h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Search</button>
-            </form>
-            <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-              <label>
-                <span className="sr-only">Filter by event type</span>
-                <select value={kind} onChange={(event) => setKind(event.target.value as KindFilter)} className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
+          <SearchFilterBar
+            label="Search hackathons"
+            placeholder="Search events, organisers, or skills"
+            value={searchText}
+            onChange={setSearchText}
+            onSearch={() => setQuery(searchText.trim())}
+            activeFilters={activeFilterCount}
+            onClear={clearSearchAndFilters}
+            filters={<>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Event type
+                <select value={kind} onChange={(event) => setKind(event.target.value as KindFilter)} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
                   <option>All types</option><option>Hackathons</option><option>Coding contests</option>
                 </select>
               </label>
-              <label>
-                <span className="sr-only">Filter by participation format</span>
-                <select value={format} onChange={(event) => setFormat(event.target.value as typeof format)} className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Format
+                <select value={format} onChange={(event) => setFormat(event.target.value as typeof format)} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
                   <option>Any format</option><option>Team</option><option>Solo</option>
                 </select>
               </label>
-              {hasFilters && <button type="button" onClick={clearSearchAndFilters} className="h-10 rounded-lg px-3 text-sm font-medium text-primary hover:bg-card">Clear</button>}
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">Search checks every word across live and annual events.</p>
-          </section>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Events
+                <select value={scope} onChange={(event) => setScope(event.target.value as Scope)} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
+                  <option value="branch">For {profile.department}</option><option value="all">All open</option>
+                </select>
+              </label>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Location
+                <select value={location} onChange={(event) => setLocation(event.target.value as LiveLocation)} className="h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
+                  <option>Any location</option><option>In India</option><option>Online</option>
+                </select>
+              </label>
+            </>}
+          />
           <section aria-labelledby="live-heading" className="space-y-3">
             <div>
               <h2 id="live-heading" className="text-base font-semibold text-foreground">Open now <span className="ml-1 rounded-full bg-risk-red-bg px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wide text-risk-red">Live</span></h2>
-              <p className="text-sm text-muted-foreground">Hackathons and contests you can still register for, collected daily from Unstop, Devpost, HackerEarth, MLH and CodeChef.</p>
             </div>
-            <LiveFeed profile={profile} query={query} kind={kind} format={format} />
+            <LiveFeed profile={profile} query={query} kind={kind} format={format} scope={scope} location={location} />
           </section>
         </div>
       )}

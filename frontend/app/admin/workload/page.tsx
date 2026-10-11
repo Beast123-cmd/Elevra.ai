@@ -94,10 +94,7 @@ export default function WorkloadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Response &amp; workload</h1>
-        <p className="text-sm text-muted-foreground">
-          Is every Red student being reached? Target: a conversation within {SLA_DAYS} days. This tracks follow-through, not outcomes.
-        </p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">Response &amp; workload</h1>
       </div>
 
       <section className="grid gap-5 rounded-lg border border-border bg-card p-5 md:grid-cols-[auto_1fr] md:items-center">
@@ -120,7 +117,7 @@ export default function WorkloadPage() {
         </div>
       </section>
 
-      <Card className="p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold">Programme task</h2>
@@ -132,7 +129,7 @@ export default function WorkloadPage() {
         </div>
       </Card>
 
-      <Card className="p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <h2 className="text-[15px] font-semibold">Caseload by mentor</h2>
         <p className="text-[13px] text-muted-foreground">Each bar is a mentor&apos;s Red students: green have been contacted this week, brick are still waiting.</p>
         <div className="mt-2 overflow-x-auto">
@@ -163,7 +160,7 @@ export default function WorkloadPage() {
         </div>
       </Card>
 
-      <Card className="p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4">
         <h2 className="text-sm font-semibold">Suggested rebalancing</h2>
         <p className="text-xs text-muted-foreground">Moves not-yet-contacted Red students from busier to lighter mentors in the same department. You decide; nothing changes until you apply it.</p>
         {moves.length === 0 ? (

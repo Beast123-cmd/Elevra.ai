@@ -40,10 +40,8 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
     {
       label: "Tools",
       items: [
-        { href: "/insights/assistant", label: "Ask Elevra", icon: "chat" },
         { href: "/admin/chat", label: "Ask your data", icon: "chat" },
         { href: "/admin/users", label: "Users", icon: "users" },
-        { href: "/demo", label: "Guided demo", icon: "demo" },
       ],
     },
   ],
@@ -57,13 +55,6 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
       ],
     },
     { label: "Data & trust", items: INSIGHTS },
-    {
-      label: "Help",
-      items: [
-        { href: "/insights/assistant", label: "Ask Elevra", icon: "chat" },
-        { href: "/demo", label: "Guided demo", icon: "demo" },
-      ],
-    },
   ],
   student: [
     {
@@ -73,7 +64,6 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
         { href: "/student/improve", label: "My plan", icon: "plan" },
         { href: "/student/certifications", label: "Certifications", icon: "certifications" },
         { href: "/student/hackathons", label: "Hackathons", icon: "hackathons" },
-        { href: "/student/annual-events", label: "Annual events", icon: "events" },
         { href: "/student/interview", label: "Mock interview", icon: "interview" },
         { href: "/student/notifications", label: "Inbox", icon: "inbox" },
       ],

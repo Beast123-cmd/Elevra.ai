@@ -42,6 +42,17 @@ PILLAR_LABEL = {"academic": "Academics", "attendance": "Attendance", "lms": "Onl
                 "skills": "Skills", "engagement": "Co-curricular", "feedback": "Feedback"}
 WHATIF_BOUNDS = {"attendance_pct": (0, 100), "internal_pct": (0, 100), "submit_rate": (0, 1), "coding": (0, 100),
                  "aptitude": (0, 100), "mock": (1, 5), "certifications": (0, 20), "hackathons": (0, 20)}
+SCENARIO_SIGNAL = re.compile(r"\b(?:what if|suppose|imagine if)\b", re.I)
+SCENARIO_METRICS = (
+    ("attendance_pct", re.compile(r"\battendance\b", re.I), "attendance"),
+    ("internal_pct", re.compile(r"\binternal(?:\s+marks?)?\b", re.I), "internal marks"),
+    ("submit_rate", re.compile(r"\b(?:assignments?|submissions?)\b", re.I), "assignment submission"),
+    ("coding", re.compile(r"\bcoding(?:\s+score)?\b", re.I), "coding score"),
+    ("aptitude", re.compile(r"\baptitude(?:\s+score)?\b", re.I), "aptitude score"),
+    ("mock", re.compile(r"\bmock(?:\s+interview)?\b", re.I), "mock interview"),
+    ("certifications", re.compile(r"\bcertifications?\b", re.I), "certifications"),
+    ("hackathons", re.compile(r"\bhackathons?\b", re.I), "hackathons"),
+)
 
 
 def _clip(n: int):
@@ -228,6 +239,32 @@ def tool_whatif(ctx: dict, changes: dict) -> dict:
             "placement_outlook_after": r["placement_risk"]["level"]}
 
 
+def parse_student_scenario(message: str) -> tuple[dict, str, float] | None:
+    """Parse simple, explicit what-if values so the common scenario doesn't depend on model routing."""
+    if not SCENARIO_SIGNAL.search(message):
+        return None
+    for key, pattern, label in SCENARIO_METRICS:
+        match = pattern.search(message)
+        if not match:
+            continue
+        tail = message[match.end():].split(" and ", 1)[0][:60]
+        if re.search(r"\b(?:up|down|increase|decrease|improve|drop|rise|fall)\s+by\b", tail, re.I):
+            continue  # A delta needs the current value; don't mistake it for an absolute target.
+        value_match = re.search(
+            r"\b(?:to|at|was|were|be|is|reach(?:ed)?|around|about)\s+(\d+(?:\.\d+)?)\s*(%|percent|/\s*5)?(?!\w)"
+            r"|(\d+(?:\.\d+)?)\s*(%|percent|/\s*5)(?!\w)", tail, re.I)
+        if not value_match:
+            continue
+        number = float(value_match.group(1) or value_match.group(3))
+        unit = value_match.group(2) or value_match.group(4) or ""
+        if key == "submit_rate" and ("%" in unit or "percent" in unit.lower()):
+            number /= 100
+        lo, hi = WHATIF_BOUNDS[key]
+        if lo <= number <= hi:
+            return {key: number}, label, number
+    return None
+
+
 def tool_hackathons(ctx: dict, topic: str | None = None, within_days: int | None = None) -> list[dict]:
     """Open hackathons from the daily feed for the student's branch, optionally filtered by topic or deadline."""
     from datetime import datetime, timedelta, timezone
@@ -361,7 +398,7 @@ PAGES = {
 }
 INTERVIEW_WORDS = re.compile(r"\binterview", re.I)
 START_WORDS = re.compile(r"\b(start|begin|take|try|do|run|conduct|give|practi[sc]e|mock|prepare|ready|simulat\w*|rehears\w*)\b", re.I)
-PROGRESS_WORDS = re.compile(r"\b(progress|history|past|previous|trend|scores?|(has|have|had|did|been)( been| gone)? (going|gone|go))\b", re.I)
+PROGRESS_WORDS = re.compile(r"\b(progress|history|past|previous|trend|scores?|results?|performance|how did i do|(has|have|had|did|been)( been|gone)? (going|gone|go))\b", re.I)
 WEAK_WORDS = re.compile(r"\b(weak\w*|focus\w*|retest\w*|gaps?|struggl\w*|bad at|poor)\b", re.I)
 
 
@@ -438,10 +475,86 @@ STUDENT_RULES = (
 
 
 COURSE_INTENT = re.compile(r"\b(courses?|certifications?|certificates?|learn\w*|study|ai|ml|machine learning|deep learning|data science|python)\b", re.I)
+HACKATHON_INTENT = re.compile(r"\b(hackathons?|competitions?|contests?)\b", re.I)
+ANNUAL_EVENT_INTENT = re.compile(r"\b(annual events?|recurring events?|conference calendar)\b", re.I)
+PROFILE_INTENT = re.compile(r"\b(score|progress|attendance|cgpa|backlogs?|academic|placement|risk|areas?|weakest|strengths?|plan|focus|next steps?|lms|learning|assignments?|coding|aptitude|feedback|co-?curricular|engagement|interview|interviews|study|studies|exam|exams|subject|subjects|semester|course|courses|certification|certifications|hackathon|hackathons|competition|competitions|contest|contests|skill|skills|resume|career|job|jobs|internship|internships|event|events|compare|comparison|average|cohort)\b", re.I)
+PRIVATE_DATA_INTENT = re.compile(
+    r"\b(classmates?|someone else|another student|student ids?|personal data|private records?)\b"
+    r"|\b(other students?|all students?|everyone(?:'s)?)\b.{0,40}\b(names?|ids?|scores?|records?|details?|emails?|phones?|grades?)\b"
+    r"|\b(names?|ids?|scores?|records?|details?|emails?|phones?|grades?)\b.{0,40}\b(other students?|all students?|everyone)\b", re.I)
+PROMPT_ATTACK_INTENT = re.compile(r"\b(ignore|bypass|override|forget)\b.{0,50}\b(instructions?|rules?|prompt|safety|system)\b|\b(reveal|show|print|dump|expose)\b.{0,50}\b(system prompt|api key|secret|password|credentials?)\b", re.I)
 FILLER = re.compile(r"\b(i|want|to|learn|learning|a|an|the|some|any|for|me|my|about|course|courses|certification|certifications|suggest|find|recommend|please|can|you|need|interested|in|is|are|there|am|more)\b", re.I)
 
 
+def _student_refusal(message: str) -> str | None:
+    """Hard boundaries that should not depend on model availability or prompt compliance."""
+    if PRIVATE_DATA_INTENT.search(message):
+        return "I can only help with your own record and anonymous cohort averages. I can’t show another student’s private information."
+    if PROMPT_ATTACK_INTENT.search(message):
+        return "I can’t reveal private system instructions, credentials, or hidden data. I can help with your scores, plan, courses, interviews, or events."
+    return None
+
+
+def _is_greeting_or_thanks(message: str) -> bool:
+    return bool(re.fullmatch(r"\s*(hi|hello|hey|good morning|good afternoon|good evening|thanks|thank you|who are you|what can you help with)[!.? ]*\s*", message, re.I))
+
+
+def _student_record_answer(ctx: dict, message: str) -> dict:
+    """Small deterministic answers for common own-record questions when AI is unavailable."""
+    q = message.lower()
+    score = ctx.get("success_score")
+    areas = ctx.get("areas_out_of_100") or {}
+    numbers = ctx.get("key_numbers") or {}
+    if re.search(r"\b(attendance|cgpa|backlogs?|coding|aptitude|assignments?|certifications?|hackathons?)\b", q):
+        labels = (("attendance", "attendance_pct", "%"), ("cgpa", "cgpa", ""), ("backlog", "backlogs", ""),
+                  ("coding", "coding", ""), ("aptitude", "aptitude", ""), ("assignment", "submit_rate", "%"),
+                  ("certification", "certifications", ""), ("hackathon", "hackathons", ""))
+        facts = []
+        for word, key, suffix in labels:
+            if word in q and numbers.get(key) is not None:
+                value = numbers[key]
+                if key == "submit_rate":
+                    value = float(value) * 100
+                facts.append(f"{word.capitalize()}: {value:g}{suffix}")
+        if facts:
+            return {"reply": "Your record shows " + "; ".join(facts) + ".", "chart": None}
+    if re.search(r"\b(average|cohort|compare|vs\.?|versus)\b", q):
+        return {"reply": "The comparison chart shows your assessed areas alongside the anonymous cohort averages.", "chart": "areas"}
+    if re.search(r"\b(areas?|skills?|strengths?|weaknesses)\b", q):
+        values = [f"{name}: {value:g}/100" for name, value in areas.items() if value is not None]
+        return {"reply": "Your assessed areas are " + "; ".join(values) + ".", "chart": "areas"}
+    if re.search(r"\b(history|trend|over time|semester)\b", q) and len(ctx.get("score_history", [])) >= 2:
+        return {"reply": "Here is how your Success Score has changed across semesters.", "chart": "history"}
+    if re.search(r"\b(academic|placement)\b.{0,20}\b(risk|outlook|readiness)\b|\b(risk|outlook|readiness)\b.{0,20}\b(academic|placement)\b", q):
+        kind = "placement" if "placement" in q else "academic"
+        outlook = ctx[f"{kind}_outlook"]
+        reasons = "; ".join(outlook.get("reasons") or [])
+        detail = f" Reasons: {reasons}." if reasons else " No risk drivers are recorded."
+        return {"reply": f"Your {kind} outlook is {outlook['level']}.{detail}", "chart": None}
+    if re.search(r"\b(interview|interviews)\b", q) and ctx.get("interview_scores"):
+        return {"reply": "Here are your recorded mock interview scores.", "chart": "interviews"}
+    if re.search(r"\b(plan|focus|next steps?|what should|improve|weakest|strength)\b", q):
+        actions = ctx.get("suggested_actions") or []
+        return {"reply": "Your lowest assessed areas are " + ", ".join(f"{k} ({v:g})" for k, v in sorted(areas.items(), key=lambda x: x[1] if x[1] is not None else 101)[:2] if v is not None)
+                + (". Suggested next steps: " + "; ".join(actions[:3]) + "." if actions else "."), "chart": "areas"}
+    if re.search(r"\b(score|progress|doing|outlook|risk|area|areas)\b", q):
+        return {"reply": f"Your Success Score is {score} ({ctx.get('band')}). Academic outlook: {ctx['academic_outlook']['level']}; placement outlook: {ctx['placement_outlook']['level']}.", "chart": "areas"}
+    return {"reply": "I can help with your own Success Score, attendance, academic and placement outlook, next steps, courses, interviews, and hackathons. What would you like to check?", "chart": None}
+
+
 def _student_fallback(ctx: dict, message: str = "") -> dict:
+    refusal = _student_refusal(message)
+    if refusal:
+        return {"reply": refusal, "chart": None, "cards": None, "courses": None, "links": [], "ai": False, "follow_ups": []}
+    if INTERVIEW_WORDS.search(message) and PROGRESS_WORDS.search(message) and ctx.get("interview_scores"):
+        return {"reply": f"You have {len(ctx['interview_scores'])} recorded mock interview score(s). Here is your progress.",
+                "chart": build_chart("interviews", ctx), "cards": None, "courses": None,
+                "links": resolve_links(["interview_progress"]), "ai": False,
+                "follow_ups": ["Practise a mock interview", "What should I focus on this week?"]}
+    if ANNUAL_EVENT_INTENT.search(message):
+        return {"reply": "The Annual events page has recurring events and platforms to plan for.", "chart": None,
+                "cards": None, "courses": None, "links": resolve_links(["annual_events"]), "ai": False,
+                "follow_ups": ["Any open hackathons for me?", "What should I focus on this week?"]}
     links = resolve_links(intent_links(message, ctx))
     if links:
         return {"reply": "The AI helper is offline, but the page you want is ready: use the button below.", "chart": None,
@@ -454,17 +567,86 @@ def _student_fallback(ctx: dict, message: str = "") -> dict:
                              + ", ".join(c["title"] for c in found[:3]) + ".",
                     "chart": None, "cards": None, "courses": found, "links": [], "ai": False,
                     "follow_ups": ["What should I focus on this week?", "Any hackathons for me?"]}
-    ac, pc = ctx["academic_outlook"], ctx["placement_outlook"]
-    weakest = sorted(((v, k) for k, v in ctx["areas_out_of_100"].items() if v is not None))[:2]
-    reply = (f"Your Success Score is {ctx['success_score']} ({ctx['band']}). Academic outlook: {ac['level']}; placement "
-             f"outlook: {pc['level']}. Your lowest areas are " + " and ".join(f"{k} ({v:.0f})" for v, k in weakest) + ". "
-             + ("Suggested next steps: " + "; ".join(ctx["suggested_actions"][:3]) + "." if ctx["suggested_actions"] else ""))
-    return {"reply": reply, "chart": build_chart("areas", ctx), "cards": None, "courses": None, "links": [], "ai": False,
-            "follow_ups": ["What should I focus on this week?", "What if my attendance was 85%?", "Any hackathons for me?"]}
+    if HACKATHON_INTENT.search(message):
+        cards = tool_hackathons(ctx)
+        return {"reply": "Here are open events matching your department." if cards else "I couldn't find open events for your department right now.",
+                "chart": None, "cards": cards, "courses": None, "links": resolve_links(["hackathons"]), "ai": False,
+                "follow_ups": ["Show courses for my focus areas", "What should I focus on this week?"]}
+    if PROFILE_INTENT.search(message):
+        answer = _student_record_answer(ctx, message)
+        return {"reply": answer["reply"], "chart": build_chart(answer["chart"], ctx), "cards": None, "courses": None,
+                "links": [], "ai": False, "follow_ups": ["What should I focus on this week?", "What if my attendance was 85%?"]}
+    if not _is_greeting_or_thanks(message):
+        return {"reply": "I’m here to help with your student record, study and placement progress, courses, interviews, and events. I can’t help with unrelated requests.",
+                "chart": None, "cards": None, "courses": None, "links": [], "ai": False, "follow_ups": []}
+    return {"reply": _student_record_answer(ctx, message)["reply"], "chart": None, "cards": None, "courses": None,
+            "links": [], "ai": False, "follow_ups": ["What is my Success Score?", "Suggest a course for me"]}
 
 
 def answer_student(student_id: str, message: str, history: list[Msg]) -> dict:
     ctx = student_context(student_id)
+    refusal = _student_refusal(message)
+    if refusal:
+        return {"reply": refusal, "chart": None, "cards": None, "courses": None, "links": [],
+                "follow_ups": [], "ai": False}
+    scenario = parse_student_scenario(message)
+    if scenario:
+        changes, label, value = scenario
+        result = tool_whatif(ctx, changes)
+        if "score_after" in result:
+            current, estimated = result["score_now"], result["score_after"]
+            delta = result["delta"]
+            unit = "/5" if label == "mock interview" else "%" if label in ("attendance", "internal marks", "assignment submission", "coding score", "aptitude score") else ""
+            shown_value = f"{value:g}{unit}"
+            if delta == 0:
+                summary = f"At {shown_value} {label}, the estimate stays **{estimated:.1f}** ({result['band_after']}); there is no score change at one-decimal precision."
+            else:
+                direction = "up" if delta > 0 else "down"
+                summary = f"At {shown_value} {label}, your estimated Success Score would be **{estimated:.1f}**, {direction} **{abs(delta):.1f} points** from {current:.1f}."
+                if result["band_after"] != ctx["band"]:
+                    summary += f" Your band would change from {ctx['band']} to {result['band_after']}."
+                else:
+                    summary += f" Your band would remain {result['band_after']}."
+            summary += " Only this value changes in the simulation; your saved records stay the same."
+            return {"reply": summary, "chart": build_chart("whatif", ctx, result), "cards": None, "courses": None,
+                    "links": [], "follow_ups": ["What if my attendance was 90%?", "What if I improved my coding score?"],
+                    "ai": False}
+    elif SCENARIO_SIGNAL.search(message):
+        metric = next(((key, label) for key, pattern, label in SCENARIO_METRICS if pattern.search(message)), None)
+        if metric:
+            key, label = metric
+            low, high = WHATIF_BOUNDS[key]
+            unit = "%" if key in ("attendance_pct", "internal_pct", "submit_rate", "coding", "aptitude") else ""
+            if key == "submit_rate":
+                low, high = 0, 100
+            elif key == "mock":
+                unit, high = "/5", 5
+            return {"reply": f"I can estimate that. What target {label} should I use? Enter a value from {low:g} to {high:g}{unit}.",
+                    "chart": None, "cards": None, "courses": None, "links": [],
+                    "follow_ups": [], "ai": False}
+    # These requests have reliable local data sources. Route them deterministically so they still work
+    # when the model is offline or misroutes the intent.
+    if COURSE_INTENT.search(message):
+        topic = FILLER.sub(" ", message).strip()[:60] or None
+        courses = tool_courses(ctx, topic)
+        return {"reply": "These courses from the Certifications catalog match your request." if courses else
+                "I couldn't find a matching course in the catalog. Try a broader topic or search the Certifications page.",
+                "chart": None, "cards": None, "courses": courses, "links": resolve_links(["certifications"]),
+                "follow_ups": ["What should I focus on this week?", "Any hackathons for me?"], "ai": False}
+    if HACKATHON_INTENT.search(message):
+        topic_match = re.search(r"\b(?:about|on|focused on)\s+([a-z][a-z0-9 -]{1,24})", message, re.I)
+        topic = topic_match.group(1).strip().split()[0] if topic_match else None
+        cards = tool_hackathons(ctx, topic=topic)
+        return {"reply": "Here are open events matching your department." if cards else "I couldn't find open events matching that request right now.",
+                "chart": None, "cards": cards, "courses": None, "links": resolve_links(["hackathons"]),
+                "follow_ups": ["Show courses for my focus areas", "What should I focus on this week?"], "ai": False}
+    if ANNUAL_EVENT_INTENT.search(message):
+        return {"reply": "The Annual events page has recurring events and platforms to plan for.", "chart": None,
+                "cards": None, "courses": None, "links": resolve_links(["annual_events"]), "ai": False,
+                "follow_ups": ["Any open hackathons for me?", "What should I focus on this week?"]}
+    if not PROFILE_INTENT.search(message) and not _is_greeting_or_thanks(message):
+        return {"reply": "I’m here to help with your student record, study and placement progress, courses, interviews, and events. I can’t help with unrelated requests.",
+                "chart": None, "cards": None, "courses": None, "links": [], "follow_ups": [], "ai": False}
     public = {k: v for k, v in ctx.items() if not k.startswith("_")}
     base = (STUDENT_RULES + f"<record>\n{json.dumps(public, default=str)}\n</record>\n"
             f"<conversation>\n{_history_text(history)}\n</conversation>\n<question>{message}</question>\n")

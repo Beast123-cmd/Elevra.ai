@@ -45,14 +45,10 @@ export default function ChatPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Ask your data</h1>
-        <p className="text-sm text-muted-foreground">
-          Ask a question in plain English. The assistant writes a read-only query, we check it against a strict allowlist, and show you the answer and the query.
-          It cannot change data or see email addresses, and only your question (never student records) is sent to the AI.
-        </p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">Ask your data</h1>
       </div>
 
-      <Card className="space-y-3 p-4">
+      <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] space-y-3 p-4">
         <div className="flex gap-2">
           <input
             className="h-10 flex-1 rounded-md border border-input bg-card px-3 text-sm"
@@ -81,7 +77,7 @@ export default function ChatPage() {
       {error && <EmptyState>{error.message}</EmptyState>}
 
       {result && !busy && (
-        <Card className="space-y-3 p-4">
+        <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] space-y-3 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <p className="mr-auto text-sm font-medium">{result.answer}</p>
             <span className={`rounded-full px-2 py-0.5 text-xs ${result.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>

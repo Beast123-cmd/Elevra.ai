@@ -100,9 +100,11 @@ export default function LoginPage() {
                   <label htmlFor="login-password" className="text-xs font-medium text-slate-700">Password</label>
                   <Input id="login-password" type="password" autoComplete="current-password" placeholder="Enter your password" value={password} onChange={(event) => setPassword(event.target.value)} required disabled={busy} className="h-11 border-slate-300 bg-white text-sm placeholder:text-slate-400 focus-visible:ring-[#286a62]" />
                 </div>
-                <Button type="submit" className="h-11 w-full bg-[#154e49] text-sm font-semibold text-white hover:bg-[#103e3a]" disabled={busy || !email.trim() || !password}>
-                  {busy ? "Signing in…" : "Continue"}{!busy && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button type="submit" className="h-11 min-w-0 flex-1 bg-[#154e49] text-sm font-semibold text-white hover:bg-[#103e3a]" disabled={busy || !email.trim() || !password}>
+                    {busy ? "Signing in…" : "Continue"}{!busy && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
+                  </Button>
+                </div>
               </form>
             </TabsContent>
           ))}

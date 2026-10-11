@@ -44,8 +44,7 @@ export default function FacultyPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Action Queue</h1>
-        <p className="text-sm text-muted-foreground">{data.isAdmin ? "Every mentee across the institution." : "Your mentees: who needs a conversation, why, and what to do."}</p>
+        <h1 className="text-lg font-bold leading-tight tracking-tight">Action Queue</h1>
       </div>
       {!data.isAdmin && <MyWeek rows={data.rows} cases={data.cases} onChanged={reload} />}
       <ActionQueue rows={data.rows} cases={data.cases} showMentorFilter={data.isAdmin} />
