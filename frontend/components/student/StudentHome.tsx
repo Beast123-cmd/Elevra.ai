@@ -1,35 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { BAND_COLOR, SEGMENT_COLOR, TIER_STYLE, fmt } from "@/lib/format";
-import { PILLARS, type Pillar, type Profile, type Risk } from "@/lib/types";
+import { PILLARS, type Profile, type Risk } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MOCK_PROFILE } from "./mock-profile";
-
-type State =
-  | { status: "loading" }
-  | { status: "error"; message: string }
-  | { status: "empty" }
-  | { status: "ready"; profile: Profile };
-
-const PILLAR_LABEL: Record<Pillar, string> = {
-  academic: "Academics", attendance: "Attendance", lms: "Online learning (LMS)", placement: "Placement readiness",
-  skills: "Skills", engagement: "Co-curricular", feedback: "Feedback",
-};
-
-async function load(): Promise<Profile | null> {
-  const sb = createClient();
-  const { data: auth } = await sb.auth.getUser();
-  const studentId = auth.user?.app_metadata?.student_id as string | undefined;
-  if (!studentId) throw new Error("This account isn't linked to a student record");
-  const { data, error } = await sb.from("scores").select("profile").eq("student_id", studentId).maybeSingle();
-  if (error) throw new Error(error.message);
-  return (data?.profile as Profile | undefined) ?? null;
-}
+import { PILLAR_LABEL } from "./playbook";
+import { useStudentProfile } from "./useStudentProfile";
 
 function RiskCard({ title, risk }: { title: string; risk: Risk }) {
   const notAssessed = risk.level === "Not assessed";
@@ -173,20 +150,7 @@ function Dashboard({ p }: { p: Profile }) {
 }
 
 export function StudentHome() {
-  const mock = useSearchParams().get("mock") === "1";
-  const [state, setState] = useState<State>({ status: "loading" });
-
-  useEffect(() => {
-    if (mock) {
-      setState({ status: "ready", profile: MOCK_PROFILE });
-      return;
-    }
-    let cancelled = false;
-    load()
-      .then((profile) => !cancelled && setState(profile ? { status: "ready", profile } : { status: "empty" }))
-      .catch((e: Error) => !cancelled && setState({ status: "error", message: e.message }));
-    return () => { cancelled = true; };
-  }, [mock]);
+  const { state, mock } = useStudentProfile();
 
   if (state.status === "loading") {
     return (
