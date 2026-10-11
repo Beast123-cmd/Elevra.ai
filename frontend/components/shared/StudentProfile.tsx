@@ -9,8 +9,8 @@ import { HistoryChart, PillarRadar, Waterfall, WeeklyTimeline } from "./charts";
 function Section({ title, subtitle, children, className = "" }: { title: string; subtitle?: string; children: ReactNode; className?: string }) {
   return (
     <Card className={`p-4 ${className}`}>
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
-      {subtitle && <p className="mb-3 text-xs text-slate-500">{subtitle}</p>}
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+      {subtitle && <p className="mb-3 text-xs text-muted-foreground">{subtitle}</p>}
       {children}
     </Card>
   );
@@ -21,19 +21,19 @@ function RiskCard({ title, risk }: { title: string; risk: Risk }) {
     <Section title={title}>
       <RiskBadge level={risk.level} />
       {risk.level === "Not assessed" ? (
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           No placement assessments yet (typical for 2nd-years). The score is re-weighted without this pillar.
         </p>
       ) : risk.drivers.length === 0 ? (
-        <p className="mt-2 text-sm text-slate-500">No risk drivers triggered.</p>
+        <p className="mt-2 text-sm text-muted-foreground">No risk drivers triggered.</p>
       ) : (
         <ul className="mt-2 space-y-1 text-sm">
           {risk.drivers.map((d) => (
             <li key={d.label} className="flex justify-between gap-2">
               <span>
-                {d.label} <span className="text-slate-500">({d.value})</span>
+                {d.label} <span className="text-muted-foreground">({d.value})</span>
               </span>
-              <span className="shrink-0 font-mono text-xs text-red-700">+{d.points}</span>
+              <span className="shrink-0 font-mono text-xs text-risk-red">+{d.points}</span>
             </li>
           ))}
         </ul>
@@ -81,8 +81,8 @@ export function StudentProfile({ profile: s, cohortMeans, mode, actions, liveSco
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{s.name}</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">{s.name}</h1>
+          <p className="text-sm text-muted-foreground">
             {s.student_id} · {s.department} · Year {s.year} · Batch {s.batch} · {s.residence}
             {!mine && ` · Mentor ${s.mentor_faculty_id}`}
           </p>
@@ -90,23 +90,23 @@ export function StudentProfile({ profile: s, cohortMeans, mode, actions, liveSco
         <div className="ml-auto text-right">
           <div className="text-4xl font-bold">{score.toFixed(1)}</div>
           <BandBadge band={s.band} />
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-muted-foreground">
             Data confidence {s.confidence}%{s.missing.length > 0 && ` · missing: ${s.missing.join(", ")}`}
           </div>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm">
+        <span className="rounded-full bg-muted px-3 py-1 text-sm">
           Segment: <b>{s.segment}</b>
         </span>
         {s.engagement_drop && (
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-sm text-amber-800">
+          <span className="rounded-full bg-risk-amber-bg px-3 py-1 text-sm text-risk-amber">
             ⚠ {mine ? "Your LMS activity has dropped in recent weeks" : "Early warning: LMS activity dropped sharply in weeks 6–8"}
           </span>
         )}
         {s.declining && (
-          <span className="rounded-full bg-red-100 px-3 py-1 text-sm text-red-800">↘ Score declining over two semesters</span>
+          <span className="rounded-full bg-risk-red-bg px-3 py-1 text-sm text-risk-red">↘ Score declining over two semesters</span>
         )}
       </div>
 
@@ -126,7 +126,7 @@ export function StudentProfile({ profile: s, cohortMeans, mode, actions, liveSco
         <RiskCard title="Placement risk" risk={s.placement_risk} />
         <Section title={mine ? "Your next steps" : "Recommended actions"}>
           {s.actions.length === 0 ? (
-            <p className="text-sm text-slate-500">{mine ? "You are on track. Keep it up." : "Routine monthly check-in."}</p>
+            <p className="text-sm text-muted-foreground">{mine ? "You are on track. Keep it up." : "Routine monthly check-in."}</p>
           ) : (
             <ol className="list-decimal space-y-1 pl-5 text-sm">
               {s.actions.map((a) => (
@@ -134,7 +134,7 @@ export function StudentProfile({ profile: s, cohortMeans, mode, actions, liveSco
               ))}
             </ol>
           )}
-          <div className="mt-4 border-t pt-3 text-xs text-slate-500">
+          <div className="mt-4 border-t pt-3 text-xs text-muted-foreground">
             Early-warning model: <b>{(s.model.prob * 100).toFixed(0)}%</b> estimated chance of a backlog this semester. Main factors:
             <ul className="mt-1">
               {s.model.factors.map((f) => (
@@ -160,8 +160,8 @@ export function StudentProfile({ profile: s, cohortMeans, mode, actions, liveSco
         <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-1 text-sm">
           {records.map(([k, v]) => (
             <Fragment key={k}>
-              <dt className="font-medium text-slate-600">{k}</dt>
-              <dd className="text-slate-800">{v}</dd>
+              <dt className="font-medium text-muted-foreground">{k}</dt>
+              <dd className="text-foreground">{v}</dd>
             </Fragment>
           ))}
         </dl>

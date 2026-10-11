@@ -10,7 +10,7 @@ import { INTERVENTION_TYPES, NOTE_MAX, STATUSES, validateIntervention, type Stat
 
 interface Row { id: number; type: string; note: string | null; status: Status; followup_date: string | null; score_before: number | null; created_at: string; is_seeded: boolean }
 
-const FIELD = "h-9 w-full rounded-md border border-slate-300 bg-white px-3 text-sm";
+const FIELD = "h-9 w-full rounded-md border border-input bg-card px-3 text-sm";
 const STATUS_LABEL: Record<Status, string> = { planned: "Planned", in_progress: "In progress", done: "Done" };
 
 export function InterventionPanel({ studentId, scoreBefore, facultyId }: { studentId: string; scoreBefore: number; facultyId: string | null }) {
@@ -73,31 +73,31 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h2 className="text-sm font-semibold">Interventions</h2>
-          <p className="text-xs text-slate-500">Log what you did, then track follow-up. Effectiveness is measured from the score change.</p>
+          <p className="text-xs text-muted-foreground">Log what you did, then track follow-up. Effectiveness is measured from the score change.</p>
         </div>
         <Button size="sm" onClick={() => setOpen(true)}>Log intervention</Button>
       </div>
 
       {error ? (
-        <p className="text-sm text-red-700">Could not load interventions: {error}</p>
+        <p className="text-sm text-risk-red">Could not load interventions: {error}</p>
       ) : rows === null ? (
-        <p className="text-sm text-slate-500">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading…</p>
       ) : rows.length === 0 ? (
-        <p className="text-sm text-slate-500">No interventions logged for this student yet.</p>
+        <p className="text-sm text-muted-foreground">No interventions logged for this student yet.</p>
       ) : (
         <ul className="divide-y text-sm">
           {rows.map((r) => (
             <li key={r.id} className="flex flex-wrap items-center gap-3 py-2">
               <div className="min-w-0 flex-1">
-                <div className="font-medium">{r.type}{r.is_seeded && <span className="ml-2 text-xs font-normal text-slate-400">(historical)</span>}</div>
-                {r.note && <div className="text-slate-600">{r.note}</div>}
-                <div className="text-xs text-slate-500">
+                <div className="font-medium">{r.type}{r.is_seeded && <span className="ml-2 text-xs font-normal text-muted-foreground">(historical)</span>}</div>
+                {r.note && <div className="text-muted-foreground">{r.note}</div>}
+                <div className="text-xs text-muted-foreground">
                   {new Date(r.created_at).toLocaleDateString()}
                   {r.followup_date && ` · follow-up ${r.followup_date}`}
                   {r.score_before !== null && ` · score then ${Number(r.score_before).toFixed(1)}`}
                 </div>
               </div>
-              <select className="h-8 rounded-md border border-slate-300 px-2 text-xs" value={r.status} aria-label="Follow-up status"
+              <select className="h-8 rounded-md border border-input px-2 text-xs" value={r.status} aria-label="Follow-up status"
                 onChange={(e) => setStatus(r.id, e.target.value as Status)}>
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>{STATUS_LABEL[s]}</option>
@@ -123,7 +123,7 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
                   <option key={t}>{t}</option>
                 ))}
               </select>
-              {errors.type && <span className="text-xs text-red-700">{errors.type}</span>}
+              {errors.type && <span className="text-xs text-risk-red">{errors.type}</span>}
             </label>
             <label className="block text-sm">
               Status
@@ -132,19 +132,19 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
                 <option value="in_progress">In progress</option>
                 <option value="planned">Planned: still to do</option>
               </select>
-              <span className="text-xs text-slate-500">Done or in-progress counts as contact for the weekly target.</span>
+              <span className="text-xs text-muted-foreground">Done or in-progress counts as contact for the weekly target.</span>
             </label>
             <label className="block text-sm">
               Note (optional)
-              <textarea className="mt-1 w-full rounded-md border border-slate-300 p-2 text-sm" rows={3} value={form.note}
+              <textarea className="mt-1 w-full rounded-md border border-input p-2 text-sm" rows={3} value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })} />
-              <span className="text-xs text-slate-500">{form.note.length}/{NOTE_MAX}</span>
-              {errors.note && <span className="ml-2 text-xs text-red-700">{errors.note}</span>}
+              <span className="text-xs text-muted-foreground">{form.note.length}/{NOTE_MAX}</span>
+              {errors.note && <span className="ml-2 text-xs text-risk-red">{errors.note}</span>}
             </label>
             <label className="block text-sm">
               Follow-up date (optional)
               <input type="date" className={`${FIELD} mt-1`} value={form.followup_date} onChange={(e) => setForm({ ...form, followup_date: e.target.value })} />
-              {errors.followup_date && <span className="text-xs text-red-700">{errors.followup_date}</span>}
+              {errors.followup_date && <span className="text-xs text-risk-red">{errors.followup_date}</span>}
             </label>
             <Button disabled={saving} onClick={save}>{saving ? "Saving…" : "Save intervention"}</Button>
           </div>

@@ -45,8 +45,8 @@ export default function ChatPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Ask your data</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Ask your data</h1>
+        <p className="text-sm text-muted-foreground">
           Ask a question in plain English. The assistant writes a read-only query, we check it against a strict allowlist, and show you the answer and the query.
           It cannot change data or see email addresses, and only your question (never student records) is sent to the AI.
         </p>
@@ -55,7 +55,7 @@ export default function ChatPage() {
       <Card className="space-y-3 p-4">
         <div className="flex gap-2">
           <input
-            className="h-10 flex-1 rounded-md border border-slate-300 bg-white px-3 text-sm"
+            className="h-10 flex-1 rounded-md border border-input bg-card px-3 text-sm"
             placeholder="e.g. Which year 4 students have a success score below 45?"
             maxLength={300}
             value={question}
@@ -70,32 +70,32 @@ export default function ChatPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {chips.map((s) => (
-            <button key={s} disabled={busy} onClick={() => ask(s)} className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+            <button key={s} disabled={busy} onClick={() => ask(s)} className="rounded-full border border-input bg-card px-3 py-1 text-xs text-foreground hover:bg-muted/60 disabled:opacity-50">
               {s}
             </button>
           ))}
         </div>
       </Card>
 
-      {busy && <p className="text-sm text-slate-500">Working on it…</p>}
+      {busy && <p className="text-sm text-muted-foreground">Working on it…</p>}
       {error && <EmptyState>{error.message}</EmptyState>}
 
       {result && !busy && (
         <Card className="space-y-3 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <p className="mr-auto text-sm font-medium">{result.answer}</p>
-            <span className={`rounded-full px-2 py-0.5 text-xs ${result.source === "ai" ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
+            <span className={`rounded-full px-2 py-0.5 text-xs ${result.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
               {SOURCE_LABEL[result.source]}
             </span>
           </div>
 
-          {result.sql && result.row_count === 0 && <p className="text-sm text-slate-500">No students match that.</p>}
+          {result.sql && result.row_count === 0 && <p className="text-sm text-muted-foreground">No students match that.</p>}
 
           {result.rows.length > 0 && (
             <>
-              <div className="max-h-96 overflow-auto rounded-md border border-slate-200">
+              <div className="max-h-96 overflow-auto rounded-md border border-border">
                 <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-slate-50 text-left text-xs uppercase text-slate-500">
+                  <thead className="sticky top-0 bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                     <tr>{result.columns.map((c) => <th key={c} className="p-2">{c.replace(/_/g, " ")}</th>)}</tr>
                   </thead>
                   <tbody>
@@ -107,7 +107,7 @@ export default function ChatPage() {
                   </tbody>
                 </table>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 {result.row_count} row{result.row_count === 1 ? "" : "s"}
                 {result.truncated && " · showing the first 200 only; narrow your question to see the rest"}
               </p>
@@ -115,7 +115,7 @@ export default function ChatPage() {
           )}
 
           {result.sql && (
-            <details className="text-xs text-slate-600">
+            <details className="text-xs text-muted-foreground">
               <summary className="cursor-pointer">Show the query that was run</summary>
               <pre className="mt-2 overflow-x-auto rounded bg-slate-900 p-3 text-slate-100">{result.sql}</pre>
             </details>

@@ -37,7 +37,7 @@ export default function StudentDetailPage() {
   const { data: state, error, loading } = useCachedQuery(`student360:${id}`, () => loadStudent(id));
 
   const back = (
-    <Link href="/faculty" className="text-sm text-blue-700 hover:underline">
+    <Link href="/faculty" className="text-sm text-primary hover:underline">
       ← Back to the action queue
     </Link>
   );

@@ -30,7 +30,7 @@ export function WeeklyBrief({ rows }: { rows: OverviewRow[] }) {
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h2 className="text-sm font-semibold">This week in brief</h2>
-          <p className="text-xs text-slate-500">A short summary of who needs support and whether they are being reached.</p>
+          <p className="text-xs text-muted-foreground">A short summary of who needs support and whether they are being reached.</p>
         </div>
         <Button size="sm" variant="outline" className="print:hidden" disabled={state.kind === "loading"} onClick={generate}>
           {state.kind === "loading" ? "Writing…" : state.kind === "ready" ? "Refresh" : "Write this week's brief"}
@@ -40,8 +40,8 @@ export function WeeklyBrief({ rows }: { rows: OverviewRow[] }) {
       {state.kind === "ready" && (
         <>
           <p className="text-sm leading-relaxed">{state.text}</p>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className={`rounded-full px-2 py-0.5 ${state.source === "ai" ? "bg-blue-50 text-blue-700" : "bg-slate-100"}`}>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <span className={`rounded-full px-2 py-0.5 ${state.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>
               {state.source === "ai" ? "AI-written · every figure checked against the data" : "Standard summary"}
             </span>
             {state.note && <span>{state.note}</span>}

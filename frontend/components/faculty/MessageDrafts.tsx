@@ -38,7 +38,7 @@ export function MessageDrafts({ profile }: { profile: Profile }) {
     <Card className="space-y-3 p-4" aria-label="Message drafts">
       <div>
         <h2 className="text-sm font-semibold">Write to this student</h2>
-        <p className="text-xs text-slate-500">Pick a message, edit it, and send it yourself. Nothing is sent from here.</p>
+        <p className="text-xs text-muted-foreground">Pick a message, edit it, and send it yourself. Nothing is sent from here.</p>
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Message type">
         {MESSAGE_KINDS.map(([k, name]) => (
@@ -49,15 +49,15 @@ export function MessageDrafts({ profile }: { profile: Profile }) {
       </div>
       {draft && (
         <div className="space-y-2">
-          <textarea aria-label="Message text" className="min-h-28 w-full rounded-md border border-slate-300 p-2 text-sm" value={draft.text}
+          <textarea aria-label="Message text" className="min-h-28 w-full rounded-md border border-input p-2 text-sm" value={draft.text}
             onChange={(e) => setDraft({ ...draft, text: e.target.value })} />
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className={`rounded-full px-2 py-0.5 ${draft.source === "ai" ? "bg-blue-50 text-blue-700" : "bg-slate-100"}`}>{label}</span>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <span className={`rounded-full px-2 py-0.5 ${draft.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>{label}</span>
             {draft.note && <span>{draft.note}</span>}
             <span className="ml-auto flex gap-3">
-              <button className="text-blue-700 hover:underline" onClick={() => navigator.clipboard.writeText(draft.text).then(() => toast.success("Copied"), () => toast.error("Could not copy"))}>Copy</button>
-              <a className="text-blue-700 hover:underline" href={whatsappUrl(draft.text)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-              <a className="text-blue-700 hover:underline" href={mailtoUrl(subject, draft.text)}>Email</a>
+              <button className="text-primary hover:underline" onClick={() => navigator.clipboard.writeText(draft.text).then(() => toast.success("Copied"), () => toast.error("Could not copy"))}>Copy</button>
+              <a className="text-primary hover:underline" href={whatsappUrl(draft.text)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a className="text-primary hover:underline" href={mailtoUrl(subject, draft.text)}>Email</a>
             </span>
           </div>
         </div>

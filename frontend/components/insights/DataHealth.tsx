@@ -35,10 +35,10 @@ function Kpi({ icon: Icon, label, value }: { icon: typeof Database; label: strin
   return (
     <Card>
       <CardContent className="flex items-center gap-4 p-5">
-        <div className="rounded-lg bg-slate-100 p-2.5 text-slate-700"><Icon className="h-5 w-5" /></div>
+        <div className="rounded-lg bg-muted p-2.5 text-foreground"><Icon className="h-5 w-5" /></div>
         <div>
           <p className="text-2xl font-semibold tabular-nums">{value}</p>
-          <p className="text-sm text-slate-500">{label}</p>
+          <p className="text-sm text-muted-foreground">{label}</p>
         </div>
       </CardContent>
     </Card>
@@ -61,11 +61,11 @@ function HowWeJoin({ sources, nStudents }: { sources: number; nStudents: number 
       <CardContent className="flex flex-col items-stretch gap-3 lg:flex-row lg:items-center">
         {steps.map((s, i) => (
           <div key={s.title} className="flex flex-1 items-center gap-3">
-            <div className="flex-1 rounded-lg border bg-slate-50 p-4">
+            <div className="flex-1 rounded-lg border bg-muted/50 p-4">
               <p className="font-medium">{s.title}</p>
-              <p className="mt-1 text-sm text-slate-500">{s.body}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{s.body}</p>
             </div>
-            {i < steps.length - 1 && <ArrowRight className="hidden h-5 w-5 shrink-0 text-slate-400 lg:block" />}
+            {i < steps.length - 1 && <ArrowRight className="hidden h-5 w-5 shrink-0 text-muted-foreground lg:block" />}
           </div>
         ))}
       </CardContent>
@@ -136,7 +136,7 @@ export function DataHealth() {
   return (
     <div className="space-y-6">
       {mock && (
-        <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        <p className="rounded-md bg-risk-amber-bg px-3 py-2 text-sm text-risk-amber">
           Showing sample data (?mock=1). Remove it from the address to see live results.
         </p>
       )}
@@ -196,7 +196,7 @@ export function DataHealth() {
           </CardHeader>
           <CardContent className="overflow-x-auto">
             {quality.length === 0 ? (
-              <p className="text-sm text-slate-500">No issues were logged.</p>
+              <p className="text-sm text-muted-foreground">No issues were logged.</p>
             ) : (
               <Table>
                 <TableHeader>
@@ -213,7 +213,7 @@ export function DataHealth() {
                       <TableCell className="font-medium">{q.source}</TableCell>
                       <TableCell>{q.issue}</TableCell>
                       <TableCell className="text-right tabular-nums">{nf.format(q.rows_affected)}</TableCell>
-                      <TableCell className="text-slate-600">{q.action}</TableCell>
+                      <TableCell className="text-muted-foreground">{q.action}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -232,7 +232,7 @@ export function DataHealth() {
               <div key={s.source}>
                 <div className="mb-1 flex justify-between text-sm">
                   <span>{s.source}</span>
-                  <span className="tabular-nums text-slate-500">{s.students_covered_pct.toFixed(1)}%</span>
+                  <span className="tabular-nums text-muted-foreground">{s.students_covered_pct.toFixed(1)}%</span>
                 </div>
                 <Progress value={s.students_covered_pct} className="h-2" />
               </div>

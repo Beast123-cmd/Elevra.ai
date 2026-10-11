@@ -1,11 +1,6 @@
 import type { ReactNode } from "react";
-import { FacultyNav } from "@/components/faculty/FacultyNav";
+import { AppShell } from "@/components/shared/shell/AppShell";
 
-export default function FacultyLayout({ children }: { children: ReactNode }) {
-  return (
-    <div className="min-h-screen bg-slate-50">
-      <FacultyNav />
-      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
-    </div>
-  );
+export default function Layout({ children }: { children: ReactNode }) {
+  return <AppShell>{children}</AppShell>;
 }

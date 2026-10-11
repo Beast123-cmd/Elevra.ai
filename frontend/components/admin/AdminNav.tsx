@@ -23,10 +23,10 @@ export function AdminNav() {
   const path = usePathname();
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
-        <span className="font-bold text-blue-900">
-          Elevra.ai <span className="font-normal text-slate-500">· Admin</span>
+        <span className="font-bold text-primary">
+          Elevra.ai <span className="font-normal text-muted-foreground">· Admin</span>
         </span>
         <nav className="flex flex-wrap gap-1 text-sm">
           {LINKS.map(([href, label]) => {
@@ -35,7 +35,7 @@ export function AdminNav() {
               <Link
                 key={href}
                 href={href}
-                className={`rounded-md px-3 py-1.5 ${active ? "bg-blue-50 font-medium text-blue-700" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`rounded-md px-3 py-1.5 ${active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground hover:bg-muted"}`}
               >
                 {label}
               </Link>

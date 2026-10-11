@@ -15,7 +15,7 @@ interface StudentRow { student_id: string; name: string; department: string; yea
 interface FacultyRow { faculty_id: string; name: string; department: string }
 interface Created { email: string; role: Role; temp_password: string }
 
-const FIELD = "h-9 w-full rounded-md border border-slate-300 bg-white px-3 text-sm";
+const FIELD = "h-9 w-full rounded-md border border-input bg-card px-3 text-sm";
 
 export default function UsersPage() {
   const supabase = createClient();
@@ -94,8 +94,8 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">User management</h1>
-        <p className="text-sm text-slate-500">There is no self sign-up. Admins create every student and faculty login and assign mentors.</p>
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">User management</h1>
+        <p className="text-sm text-muted-foreground">There is no self sign-up. Admins create every student and faculty login and assign mentors.</p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -135,15 +135,15 @@ export default function UsersPage() {
             <Button variant="outline" onClick={search}>Search</Button>
           </div>
           {matches.length === 0 ? (
-            <p className="text-sm text-slate-500">{q ? "No students found." : "Search for a student to change their mentor."}</p>
+            <p className="text-sm text-muted-foreground">{q ? "No students found." : "Search for a student to change their mentor."}</p>
           ) : (
             <ul className="divide-y text-sm">
               {matches.map((s) => (
                 <li key={s.student_id} className="flex flex-wrap items-center gap-2 py-2">
                   <span className="min-w-0 flex-1">
-                    <b>{s.name}</b> <span className="text-slate-500">{s.student_id} · {s.department} · Y{s.year} · mentor {s.mentor_faculty_id ?? "none"}</span>
+                    <b>{s.name}</b> <span className="text-muted-foreground">{s.student_id} · {s.department} · Y{s.year} · mentor {s.mentor_faculty_id ?? "none"}</span>
                   </span>
-                  <select className="h-8 rounded-md border border-slate-300 px-2 text-xs" value={mentorFor[s.student_id] ?? ""}
+                  <select className="h-8 rounded-md border border-input px-2 text-xs" value={mentorFor[s.student_id] ?? ""}
                     onChange={(e) => setMentorFor({ ...mentorFor, [s.student_id]: e.target.value })}>
                     <option value="">Mentor…</option>
                     {faculty.filter((f) => f.department === s.department).map((f) => (
@@ -166,13 +166,13 @@ export default function UsersPage() {
         {error ? (
           <EmptyState>Could not load users: {error}</EmptyState>
         ) : users === null ? (
-          <p className="text-sm text-slate-500">Loading…</p>
+          <p className="text-sm text-muted-foreground">Loading…</p>
         ) : shown.length === 0 ? (
           <EmptyState>{users.length === 0 ? "No accounts yet." : "No accounts match that filter."}</EmptyState>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-left text-xs uppercase text-slate-500">
+              <thead className="text-left text-xs uppercase text-muted-foreground">
                 <tr><th className="p-2">Email</th><th className="p-2">Role</th><th className="p-2">Linked record</th><th className="p-2">Created</th></tr>
               </thead>
               <tbody>
@@ -180,8 +180,8 @@ export default function UsersPage() {
                   <tr key={u.id} className="border-t">
                     <td className="p-2">{u.email}</td>
                     <td className="p-2 capitalize">{u.role}</td>
-                    <td className="p-2 text-slate-600">{u.student_id ?? u.faculty_id ?? "—"}</td>
-                    <td className="p-2 text-slate-500">{new Date(u.created_at).toLocaleDateString()}</td>
+                    <td className="p-2 text-muted-foreground">{u.student_id ?? u.faculty_id ?? "—"}</td>
+                    <td className="p-2 text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -200,7 +200,7 @@ export default function UsersPage() {
             <div className="space-y-2 text-sm">
               <div>Email: <b>{created.email}</b> ({created.role})</div>
               <div className="flex items-center gap-2">
-                Temporary password: <code className="rounded bg-slate-100 px-2 py-1">{created.temp_password}</code>
+                Temporary password: <code className="rounded bg-muted px-2 py-1">{created.temp_password}</code>
                 <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(created.temp_password).then(() => toast.success("Copied"))}>Copy</Button>
               </div>
             </div>

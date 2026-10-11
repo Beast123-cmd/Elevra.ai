@@ -86,10 +86,10 @@ export function DemoGuide() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">
-        Signed in as <span className="font-medium text-slate-700">{email ?? "…"}</span>. Each step opens in the right demo account for you.
+      <p className="text-sm text-muted-foreground">
+        Signed in as <span className="font-medium text-foreground">{email ?? "…"}</span>. Each step opens in the right demo account for you.
       </p>
-      {error && <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>}
+      {error && <p role="alert" className="rounded-md bg-risk-red-bg px-3 py-2 text-sm text-risk-red">{error}</p>}
       <ol className="space-y-4">
         {STEPS.map((s, i) => {
           const here = email === s.account.email;
@@ -98,13 +98,13 @@ export function DemoGuide() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <CardTitle className="text-lg"><span className="mr-2 text-slate-400">{i + 1}.</span>{s.title}</CardTitle>
-                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">{s.account.label} · {s.account.email}</span>
+                    <CardTitle className="text-lg"><span className="mr-2 text-muted-foreground">{i + 1}.</span>{s.title}</CardTitle>
+                    <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">{s.account.label} · {s.account.email}</span>
                   </div>
-                  <CardDescription className="text-base text-slate-700">&ldquo;{s.say}&rdquo;</CardDescription>
+                  <CardDescription className="text-base text-foreground">&ldquo;{s.say}&rdquo;</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <ul className="list-inside list-disc text-sm text-slate-600">{s.try.map((t) => <li key={t}>{t}</li>)}</ul>
+                  <ul className="list-inside list-disc text-sm text-muted-foreground">{s.try.map((t) => <li key={t}>{t}</li>)}</ul>
                   <div className="flex flex-wrap gap-2">
                     {s.links.map((l) =>
                       here ? (

@@ -36,7 +36,21 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
-  			destructive: 'hsl(var(--destructive))',
+  			destructive: {
+  				DEFAULT: 'hsl(var(--destructive))',
+  				foreground: 'hsl(var(--destructive-foreground))'
+  			},
+  			highlight: 'hsl(var(--highlight))',
+  			risk: {
+  				red: 'hsl(var(--risk-red))',
+  				'red-bg': 'hsl(var(--risk-red-bg))',
+  				amber: 'hsl(var(--risk-amber))',
+  				'amber-bg': 'hsl(var(--risk-amber-bg))',
+  				green: 'hsl(var(--risk-green))',
+  				'green-bg': 'hsl(var(--risk-green-bg))',
+  				none: 'hsl(var(--risk-none))',
+  				'none-bg': 'hsl(var(--risk-none-bg))'
+  			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -45,7 +59,8 @@ const config: Config = {
   				'2': 'hsl(var(--chart-2))',
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
+  				'5': 'hsl(var(--chart-5))',
+  				'6': 'hsl(var(--chart-6))'
   			},
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar))',
@@ -58,7 +73,18 @@ const config: Config = {
   				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
+  		fontFamily: {
+  			sans: ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			serif: ['"IBM Plex Serif"', 'ui-serif', 'Georgia', 'serif'],
+  			mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace']
+  		},
+  		boxShadow: {
+  			DEFAULT: '0 0 0 0 transparent',
+  			sm: '0 0 0 0 transparent'
+  		},
   		borderRadius: {
+  			'2xl': 'calc(var(--radius) + 4px)',
+  			xl: 'calc(var(--radius) + 2px)',
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'

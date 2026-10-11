@@ -1,19 +1,11 @@
-import { BAND_COLOR, TIER_STYLE } from "@/lib/format";
 import type { Tier } from "@/lib/types";
+import { BandTag, RiskTag } from "./ui-kit";
 
+/** Kept for existing pages; both render the shared token-based tags. */
 export function RiskBadge({ level, prefix }: { level: Tier; prefix?: string }) {
-  return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ring-1 ${TIER_STYLE[level]}`}>
-      {prefix ? `${prefix}: ` : ""}
-      {level === "Not assessed" ? "Not yet assessed" : level}
-    </span>
-  );
+  return <RiskTag level={level} prefix={prefix} />;
 }
 
 export function BandBadge({ band }: { band: string }) {
-  return (
-    <span className="whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium text-white" style={{ background: BAND_COLOR[band] ?? "#64748b" }}>
-      {band}
-    </span>
-  );
+  return <BandTag band={band} />;
 }

@@ -12,8 +12,8 @@ const fmtDate = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(
 
 function Last({ studentId, cases }: { studentId: string; cases: CaseRow[] }) {
   const s = contactState(studentId, cases);
-  if (s.kind === "never") return <span className="text-red-700">not contacted yet</span>;
-  return <span className="text-amber-700">last contact {s.daysAgo} days ago</span>;
+  if (s.kind === "never") return <span className="text-risk-red">not contacted yet</span>;
+  return <span className="text-risk-amber">last contact {s.daysAgo} days ago</span>;
 }
 
 /**
@@ -45,8 +45,8 @@ export function MyWeek({ rows, cases, onChanged }: { rows: QueueRow[]; cases: Ca
       <li key={c.id} className="flex flex-wrap items-center gap-2 py-2 text-sm">
         <span className={`w-14 shrink-0 text-xs font-medium ${tone}`}>{c.followup_date ? fmtDate(c.followup_date) : "No date"}</span>
         <span className="min-w-0 flex-1">
-          <Link href={`/faculty/student/${c.student_id}`} className="font-medium text-blue-700 hover:underline">{s?.name ?? c.student_id}</Link>
-          <span className="text-slate-500"> · {c.type}</span>
+          <Link href={`/faculty/student/${c.student_id}`} className="font-medium text-primary hover:underline">{s?.name ?? c.student_id}</Link>
+          <span className="text-muted-foreground"> · {c.type}</span>
         </span>
         <Button size="sm" variant="outline" disabled={busy === c.id} onClick={() => markDone(c.id)}>{busy === c.id ? "Saving…" : "Done"}</Button>
       </li>
@@ -59,38 +59,38 @@ export function MyWeek({ rows, cases, onChanged }: { rows: QueueRow[]; cases: Ca
     <section className="space-y-3" aria-label="My week">
       <div className="flex flex-wrap items-end gap-x-6 gap-y-1">
         <h2 className="text-xl font-bold">My week</h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           {cov.red === 0
             ? "None of your mentees is flagged Red right now."
             : <>
-                <b className="text-slate-800">{cov.contacted} of {cov.red}</b> Red mentees contacted in the last {SLA_DAYS} days
-                {waiting > 0 && <> · <b className="text-red-700">{waiting} waiting</b></>}
+                <b className="text-foreground">{cov.contacted} of {cov.red}</b> Red mentees contacted in the last {SLA_DAYS} days
+                {waiting > 0 && <> · <b className="text-risk-red">{waiting} waiting</b></>}
               </>}
         </p>
       </div>
       {cov.red > 0 && (
-        <div className="h-2 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow={cov.pct} aria-valuemin={0} aria-valuemax={100} aria-label="Red mentees contacted this week">
-          <div className="h-full bg-emerald-500 transition-all" style={{ width: `${cov.pct}%` }} />
+        <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={cov.pct} aria-valuemin={0} aria-valuemax={100} aria-label="Red mentees contacted this week">
+          <div className="h-full bg-risk-green transition-all" style={{ width: `${cov.pct}%` }} />
         </div>
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-4">
           <h3 className="text-sm font-semibold">Start with these {today.length > 0 ? today.length : ""}</h3>
-          <p className="mb-2 text-xs text-slate-500">The most urgent flagged students nobody has contacted this week. A short list on purpose.</p>
+          <p className="mb-2 text-xs text-muted-foreground">The most urgent flagged students nobody has contacted this week. A short list on purpose.</p>
           {today.length === 0 ? (
-            <p className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-800">
+            <p className="rounded-md bg-risk-green-bg p-3 text-sm text-risk-green">
               {cov.red === 0 ? "Nobody needs a contact right now." : "Every Red mentee has been contacted this week. Nice work."}
             </p>
           ) : (
             <ol className="divide-y">
               {today.map((s, i) => (
                 <li key={s.student_id} className="flex flex-wrap items-start gap-3 py-2 text-sm">
-                  <span className="mt-0.5 w-5 shrink-0 text-slate-400">{i + 1}</span>
+                  <span className="mt-0.5 w-5 shrink-0 text-muted-foreground">{i + 1}</span>
                   <span className="min-w-0 flex-1">
-                    <Link href={`/faculty/student/${s.student_id}`} className="font-medium text-blue-700 hover:underline">{s.name}</Link>
-                    <span className="text-xs text-slate-500"> · {s.department} · Y{s.year} · <Last studentId={s.student_id} cases={cases} /></span>
-                    <span className="block text-xs text-slate-600">{topReasons(s, 1)[0]?.label ?? s.actions?.[0] ?? "Flagged for a check-in"}</span>
+                    <Link href={`/faculty/student/${s.student_id}`} className="font-medium text-primary hover:underline">{s.name}</Link>
+                    <span className="text-xs text-muted-foreground"> · {s.department} · Y{s.year} · <Last studentId={s.student_id} cases={cases} /></span>
+                    <span className="block text-xs text-muted-foreground">{topReasons(s, 1)[0]?.label ?? s.actions?.[0] ?? "Flagged for a check-in"}</span>
                   </span>
                   <Button asChild size="sm"><Link href={`/faculty/student/${s.student_id}`}>Open</Link></Button>
                 </li>
@@ -101,18 +101,18 @@ export function MyWeek({ rows, cases, onChanged }: { rows: QueueRow[]; cases: Ca
 
         <Card className="p-4">
           <h3 className="text-sm font-semibold">Follow-ups</h3>
-          <p className="mb-2 text-xs text-slate-500">Open interventions with a date. Log one from a student&apos;s page and set a follow-up date.</p>
+          <p className="mb-2 text-xs text-muted-foreground">Open interventions with a date. Log one from a student&apos;s page and set a follow-up date.</p>
           {!hasFollowUps ? (
-            <p className="rounded-md bg-slate-50 p-3 text-sm text-slate-600">No follow-ups scheduled yet.</p>
+            <p className="rounded-md bg-muted/50 p-3 text-sm text-muted-foreground">No follow-ups scheduled yet.</p>
           ) : (
             <ul className="divide-y">
-              {due.overdue.map((c) => followRow(c, "text-red-700"))}
-              {due.today.map((c) => followRow(c, "text-amber-700"))}
-              {due.upcoming.map((c) => followRow(c, "text-slate-600"))}
-              {due.undated.map((c) => followRow(c, "text-slate-400"))}
+              {due.overdue.map((c) => followRow(c, "text-risk-red"))}
+              {due.today.map((c) => followRow(c, "text-risk-amber"))}
+              {due.upcoming.map((c) => followRow(c, "text-muted-foreground"))}
+              {due.undated.map((c) => followRow(c, "text-muted-foreground"))}
             </ul>
           )}
-          {due.overdue.length > 0 && <p className="mt-2 text-xs font-medium text-red-700">{due.overdue.length} overdue</p>}
+          {due.overdue.length > 0 && <p className="mt-2 text-xs font-medium text-risk-red">{due.overdue.length} overdue</p>}
         </Card>
       </div>
     </section>
