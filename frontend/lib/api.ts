@@ -8,6 +8,10 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (r.status === 401 && typeof window !== "undefined") window.dispatchEvent(new Event("elevra:unauthorized"));
-  if (!r.ok) throw new Error(`API ${path} failed: ${r.status}`);
+  if (!r.ok) {
+    // FastAPI puts the human-readable reason in `detail`; keep it so screens can show why a request failed.
+    const detail = await r.json().then((j) => (typeof j?.detail === "string" ? j.detail : "")).catch(() => "");
+    throw new Error(`API ${path} failed: ${r.status}${detail ? ` - ${detail}` : ""}`);
+  }
   return r.json();
 }

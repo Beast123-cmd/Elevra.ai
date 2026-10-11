@@ -188,9 +188,12 @@ def student_context(student_id: str) -> dict:
                   .eq("done", False).order("created_at", desc=True).limit(6).execute().data, [])
     interviews = _safe(lambda: db().table("mock_interviews").select("created_at,score").eq("student_id", student_id)
                        .not_.is_("score", "null").order("created_at").execute().data, [])
+    skill_rows = _safe(lambda: db().table("skills").select("skill,level").eq("student_id", student_id).execute().data, [])
+    skills = {r["skill"]: round(float(r["level"])) for r in skill_rows if r.get("level") is not None}
     m = p.get("metrics", {})
     return {
         "name": p.get("name"), "department": p.get("department"), "year": p.get("year"),
+        "skill_levels_out_of_100": dict(sorted(skills.items(), key=lambda kv: kv[1])),
         "success_score": p.get("score"), "band": p.get("band"), "confidence_pct": p.get("confidence"),
         "segment": p.get("segment"),
         "areas_out_of_100": {PILLAR_LABEL[k]: (round(v, 1) if v is not None else None) for k, v in (p.get("pillars") or {}).items()},
@@ -204,7 +207,7 @@ def student_context(student_id: str) -> dict:
         "interview_scores": [round(float(i["score"]), 1) for i in interviews],
         "interview_focus_areas": [f"{f['label']} ({f['status']}, seen {f['times_seen']}x)" for f in focus],
         "pending_practice_tasks": [f"Day {t['day']}: {t['task']}" for t in tasks],
-        "_profile": p, "_interviews": interviews,
+        "_profile": p, "_interviews": interviews, "_skills": skills,
     }
 
 
@@ -260,13 +263,39 @@ def _words(text: str) -> list[str]:
     return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).split()
 
 
+GAP_BELOW, STRONG_FROM = 55, 70   # same thresholds as frontend/components/student/recommend.ts
+LEVEL_RANK = {"Beginner": 0, "Intermediate": 1, "Advanced": 2}
+
+
+def _level_for(skill_level: float) -> str:
+    return "Beginner" if skill_level < 50 else "Intermediate" if skill_level < 75 else "Advanced"
+
+
+def _skill_fit(course: dict, skills: dict) -> tuple[float, str, str | None]:
+    """(priority, reason, main skill) for one course given the student's real skill levels. Higher priority = better."""
+    trained = [t for t in course.get("trains", []) if t in skills]
+    if not trained:
+        return 0.0, "", None
+    main = min(trained, key=lambda t: skills[t])
+    level = skills[main]
+    course_level = course.get("level")
+    fit = 1 - min(1, abs(LEVEL_RANK[_level_for(level)] - LEVEL_RANK.get(course_level, 1)) / 2) if course_level else 0.5
+    if level < GAP_BELOW:
+        return 100 + (GAP_BELOW - level) * 1.2 + fit * 25, f"Your {main} is {level}/100, one of your lower skills.", main
+    if level >= STRONG_FROM and LEVEL_RANK.get(course_level, 0) >= 1:
+        return 60 + (level - STRONG_FROM) * 0.6 + fit * 20, f"You already score {level}/100 in {main}; this goes further.", main
+    return 30 + fit * 20, f"Builds {main} (you are at {level}/100).", main
+
+
 def tool_courses(ctx: dict, topic: str | None = None, limit: int = 4) -> list[dict]:
     """Courses and certifications from the app's own catalog for the student's branch, best match first.
 
     With a topic ("machine learning", "ai", "python") courses whose title, description, tag or keywords contain the
-    words rank first (all words beat some words). Without one, courses that help the student's weakest areas rank
-    first. Never invents a course: everything returned comes from courses.json."""
+    words rank first (all words beat some words), then the ones that fit the student's real skill level. Without a
+    topic, the student's lowest skills decide: a course for their weakest skill comes first, a beginner course in a
+    skill they are already strong at does not. Never invents a course: everything returned comes from courses.json."""
     dept = ctx["department"]
+    skills = ctx.get("_skills") or {}
     pillars = ctx["_profile"].get("pillars") or {}
     weak = [k for k, _ in sorted(((k, v) for k, v in pillars.items() if v is not None), key=lambda kv: kv[1])[:2]]
     wanted = _words(topic or "")
@@ -274,7 +303,7 @@ def tool_courses(ctx: dict, topic: str | None = None, limit: int = 4) -> list[di
     for order, c in enumerate(_catalog()):
         if c.get("departments") and dept not in c["departments"]:
             continue
-        haystack = _words(f"{c['title']} {c['description']} {c['tag']} {' '.join(c.get('keywords', []))}")
+        haystack = _words(f"{c['title']} {c['description']} {c['tag']} {' '.join(c.get('keywords', []))} {' '.join(c.get('trains', []))}")
         hit = sum(any(h.startswith(w) for h in haystack) for w in wanted)
         if wanted and hit == 0:
             continue
@@ -282,9 +311,22 @@ def tool_courses(ctx: dict, topic: str | None = None, limit: int = 4) -> list[di
         in_title = sum(any(h.startswith(w) for h in title_words) for w in wanted)   # a title match beats a keyword match
         helps = any(k in weak for k in c.get("skills", []))
         everything = bool(wanted) and hit == len(wanted)
-        scored.append((not everything, -in_title, -hit, not helps, order, c))
-    scored.sort(key=lambda t: t[:5])
-    return [{k: c[k] for k in ("title", "description", "provider", "url", "tag")} for *_, c in scored[:limit]]
+        priority, reason, _main = _skill_fit(c, skills)
+        if not reason and helps:
+            reason = "Helps one of your weaker score areas."
+        scored.append(((not everything, -in_title, -hit, -priority, not helps, order), c, reason))
+    if any(not t[0][0] for t in scored):   # some course matches every word: drop the partial matches ("learning" alone)
+        scored = [t for t in scored if not t[0][0]]
+    scored.sort(key=lambda t: t[0])
+    out = []
+    for _key, c, reason in scored[:limit]:
+        item = {k: c[k] for k in ("title", "description", "provider", "url", "tag")}
+        if c.get("level"):
+            item["level"] = c["level"]
+        if reason:
+            item["reason"] = reason
+        out.append(item)
+    return out
 
 
 def build_chart(kind: str | None, ctx: dict, whatif: dict | None = None) -> dict | None:
