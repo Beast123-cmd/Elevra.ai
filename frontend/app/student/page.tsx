@@ -3,14 +3,10 @@ import { StudentHome } from "@/components/student/StudentHome";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-6xl space-y-6 p-6">
-      <header>
-        <h1 className="text-2xl font-semibold">My dashboard</h1>
-        <p className="text-slate-500">Where you stand today, and what would move your score the most.</p>
-      </header>
-      <Suspense fallback={null}>
+    <>
+      <Suspense fallback={<div className="mx-auto w-full max-w-[1030px] space-y-4 px-4 py-7 sm:px-6" aria-busy="true"><div className="h-7 w-56 animate-pulse rounded bg-slate-200" /><div className="h-4 w-64 animate-pulse rounded bg-slate-200" /><div className="mt-6 h-48 animate-pulse rounded-lg bg-white" /></div>}>
         <StudentHome />
       </Suspense>
-    </main>
+    </>
   );
 }
