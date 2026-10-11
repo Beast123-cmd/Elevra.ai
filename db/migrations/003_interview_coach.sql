@@ -1,4 +1,4 @@
--- 003_interview_coach.sql (PROPOSAL from Lane C, for Aayush to review and move into db/migrations/)
+-- 003_interview_coach.sql: post-interview coaching (applied on the Mumbai project).
 --
 -- Post-interview coaching: remember each student's weak interview topics across interviews, and keep the practice
 -- plan generated after each interview so students can tick tasks off and mentors can see progress.

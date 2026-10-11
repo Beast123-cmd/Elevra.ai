@@ -1,4 +1,4 @@
--- 004_assistant_history.sql (PROPOSAL from Lane C, for Aayush to review and move into db/migrations/)
+-- 004_assistant_history.sql: saved Ask Elevra conversations (applied on the Mumbai project).
 --
 -- Saved conversations for the 'Ask Elevra' assistants (students, faculty and admins), so a user can reopen past chats
 -- on any device. Each message keeps its rendered extras (chart, hackathon cards, query result) in `payload`, so an old
