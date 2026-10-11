@@ -1,4 +1,4 @@
-"""Regression checks for the local, dependency-free P0 data pipeline."""
+"""Regression checks for the data pipeline and scoring API."""
 from __future__ import annotations
 
 import hashlib
@@ -6,11 +6,13 @@ import inspect
 import json
 import sys
 import tempfile
-import types
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 from clean.clean import clean_all, normalize_id
 from generate.generate import DEFAULT_STUDENT_COUNT, generate_all
@@ -21,18 +23,7 @@ from scoring.model import historical_examples, train_model
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2] / "backend"
 sys.path.insert(0, str(BACKEND_ROOT))
-# These API unit tests replace the database client; keep pipeline tests runnable
-# in the intentionally dependency-light local environment without installing API packages.
-if "supabase" not in sys.modules:
-    supabase_stub = types.ModuleType("supabase")
-    supabase_stub.Client = object
-    supabase_stub.create_client = lambda *_args, **_kwargs: None
-    sys.modules["supabase"] = supabase_stub
-if "dotenv" not in sys.modules:
-    dotenv_stub = types.ModuleType("dotenv")
-    dotenv_stub.load_dotenv = lambda *_args, **_kwargs: None
-    sys.modules["dotenv"] = dotenv_stub
-from common.auth import Caller
+from common.auth import Caller, current_caller
 from routers import whatif as whatif_router
 
 BASE = {
@@ -127,6 +118,13 @@ class WhatIfApiTests(unittest.TestCase):
         def table(self, name):
             return WhatIfApiTests.FakeQuery(self, name)
 
+    @staticmethod
+    def _client(caller):
+        app = FastAPI()
+        app.include_router(whatif_router.router)
+        app.dependency_overrides[current_caller] = lambda: caller
+        return TestClient(app)
+
     def test_whatif_validates_supported_ranges_and_rejects_unknown_metrics(self):
         self.assertEqual(whatif_router.WhatIf(student_id="42178", overrides={"submit_rate": 0.8}).overrides,
                          {"submit_rate": 0.8})
@@ -158,6 +156,16 @@ class WhatIfApiTests(unittest.TestCase):
             with self.assertRaises(whatif_router.HTTPException) as raised:
                 whatif_router.whatif(whatif_router.WhatIf(student_id="42179"), student)
         self.assertEqual(raised.exception.status_code, 403)
+
+    def test_http_routes_enforce_role_scope_and_payload_validation(self):
+        student = self._client(Caller(user_id="u1", role="student", student_id="42178"))
+        self.assertEqual(student.post("/rescore", json={"weights": {"academic": 0.5}}).status_code, 403)
+        self.assertEqual(student.post("/whatif", json={
+            "student_id": "42179", "overrides": {"coding": 90},
+        }).status_code, 403)
+        self.assertEqual(student.post("/whatif", json={
+            "student_id": "42178", "overrides": {"cgpa": 8},
+        }).status_code, 422)
 
     def test_rescore_uses_default_weights_for_omitted_pillars_and_pages_results(self):
         database = self.FakeDatabase(scores=[
