@@ -1,4 +1,4 @@
--- CampusCompass schema v1. Owner: Aayush (Lane A). Never edit after it has run; add 002_*.sql instead.
+-- Elevra.ai schema v1. Owner: Aayush (Lane A). Never edit after it has run; add 002_*.sql instead.
 -- Run in the Supabase SQL editor (or: psql "$SUPABASE_DB_URL" -f db/migrations/001_init.sql)
 
 -- ---------- Reference tables ----------

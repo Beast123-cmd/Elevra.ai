@@ -1,4 +1,4 @@
-# CampusCompass: Winning Strategy for KPMG Challenge 04
+# Elevra.ai: Winning Strategy for KPMG Challenge 04
 
 > **Challenge:** Smart Campus Analytics: Predict, Optimize & Improve Student Success (KPMG in India)
 > **Round 1:** Oct 11 10:00 IST to Oct 12 10:00 IST. Auto-evaluation of mandatory functionality comes first, then human judges.
@@ -8,7 +8,7 @@
 
 ## 1. One-line pitch
 
-**CampusCompass turns 7 disconnected campus data systems into a weekly early-warning and triage engine.** It flags students who are likely to fail **8 weeks before end-semester exams**, explains *why* in plain language, and hands each mentor a ranked action queue. We prove that it works with a back-test, and we prove that it's fair with a bias audit.
+**Elevra.ai turns 7 disconnected campus data systems into a weekly early-warning and triage engine.** It flags students who are likely to fail **8 weeks before end-semester exams**, explains *why* in plain language, and hands each mentor a ranked action queue. We prove that it works with a back-test, and we prove that it's fair with a bias audit.
 
 The tagline judges should remember: **"From dashboard to decision: we don't just show risk, we show who to call this week, why, and what to do."**
 

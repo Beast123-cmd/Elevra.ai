@@ -1,4 +1,4 @@
-# CampusCompass: Build Plan (15 hours, 3 people)
+# Elevra.ai: Build Plan (15 hours, 3 people)
 
 > **For agentic workers:** read `docs/PRD.md` first, then this file, then `CLAUDE.md`. Start each session by stating who you are ("I am Utki, role C"). Work only in your lane's folders.
 
@@ -619,7 +619,7 @@ exit
 `/etc/systemd/system/campus-api.service`:
 ```ini
 [Unit]
-Description=CampusCompass API
+Description=Elevra.ai API
 After=network.target
 [Service]
 User=app

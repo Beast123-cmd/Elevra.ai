@@ -1,4 +1,4 @@
-# CampusCompass: Product Requirements (PRD)
+# Elevra.ai: Product Requirements (PRD)
 
 **Challenge:** KPMG in India, *Smart Campus Analytics: Predict, Optimize & Improve Student Success* (HacXLerate 2026, Round 1)
 **Team:** Aayush (A: Data & ML, owns `main`), Mahesh (B: Admin & Faculty, deploys), Utki (C: Student & Insights)
@@ -13,7 +13,7 @@ Colleges collect student data in 7 disconnected systems: ERP marks, biometric at
 
 ## 2. Product vision and pitch
 
-> **CampusCompass turns 7 disconnected campus systems into one student view, scores every student, flags who needs help 8 weeks before exams, explains why in plain language, tracks whether the intervention worked, and gives every student a personalised path to placement.**
+> **Elevra.ai turns 7 disconnected campus systems into one student view, scores every student, flags who needs help 8 weeks before exams, explains why in plain language, tracks whether the intervention worked, and gives every student a personalised path to placement.**
 
 What makes us different from the 7 competitor repos we analysed (see `STRATEGY.md` §3):
 1. **Real integration.** 7 messy sources with different ID formats, plus a visible cleaning log. No rival does this properly, and it is worth 30% of the score.

@@ -1,4 +1,4 @@
-# CampusCompass: agent rules (Claude Code and Codex)
+# Elevra.ai: agent rules (Claude Code and Codex)
 
 Read `docs/PRD.md` and `docs/BUILD_PLAN.md` before doing anything. Three people work in parallel, and each owns specific folders.
 **Start every session by asking the user who they are**, unless they have already said ("I am Utki, role C").
