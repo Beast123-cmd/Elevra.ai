@@ -11,6 +11,6 @@ export function matchesEveryWord(query: string, searchableText: string): boolean
   const words = normalize(query).split(/\s+/).filter(Boolean);
   if (words.length === 0) return true;
 
-  const haystack = normalize(searchableText);
-  return words.every((word) => haystack.includes(word));
+  const searchableWords = normalize(searchableText).split(/\s+/).filter(Boolean);
+  return words.every((word) => searchableWords.some((candidate) => candidate.startsWith(word)));
 }

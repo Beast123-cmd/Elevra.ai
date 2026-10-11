@@ -2,17 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Award, Bell, BookOpen, House, Menu, Mic2, PanelLeftClose, PanelLeftOpen, Trophy, X } from "lucide-react";
+import { Award, Bell, BookOpen, CalendarDays, House, Menu, Mic2, PanelLeftClose, PanelLeftOpen, Trophy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/shared/Brand";
 
-const LINKS = [
-  { href: "/student", label: "Home", icon: House },
-  { href: "/student/improve", label: "My plan", icon: BookOpen },
-  { href: "/student/certifications", label: "Certifications", icon: Award },
-  { href: "/student/hackathons", label: "Hackathons", icon: Trophy },
-  { href: "/student/interview", label: "Mock interview", icon: Mic2 },
-  { href: "/student/notifications", label: "Inbox", icon: Bell },
+const LINK_GROUPS = [
+  {
+    label: "Student space",
+    links: [
+      { href: "/student", label: "Home", icon: House },
+      { href: "/student/improve", label: "My plan", icon: BookOpen },
+      { href: "/student/notifications", label: "Inbox", icon: Bell },
+    ],
+  },
+  {
+    label: "Career growth",
+    links: [
+      { href: "/student/certifications", label: "Certifications", icon: Award },
+      { href: "/student/hackathons", label: "Hackathons", icon: Trophy },
+      { href: "/student/annual-events", label: "Annual events", icon: CalendarDays },
+      { href: "/student/interview", label: "Mock interview", icon: Mic2 },
+    ],
+  },
 ];
 
 export function StudentNav({
@@ -42,26 +53,32 @@ export function StudentNav({
         {collapsed ? <PanelLeftOpen className="h-4 w-4" aria-hidden="true" /> : <PanelLeftClose className="h-4 w-4" aria-hidden="true" />}
       </Button>
       </div>
-      <p className={`mb-2 mt-7 hidden px-2.5 text-[9px] font-semibold uppercase tracking-[.1em] text-slate-400 md:block ${collapsed ? "md:hidden" : ""}`}>Student space</p>
       <nav id="student-navigation" aria-label="Student pages" className={`${mobileOpen ? "grid" : "hidden"} mt-2 grid-cols-5 gap-1 md:mt-0 md:flex md:flex-col md:gap-1.5`}>
-        {LINKS.map(({ href, label, icon: Icon }) => {
-          const active = href === "/student" ? path === href : path.startsWith(href);
-          const mobileLabel = { Home: "Home", "My plan": "Plan", Certifications: "Courses", "Mock interview": "Practice", Inbox: "Inbox" }[label] ?? label;
-          return (
-            <Link
-              key={href}
-              href={href}
-              aria-current={active ? "page" : undefined}
-              aria-label={label}
-              onClick={() => { if (mobileOpen) onToggleMobile(); }}
-              className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-0.5 py-1 text-[9px] font-medium no-underline transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:flex-row md:justify-start md:gap-2.5 md:px-2.5 md:py-0 md:text-[11px] ${collapsed ? "md:justify-center md:px-0" : ""} ${active ? "bg-teal-50 text-teal-900 md:shadow-[inset_3px_0_0_#286a62]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
-            >
-              <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-800" : "text-slate-400"}`} aria-hidden="true" />
-              <span className="max-w-full truncate md:hidden">{mobileLabel}</span>
-              <span className={`hidden max-w-full truncate md:inline ${collapsed ? "md:hidden" : ""}`}>{label}</span>
-            </Link>
-          );
-        })}
+        {LINK_GROUPS.map(({ label: groupLabel, links }) => (
+          <div key={groupLabel} className="contents md:block">
+            <p className={`mb-2 mt-5 hidden px-2.5 text-[9px] font-semibold uppercase tracking-[.1em] text-slate-400 dark:text-[#91a49a] md:block ${collapsed ? "md:hidden" : ""}`}>{groupLabel}</p>
+            <div className="contents md:flex md:flex-col md:gap-1.5">
+              {links.map(({ href, label, icon: Icon }) => {
+                const active = href === "/student" ? path === href : path.startsWith(href);
+                const mobileLabel = { Home: "Home", "My plan": "Plan", Certifications: "Courses", "Mock interview": "Practice", Inbox: "Inbox" }[label] ?? label;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    aria-label={label}
+                    onClick={() => { if (mobileOpen) onToggleMobile(); }}
+                    className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-0.5 py-1 text-[9px] font-medium no-underline transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 md:h-10 md:min-h-0 md:flex-row md:justify-start md:gap-2.5 md:px-2.5 md:py-0 md:text-[11px] ${collapsed ? "md:justify-center md:px-0" : ""} ${active ? "bg-teal-50 text-teal-900 md:shadow-[inset_3px_0_0_#286a62] dark:bg-[#263d34] dark:text-[#c9dfd2]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-[#b6c4bc] dark:hover:bg-[#26342e] dark:hover:text-[#e7eee9]"}`}
+                  >
+                    <Icon className={`h-4 w-4 shrink-0 ${active ? "text-teal-800 dark:text-[#c9dfd2]" : "text-slate-400 dark:text-[#91a49a]"}`} aria-hidden="true" />
+                    <span className="max-w-full truncate md:hidden">{mobileLabel}</span>
+                    <span className={`hidden max-w-full truncate md:inline ${collapsed ? "md:hidden" : ""}`}>{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
     </aside>
   );
