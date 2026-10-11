@@ -16,7 +16,7 @@ export const PLAYBOOK: Record<Pillar, { why: string; steps: string[] }> = {
     ],
   },
   attendance: {
-    why: "Below 75% you risk being barred from exams, and attendance often falls before marks do.",
+    why: "Regular attendance helps you keep up with classes and spot missed topics early.",
     steps: [
       "Check your subject-wise attendance and find the subject you are lowest in",
       "Treat the next 4 weeks as a reset: attend every lecture of that subject",
