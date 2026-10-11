@@ -59,7 +59,19 @@ def historical_examples(clean: dict) -> list[dict]:
         internal = _mean([r["internal_marks"] for r in target_rows if r["internal_marks"] is not None])
         if internal is None:
             continue
-        examples.append({"student_id": sid, "features": {
+        attendance_by_week = defaultdict(lambda: [0, 0])
+        for row in weeks:
+            attendance_by_week[row["week"]][0] += row["attended"]
+            attendance_by_week[row["week"]][1] += row["held"]
+        lms_by_week = {row["week"]: row for row in lms_weeks}
+        weekly = []
+        for week in range(1, 9):
+            attended_week, held_week = attendance_by_week[week]
+            lms_row = lms_by_week.get(week)
+            weekly.append({"week": week, "logins": lms_row["logins"] if lms_row else None,
+                           "attendance": 100 * attended_week / held_week if held_week else None})
+        examples.append({"student_id": sid, "residence": student.get("residence"), "gender": student.get("gender"),
+            "weekly": weekly, "features": {
             "cgpa": _mean([_grade(v) for v in prior_totals]),
             "backlogs": sum(v < 40 for v in prior_totals),
             "attendance_pct": 100 * attended / held,
@@ -160,10 +172,23 @@ def train_model(clean: dict) -> dict:
         fold_aucs.append(_auc([r["label"] for r in val_rows], fold_probs))
     card_features = [{"name": name, "source": name, "label": label, "coef": coef[i], "mean": means[i], "std": stds[i]}
                      for i, (name, label) in enumerate(FEATURES)]
+    fairness = []
+    for group_type, field in (("residence", "residence"), ("gender", "gender")):
+        for group in sorted({row.get(field) for row in test if row.get(field)}):
+            members = [(row, probability(row)) for row in test if row.get(field) == group]
+            member_labels = [row["label"] for row, _ in members]
+            member_flags = [prob >= threshold for _, prob in members]
+            true_positive = sum(flag and label for flag, label in zip(member_flags, member_labels))
+            false_positive = sum(flag and not label for flag, label in zip(member_flags, member_labels))
+            positives, negatives = sum(member_labels), len(member_labels) - sum(member_labels)
+            fairness.append({"group_type": group_type, "group": group, "n": len(members),
+                "flag_rate": sum(member_flags) / len(members) if members else None,
+                "recall": true_positive / positives if positives else None,
+                "fpr": false_positive / negatives if negatives else None})
     card_metrics = {"target": "Failed at least one subject based on observed final exam marks (synthetic cohort)",
         "train_window": "Previous completed semester, weeks 1–8 and internal marks -> same semester exam result",
         "n_train": len(train), "n_test": len(test), "base_rate": sum(labels) / len(labels), "threshold": threshold,
         **metrics, "cv_auc": _mean(fold_aucs) or 0.5,
         "baseline": {"rule": "Prior CGPA < 6.5", **baseline}}
     return {"features": card_features, "intercept": intercept, "metrics": card_metrics,
-            "fairness": [], "provenance": "Synthetic data only; metrics are not evidence of real-world predictive performance."}
+            "fairness": fairness, "provenance": "Synthetic data only; metrics are not evidence of real-world predictive performance."}
