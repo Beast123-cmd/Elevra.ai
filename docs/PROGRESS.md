@@ -85,7 +85,10 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 - Demo accounts are re-pointed to different students on every re-seed, so docs and demos must not hardcode student names.
 
 ## 7. Open items
-1. **Row-level security (privacy):** any logged-in student can currently read all 1,500 students' scores, feedback and interventions, and the user list. Needs `002_rls.sql` (students: own rows; faculty: their mentees; admin: all). Owner: Aayush.
+1. **Row-level security (privacy), CRITICAL.** Found by `docs/proposals/run_rls_test.py` (34 of 59 checks fail on today's database):
+   - **Anyone with the public anon key and no login can read all 1,500 students through `student_unified_view`** (views bypass RLS unless `security_invoker` is set). One-line fix: `alter view public.student_unified_view set (security_invoker = true);`
+   - Any logged-in student can read all scores, feedback, interventions and users, **and can log interventions and post notifications to everyone**.
+   - Proposed fix: `docs/proposals/002_rls.sql` (students: own rows; faculty: their mentees; admin: all; interventions: mentors only). With it, 59/59 checks pass. Tested inside a rolled-back transaction, so the shared database is unchanged. Owner: Aayush to review and apply.
 2. **Seed realism:** all 300 seeded interventions show "improved 100%" with round averages; 27% of students are Red for academic risk and 33% for placement, which is too many to triage. Add noise and recalibrate thresholds. Owner: Aayush.
 3. `min_subject_attendance` is not populated in `profile.metrics`. Owner: Aayush.
 4. Branch protection on `main` (repo admin).
