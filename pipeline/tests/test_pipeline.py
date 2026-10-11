@@ -1,12 +1,18 @@
-"""Regression checks for the local, dependency-free P0 data pipeline."""
+"""Regression checks for the data pipeline and scoring API."""
 from __future__ import annotations
 
 import hashlib
 import inspect
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 from clean.clean import clean_all, normalize_id
 from generate.generate import DEFAULT_STUDENT_COUNT, generate_all
@@ -14,6 +20,11 @@ from run import _build_payload, build_parser, run
 from seed import _student_profiles_match, _write_sql
 from scoring.engine import WEIGHTS, evaluate, pillars_from_metrics, success_score
 from scoring.model import historical_examples, train_model
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2] / "backend"
+sys.path.insert(0, str(BACKEND_ROOT))
+from common.auth import Caller, current_caller
+from routers import whatif as whatif_router
 
 BASE = {
     "cgpa": 8.0, "internal_pct": 75.0, "backlogs": 0, "attendance_pct": 88.0,
@@ -64,6 +75,112 @@ class ScoringTests(unittest.TestCase):
     def test_non_finite_inputs_do_not_escape(self):
         result = evaluate({**BASE, "cgpa": float("nan"), "avg_minutes": float("inf")})
         json.dumps(result, allow_nan=False)
+
+
+class WhatIfApiTests(unittest.TestCase):
+    class FakeQuery:
+        def __init__(self, database, table):
+            self.database = database
+            self.table_name = table
+            self.student_id = None
+            self.page = None
+
+        def select(self, _columns):
+            return self
+
+        def eq(self, key, value):
+            if key == "student_id":
+                self.student_id = value
+            return self
+
+        def limit(self, _limit):
+            return self
+
+        def order(self, _column):
+            return self
+
+        def range(self, start, end):
+            self.page = (start, end + 1)
+            return self
+
+        def execute(self):
+            rows = self.database.tables.get(self.table_name, [])
+            if self.student_id:
+                rows = [row for row in rows if row.get("student_id") == self.student_id]
+            if self.page:
+                rows = rows[self.page[0]:self.page[1]]
+            return SimpleNamespace(data=rows)
+
+    class FakeDatabase:
+        def __init__(self, **tables):
+            self.tables = tables
+
+        def table(self, name):
+            return WhatIfApiTests.FakeQuery(self, name)
+
+    @staticmethod
+    def _client(caller):
+        app = FastAPI()
+        app.include_router(whatif_router.router)
+        app.dependency_overrides[current_caller] = lambda: caller
+        return TestClient(app)
+
+    def test_whatif_validates_supported_ranges_and_rejects_unknown_metrics(self):
+        self.assertEqual(whatif_router.WhatIf(student_id="42178", overrides={"submit_rate": 0.8}).overrides,
+                         {"submit_rate": 0.8})
+        for payload in (
+            {"student_id": "42178", "overrides": {"cgpa": 8.0}},
+            {"student_id": "42178", "overrides": {"attendance_pct": 101}},
+            {"student_id": "42178", "overrides": {"submit_rate": float("nan")}},
+            {"student_id": "42178", "overrides": {"coding": True}},
+        ):
+            with self.subTest(payload=payload), self.assertRaises(ValueError):
+                whatif_router.WhatIf(**payload)
+        with self.assertRaises(ValueError):
+            whatif_router.WhatIf(student_id="SCA-42178")
+
+    def test_whatif_limits_student_scope_and_returns_delta(self):
+        metrics = {"cgpa": 8.0, "internal_pct": 75, "backlogs": 0, "attendance_pct": 80,
+                   "submit_rate": 0.8, "coding": 70, "aptitude": 70, "mock": 4,
+                   "tech_skill": 70, "soft_skill": 70, "certifications": 1,
+                   "events": 1, "clubs": 1, "hackathons": 1, "satisfaction": 4,
+                   "faculty_rating": 4}
+        profile = {"score": 60.0, "metrics": metrics}
+        database = self.FakeDatabase(scores=[{"student_id": "42178", "profile": profile}], analytics=[])
+        student = Caller(user_id="u1", role="student", student_id="42178")
+        client = self._client(student)
+        with patch.object(whatif_router, "db", return_value=database):
+            response = client.post("/whatif", json={"student_id": "42178", "overrides": {"coding": 90}})
+            self.assertEqual(response.status_code, 200, response.text)
+            result = response.json()
+            self.assertGreater(result["score"], profile["score"])
+            self.assertEqual(result["delta"], round(result["score"] - profile["score"], 1))
+            forbidden = client.post("/whatif", json={"student_id": "42179"})
+        self.assertEqual(forbidden.status_code, 403)
+
+    def test_http_routes_enforce_role_scope_and_payload_validation(self):
+        student = self._client(Caller(user_id="u1", role="student", student_id="42178"))
+        self.assertEqual(student.post("/rescore", json={"weights": {"academic": 0.5}}).status_code, 403)
+        self.assertEqual(student.post("/whatif", json={
+            "student_id": "42179", "overrides": {"coding": 90},
+        }).status_code, 403)
+        self.assertEqual(student.post("/whatif", json={
+            "student_id": "42178", "overrides": {"cgpa": 8},
+        }).status_code, 422)
+
+    def test_rescore_uses_default_weights_for_omitted_pillars_and_pages_results(self):
+        database = self.FakeDatabase(scores=[
+            {"student_id": f"{sid:05d}", "profile": {"metrics": {"cgpa": 8, "internal_pct": 75}}}
+            for sid in range(42178, 42181)
+        ])
+        with patch.object(whatif_router, "db", return_value=database), \
+                patch.object(whatif_router, "RESCORE_PAGE_SIZE", 2):
+            result = whatif_router.rescore(whatif_router.Rescore(weights={"academic": 0.5}),
+                                            Caller(user_id="admin", role="admin"))
+        self.assertEqual(len(result), 3)
+        self.assertEqual([row["student_id"] for row in result], ["42178", "42179", "42180"])
+        self.assertTrue(all(row["band"] in {"Critical", "Needs Attention", "On Track", "Thriving"}
+                            and isinstance(row["score"], float) for row in result))
 
 
 class PipelineTests(unittest.TestCase):
