@@ -136,8 +136,8 @@ export function Interview() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [resume, setResume] = useState("");
   const [pdf, setPdf] = useState<{ name: string; base64: string } | null>(null);
-  const [voiceOn, setVoiceOn] = useState(false);
-  const [autoListen, setAutoListen] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(true);
+  const [autoListen, setAutoListen] = useState(true);
   const [focusNotice, setFocusNotice] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mode, setMode] = useState<"full" | "focus">("full");
