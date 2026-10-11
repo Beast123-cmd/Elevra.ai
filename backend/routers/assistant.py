@@ -54,7 +54,93 @@ class Msg(BaseModel):
 
 class AskBody(BaseModel):
     message: str = Field(min_length=1, max_length=500)
-    history: list[Msg] = Field(default_factory=list, max_length=12)
+    history: list[Msg] = Field(default_factory=list, max_length=12)   # used only when history can't be saved
+    conversation_id: int | None = None
+
+
+# ---------- saved conversations (assistant_conversations, assistant_messages: proposal 004) ----------
+# If the tables don't exist yet, chatting still works; it just isn't saved.
+
+Kind = Literal["student", "faculty"]
+
+
+def _own_conversation(conversation_id: int, caller: Caller, kind: str) -> dict:
+    rows = db().table("assistant_conversations").select("id,owner_id,kind,title").eq("id", conversation_id).limit(1).execute().data
+    if not rows or rows[0]["owner_id"] != caller.user_id or rows[0]["kind"] != kind:
+        raise HTTPException(404, "Conversation not found")
+    return rows[0]
+
+
+def _saved_history(conversation_id: int, turns: int = 12) -> list[Msg]:
+    rows = db().table("assistant_messages").select("role,content,payload").eq("conversation_id", conversation_id) \
+        .order("id", desc=True).limit(turns).execute().data or []
+    out = []
+    for r in reversed(rows):
+        text = r["content"]
+        sql = (r.get("payload") or {}).get("sql")
+        out.append(Msg(role=r["role"], text=f"{text} (query: {sql})" if sql else text))
+    return out
+
+
+def _start_or_continue(body: AskBody, caller: Caller, kind: str) -> tuple[int | None, list[Msg]]:
+    """Returns (conversation_id, history). Saved history wins over anything the browser sends."""
+    try:
+        if body.conversation_id:
+            _own_conversation(body.conversation_id, caller, kind)
+            return body.conversation_id, _saved_history(body.conversation_id)
+        row = db().table("assistant_conversations").insert(
+            {"owner_id": caller.user_id, "kind": kind, "title": body.message.strip()[:80]}).execute().data[0]
+        return row["id"], []
+    except HTTPException:
+        raise
+    except Exception as e:  # noqa: BLE001 - tables missing or DB hiccup: answer without saving
+        log.info("conversation not saved: %s", e)
+        return None, body.history
+
+
+def _save_exchange(conversation_id: int | None, question: str, answer_text: str, payload: dict) -> None:
+    if conversation_id is None:
+        return
+    try:
+        from datetime import datetime, timezone
+
+        db().table("assistant_messages").insert([
+            # every row carries a payload: in a bulk insert a missing key is sent as null, which the column rejects
+            {"conversation_id": conversation_id, "role": "user", "content": question, "payload": {}},
+            {"conversation_id": conversation_id, "role": "assistant", "content": answer_text or "", "payload": payload},
+        ]).execute()
+        db().table("assistant_conversations").update({"updated_at": datetime.now(timezone.utc).isoformat()}).eq("id", conversation_id).execute()
+    except Exception as e:  # noqa: BLE001 - the answer is still shown; a failed save must never block it
+        log.warning("message not saved: %s", e)
+
+
+def _kind_for(caller: Caller) -> str:
+    return "student" if caller.role == "student" else "faculty"
+
+
+@router.get("/conversations")
+def list_conversations(caller: Caller = Depends(require_role("student", "faculty", "admin"))):
+    try:
+        rows = db().table("assistant_conversations").select("id,title,updated_at").eq("owner_id", caller.user_id) \
+            .eq("kind", _kind_for(caller)).order("updated_at", desc=True).limit(30).execute().data
+    except Exception as e:  # noqa: BLE001
+        log.info("conversations unavailable: %s", e)
+        return {"conversations": [], "saving": False}
+    return {"conversations": rows or [], "saving": True}
+
+
+@router.get("/conversations/{conversation_id}")
+def get_conversation(conversation_id: int, caller: Caller = Depends(require_role("student", "faculty", "admin"))):
+    conv = _own_conversation(conversation_id, caller, _kind_for(caller))
+    msgs = db().table("assistant_messages").select("role,content,payload").eq("conversation_id", conversation_id).order("id").execute().data
+    return {"id": conv["id"], "title": conv["title"], "messages": msgs or []}
+
+
+@router.delete("/conversations/{conversation_id}")
+def delete_conversation(conversation_id: int, caller: Caller = Depends(require_role("student", "faculty", "admin"))):
+    _own_conversation(conversation_id, caller, _kind_for(caller))
+    db().table("assistant_conversations").delete().eq("id", conversation_id).execute()
+    return {"deleted": conversation_id}
 
 
 def _quick_json(prompt: str, schema, max_tokens: int, temperature: float = 0.4):
@@ -259,7 +345,12 @@ def answer_student(student_id: str, message: str, history: list[Msg]) -> dict:
 def ask_student(body: AskBody, caller: Caller = Depends(require_role("student"))):
     if not caller.student_id:
         raise HTTPException(403, "This account isn't linked to a student")
-    return answer_student(caller.student_id, body.message.strip(), body.history)
+    message = body.message.strip()
+    conversation_id, history = _start_or_continue(body, caller, "student")
+    result = answer_student(caller.student_id, message, history)
+    _save_exchange(conversation_id, message, result["reply"],
+                   {k: result.get(k) for k in ("chart", "cards", "follow_ups", "ai")})
+    return {**result, "conversation_id": conversation_id}
 
 
 # =====================================================================================================================
@@ -393,7 +484,12 @@ def answer_faculty(caller: Caller, message: str, history: list[Msg]) -> dict:
 
 @router.post("/faculty")
 def ask_faculty(body: AskBody, caller: Caller = Depends(require_role("faculty", "admin"))):
-    return answer_faculty(caller, body.message.strip(), body.history)
+    message = body.message.strip()
+    conversation_id, history = _start_or_continue(body, caller, "faculty")
+    result = answer_faculty(caller, message, history)
+    keep = ("asked", "answer", "sql", "columns", "rows", "row_count", "truncated", "source", "chart", "summary", "actions", "follow_ups")
+    _save_exchange(conversation_id, message, result.get("summary") or result.get("answer", ""), {k: result.get(k) for k in keep})
+    return {**result, "conversation_id": conversation_id}
 
 
 @router.get("/faculty/suggestions")

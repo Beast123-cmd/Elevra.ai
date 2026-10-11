@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Lightbulb, Send } from "lucide-react";
+import { Lightbulb, Plus, Send, Trash2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import { ChatChart, type ChartSpec } from "./ChatChart";
+import { deleteConversation, when, type Conversation } from "./conversations";
 
 interface Answer {
   question: string; asked: string; answer: string; sql: string | null; columns: string[]; rows: (string | number | boolean | null)[][];
   row_count: number; truncated: boolean; source: "ai" | "template" | "none";
-  chart: ChartSpec | null; summary: string; actions: string[]; follow_ups: string[];
+  chart: ChartSpec | null; summary: string; actions: string[]; follow_ups: string[]; conversation_id?: number | null;
 }
 interface Turn { question: string; answer?: Answer; error?: string }
 
@@ -49,11 +50,15 @@ export function FacultyAssistant() {
   const [busy, setBusy] = useState(false);
   const [role, setRole] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>(FALLBACK_SUGGESTIONS);
+  const [conversationId, setConversationId] = useState<number | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [saving, setSaving] = useState(true);
   const end = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     createClient().auth.getSession().then(({ data }) => setRole((data.session?.user.app_metadata?.role as string) ?? null));
     api<{ suggestions: string[] }>("/assistant/faculty/suggestions").then((r) => setSuggestions(r.suggestions)).catch(() => {});
+    loadConversations();
   }, []);
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [turns, busy]);
 
@@ -66,18 +71,69 @@ export function FacultyAssistant() {
     ]);
     setTurns((t) => [...t, { question }]); setDraft(""); setBusy(true);
     try {
-      const answer = await api<Answer>("/assistant/faculty", { message: question, history });
+      const answer = await api<Answer>("/assistant/faculty", { message: question, history, conversation_id: conversationId });
+      if (answer.conversation_id) { if (answer.conversation_id !== conversationId) loadConversations(); setConversationId(answer.conversation_id); }
       setTurns((t) => t.map((x, i) => (i === t.length - 1 ? { ...x, answer } : x)));
     } catch {
       setTurns((t) => t.map((x, i) => (i === t.length - 1 ? { ...x, error: "The assistant is offline right now. Your dashboards still work; please try again shortly." } : x)));
     } finally { setBusy(false); }
   }
 
+  function loadConversations() {
+    api<{ conversations: Conversation[]; saving: boolean }>("/assistant/conversations")
+      .then((r) => { setConversations(r.conversations); setSaving(r.saving); }).catch(() => setSaving(false));
+  }
+
+  async function openConversation(id: number) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const c = await api<{ id: number; messages: { role: "user" | "assistant"; content: string; payload: Partial<Answer> }[] }>(`/assistant/conversations/${id}`);
+      const restored: Turn[] = [];
+      for (const m of c.messages) {
+        if (m.role === "user") restored.push({ question: m.content });
+        else if (restored.length) restored[restored.length - 1].answer = { ...(m.payload as Answer), summary: m.payload.summary ?? m.content };
+      }
+      setConversationId(c.id); setTurns(restored);
+    } catch { /* keep the current chat */ } finally { setBusy(false); }
+  }
+
+  async function removeConversation(id: number) {
+    setConversations((c) => c.filter((x) => x.id !== id));
+    if (id === conversationId) newChat();
+    try { await deleteConversation(id); } catch { loadConversations(); }
+  }
+
+  function newChat() { setConversationId(null); setTurns([]); }
+
   const submit = (e: FormEvent) => { e.preventDefault(); void ask(draft); };
   const lastAnswer = turns[turns.length - 1]?.answer;
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-5 lg:grid-cols-[230px_minmax(0,1fr)]">
+      <aside className="space-y-2 lg:sticky lg:top-4 lg:self-start" aria-label="Past chats">
+        <button type="button" onClick={newChat} disabled={busy}
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-[#dce7e1] bg-white px-3 py-2 text-sm font-semibold text-[#18574e] hover:bg-[#f1f6f3] disabled:opacity-50">
+          <Plus className="h-4 w-4" aria-hidden="true" />New chat
+        </button>
+        <p className="px-1 pt-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Past chats</p>
+        {!saving ? <p className="px-1 text-xs text-slate-500">Chats aren&apos;t being saved right now.</p>
+          : conversations.length === 0 ? <p className="px-1 text-xs text-slate-500">Your questions will be saved here.</p> : (
+            <ul className="max-h-[50vh] space-y-1 overflow-y-auto lg:max-h-[70vh]">
+              {conversations.map((c) => (
+                <li key={c.id} className={`flex items-center gap-1 rounded-lg ${c.id === conversationId ? "bg-[#eaf3ef]" : "hover:bg-[#f7faf8]"}`}>
+                  <button type="button" onClick={() => void openConversation(c.id)} className="min-w-0 flex-1 px-2.5 py-2 text-left">
+                    <span className="block truncate text-sm text-[#172824]">{c.title}</span>
+                    <span className="text-[11px] text-slate-500">{when(c.updated_at)}</span>
+                  </button>
+                  <button type="button" onClick={() => void removeConversation(c.id)} aria-label={`Delete chat: ${c.title}`}
+                    className="mr-1 rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-700"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /></button>
+                </li>
+              ))}
+            </ul>
+          )}
+      </aside>
+      <div className="min-w-0 space-y-4">
       <p className="text-sm text-slate-500">
         Ask about your {role === "admin" ? "students" : "mentees"} in plain English. Every answer is a read-only query you can inspect.
         {role === "faculty" && " Results only ever include your own mentees."}
@@ -139,6 +195,7 @@ export function FacultyAssistant() {
         </button>
       </form>
       <div ref={end} />
+      </div>
     </div>
   );
 }
