@@ -74,6 +74,7 @@ export default function WorkloadPage() {
   async function assignCheckIns() {
     const targets = waiting.filter((s) => s.mentor_faculty_id);
     if (targets.length === 0) return;
+    if (!window.confirm(`Create ${targets.length} planned check-in tasks, one per Red student, assigned to their mentors?`)) return;
     setBusy("bulk");
     const { error: err } = await createClient().from("interventions").insert(
       targets.map((s) => ({
