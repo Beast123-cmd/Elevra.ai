@@ -7,6 +7,7 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token ?? ""}` },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+  if (r.status === 401 && typeof window !== "undefined") window.dispatchEvent(new Event("elevra:unauthorized"));
   if (!r.ok) throw new Error(`API ${path} failed: ${r.status}`);
   return r.json();
 }

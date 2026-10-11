@@ -10,9 +10,13 @@ const ALLOWED: Record<string, string[]> = {
   "/demo": ["admin", "faculty", "student"],
 };
 
+/** Protected pages must never be cached or restored from the back/forward cache after signing out. */
+const NO_STORE = "private, no-store, must-revalidate";
+const inArea = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
+
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const area = Object.keys(ALLOWED).find((p) => path.startsWith(p));
+  const area = Object.keys(ALLOWED).find((p) => inArea(path, p));
   const shouldCheckAuth = Boolean(area) || path === "/" || path.startsWith("/login");
 
   // Most public routes do not need an Auth lookup at all.
@@ -42,6 +46,7 @@ export async function middleware(req: NextRequest) {
       const value = res.headers.get(header);
       if (value) redirect.headers.set(header, value);
     }
+    redirect.headers.set("Cache-Control", NO_STORE); // a redirect away from a protected page must not be cached either
     return redirect;
   };
 
@@ -52,6 +57,7 @@ export async function middleware(req: NextRequest) {
   if (!area) return res;
   if (!userId || error) return redirectWithAuthCookies("/login");
   if (!ALLOWED[area].includes(role)) return redirectWithAuthCookies(HOME[role] ?? "/login");
+  res.headers.set("Cache-Control", NO_STORE);
   return res;
 }
 
