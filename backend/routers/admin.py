@@ -1,4 +1,5 @@
 import secrets
+import time
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,6 +7,7 @@ from pydantic import BaseModel, Field
 
 from common.auth import Caller, require_role
 from common.db import db
+from routers import weekly
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -79,3 +81,32 @@ def assign_mentor(student_id: str, body: MentorChange, _: Caller = Depends(requi
     if not updated:
         raise HTTPException(404, f"No student with id {student_id}")
     return {"student_id": student_id, "mentor_faculty_id": body.mentor_faculty_id}
+
+
+def _all_rows(table: str, columns: str) -> list[dict]:
+    """PostgREST returns at most 1000 rows per request, so page through the table."""
+    out: list[dict] = []
+    while True:
+        chunk = db().table(table).select(columns).order(columns.split(",")[0]).range(len(out), len(out) + 999).execute().data
+        out += chunk
+        if len(chunk) < 1000:
+            return out
+
+
+_weekly_cache: dict[str, tuple[float, dict]] = {}
+
+
+@router.get("/weekly-brief")
+def weekly_brief(_: Caller = Depends(require_role("admin"))):
+    """Dean's weekly summary: numbers computed here, wording by Gemini when it passes the fact check."""
+    hit = _weekly_cache.get("brief")
+    if hit and time.time() - hit[0] < 300:
+        return hit[1]
+    stats = weekly.compute_stats(
+        _all_rows("students", "student_id,department"),
+        _all_rows("scores", "student_id,academic_risk,placement_risk,segment"),
+        _all_rows("interventions", "id,student_id,status,followup_date,created_at,is_seeded"),
+    )
+    result = {"stats": stats, **weekly.make_brief(stats)}
+    _weekly_cache["brief"] = (time.time(), result)
+    return result

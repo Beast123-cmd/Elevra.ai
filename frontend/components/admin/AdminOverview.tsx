@@ -8,6 +8,7 @@ import { EmptyState, Kpi } from "@/components/shared/Kpi";
 import { Card } from "@/components/ui/card";
 import { BAND_COLOR, SEGMENT_COLOR } from "@/lib/format";
 import { PILLARS, type Insight } from "@/lib/types";
+import { WeeklyBrief } from "./WeeklyBrief";
 import {
   applyFilters, bandDistribution, filterOptions, heatmapByDepartment, kpis, quadrantPoints, riskBy, type OverviewRow,
 } from "./aggregate";
@@ -75,6 +76,8 @@ export function AdminOverview({ rows, insights = [] }: { rows: OverviewRow[]; in
         {filterSelect("year", "Year", opts.years)}
         {filterSelect("batch", "Batch", opts.batches)}
       </div>
+
+      <WeeklyBrief rows={rows} />
 
       {view.length === 0 ? (
         <EmptyState>No students match these filters. Try clearing one.</EmptyState>
