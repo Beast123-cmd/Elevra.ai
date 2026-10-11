@@ -7,6 +7,7 @@ import { getIdentity, signOutAndLeave } from "@/components/shared/session";
 
 const LINKS = [
   ["/faculty", "Action Queue"],
+  ["/faculty/attendance", "Attendance"],
   ["/insights/segments", "Segments"],
   ["/insights/data-health", "Data Health"],
   ["/insights/method", "Method & Trust"],
@@ -34,7 +35,7 @@ export function FacultyNav() {
             </Link>
           )}
           {LINKS.map(([href, label]) => {
-            const active = href === "/faculty" ? path.startsWith("/faculty") : path.startsWith(href);
+            const active = href === "/faculty" ? path === "/faculty" || path.startsWith("/faculty/student") : path.startsWith(href);
             return (
               <Link key={href} href={href}
                 className={`rounded-md px-3 py-1.5 ${active ? "bg-blue-50 font-medium text-blue-700" : "text-slate-600 hover:bg-slate-100"}`}>

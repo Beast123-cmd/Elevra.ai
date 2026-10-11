@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { invalidateCache } from "@/components/shared/queryCache";
 import { createClient } from "@/lib/supabase/client";
 import { INTERVENTION_TYPES, NOTE_MAX, STATUSES, validateIntervention, type Status } from "./interventions";
 
@@ -17,8 +18,8 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ type: "", note: "", followup_date: "" });
-  const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
+  const [form, setForm] = useState({ type: "", note: "", followup_date: "", status: "done" });
+  const [errors, setErrors] = useState<Partial<Record<"type" | "note" | "followup_date", string>>>({});
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -36,19 +37,21 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
   }, [load]);
 
   async function save() {
-    const found = validateIntervention(form);
+    const found = validateIntervention({ type: form.type, note: form.note, followup_date: form.followup_date });
     setErrors(found);
     if (Object.keys(found).length > 0) return;
     setSaving(true);
     const { error: err } = await supabase.from("interventions").insert({
       student_id: studentId, faculty_id: facultyId, type: form.type, note: form.note.trim() || null,
-      followup_date: form.followup_date || null, status: "planned", score_before: scoreBefore,
+      followup_date: form.followup_date || null, status: form.status, score_before: scoreBefore,
     });
     setSaving(false);
     if (err) return toast.error("Could not save the intervention. Please try again.");
     toast.success("Intervention logged");
     setOpen(false);
-    setForm({ type: "", note: "", followup_date: "" });
+    setForm({ type: "", note: "", followup_date: "", status: "done" });
+    invalidateCache("faculty:"); // the queue, My week and coverage are now out of date
+    invalidateCache("admin:");
     load();
   }
 
@@ -59,7 +62,10 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
     if (err) {
       setRows(previous);
       toast.error("Could not update the status.");
+      return;
     }
+    invalidateCache("faculty:");
+    invalidateCache("admin:");
   }
 
   return (
@@ -118,6 +124,15 @@ export function InterventionPanel({ studentId, scoreBefore, facultyId }: { stude
                 ))}
               </select>
               {errors.type && <span className="text-xs text-red-700">{errors.type}</span>}
+            </label>
+            <label className="block text-sm">
+              Status
+              <select className={`${FIELD} mt-1`} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                <option value="done">Done: it already happened</option>
+                <option value="in_progress">In progress</option>
+                <option value="planned">Planned: still to do</option>
+              </select>
+              <span className="text-xs text-slate-500">Done or in-progress counts as contact for the weekly target.</span>
             </label>
             <label className="block text-sm">
               Note (optional)
