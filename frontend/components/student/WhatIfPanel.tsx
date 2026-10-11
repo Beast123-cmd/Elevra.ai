@@ -85,7 +85,7 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
       <CardContent className="grid min-w-0 gap-5 p-4 sm:p-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,.85fr)]">
         <section className="min-w-0" aria-labelledby="scenario-controls-heading">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <div><h3 id="scenario-controls-heading" className="text-sm font-semibold text-[#172824]">Choose what to adjust</h3><p className="mt-0.5 text-xs text-slate-500">{changedCount ? `${changedCount} ${changedCount === 1 ? "value" : "values"} changed` : "Your current values are shown"}</p></div>
+            <div><h3 id="scenario-controls-heading" className="text-sm font-semibold text-[#172824]">Choose what to adjust</h3><p className="mt-0.5 text-xs text-slate-500">{changedCount ? `${changedCount} ${changedCount === 1 ? "value" : "values"} changed` : "Drag a slider or focus it and use the arrow keys."}</p></div>
             <Button variant="ghost" size="sm" onClick={() => setChanged({})} disabled={!hasChanges} className="h-8 px-2 text-xs text-[#1d6158]">Reset values</Button>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -100,9 +100,10 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
                       <div key={c.key} className="min-w-0">
                         <div className="mb-2 flex items-start justify-between gap-2 text-xs">
                           <label htmlFor={`wi-${c.key}`} className="font-medium leading-5 text-slate-700">{c.label}</label>
-                          <span className="shrink-0 text-right tabular-nums"><span className="font-semibold text-[#172824]">{formatControl(c, value)}</span><span className="block text-[10px] text-slate-400">{cur === null ? "no current data" : `now ${formatControl(c, cur)}`}</span></span>
+                          <span className="shrink-0 text-right tabular-nums"><span className="font-semibold text-[#172824]">{formatControl(c, value)}</span><span className="block text-[10px] text-slate-400">{cur === null ? "no current data" : `current ${formatControl(c, cur)}`}</span></span>
                         </div>
-                        <Slider id={`wi-${c.key}`} min={c.min} max={c.max} step={c.step} value={[value]} onValueChange={([v]) => setChanged((prev) => ({ ...prev, [c.key]: v }))} aria-label={c.label} />
+                        <Slider className="what-if-slider cursor-pointer py-1" id={`wi-${c.key}`} min={c.min} max={c.max} step={c.step} value={[value]} onValueChange={([v]) => setChanged((prev) => ({ ...prev, [c.key]: v }))} aria-label={c.label} aria-valuetext={formatControl(c, value)} />
+                        <div className="mt-1 flex justify-between text-[9px] tabular-nums text-slate-400" aria-hidden="true"><span>{formatControl(c, c.min)}</span><span>{formatControl(c, c.max)}</span></div>
                       </div>
                     );
                   })}
