@@ -36,7 +36,7 @@ export function BriefCard({ profile }: { profile: Profile }) {
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h2 className="text-sm font-semibold">Mentor brief</h2>
-          <p className="text-xs text-slate-500">A short summary to prepare for your conversation with this student.</p>
+          <p className="text-xs text-muted-foreground">A short summary to prepare for your conversation with this student.</p>
         </div>
         <Button size="sm" variant="outline" disabled={state.kind === "loading"} onClick={generate}>
           {state.kind === "loading" ? "Writing…" : state.kind === "ready" ? "Regenerate" : "Generate brief"}
@@ -45,10 +45,10 @@ export function BriefCard({ profile }: { profile: Profile }) {
       {state.kind === "ready" && (
         <div className="space-y-2">
           <p className="text-sm leading-relaxed">{state.text}</p>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className={`rounded-full px-2 py-0.5 ${state.source === "ai" ? "bg-blue-50 text-blue-700" : "bg-slate-100"}`}>{label(state.source)}</span>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <span className={`rounded-full px-2 py-0.5 ${state.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>{label(state.source)}</span>
             {state.note && <span>{state.note}</span>}
-            <button className="ml-auto text-blue-700 hover:underline" onClick={() => navigator.clipboard.writeText(state.text).then(() => toast.success("Copied"))}>
+            <button className="ml-auto text-primary hover:underline" onClick={() => navigator.clipboard.writeText(state.text).then(() => toast.success("Copied"))}>
               Copy
             </button>
           </div>

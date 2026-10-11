@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { BAND_COLOR } from "@/lib/format";
+import { usePalette } from "@/components/shared/palette";
 import { PILLARS, type Cohort, type Pillar } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,6 +71,7 @@ function Section({ title, description, children }: { title: string; description?
 }
 
 function View({ data }: { data: Data }) {
+  const palette = usePalette();
   const { model, cohort, isAdmin, current } = data;
   const weights = cohort?.weights;
   const labels = cohort?.pillar_labels;
@@ -99,38 +100,38 @@ function View({ data }: { data: Data }) {
                     <TableRow key={p}>
                       <TableCell className="font-medium">{labels[p]}</TableCell>
                       <TableCell className="text-right tabular-nums">{Math.round(weights[p] * 100)}%</TableCell>
-                      <TableCell className="text-slate-600">{HOW[p]}</TableCell>
+                      <TableCell className="text-muted-foreground">{HOW[p]}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
-            <ul className="space-y-1 text-sm text-slate-600">
-              <li><span className="font-medium text-slate-900">Missing data is never scored as zero.</span> That area is left out and the remaining weights are rescaled. Confidence shows how much of the weight had data.</li>
+            <ul className="space-y-1 text-sm text-muted-foreground">
+              <li><span className="font-medium text-foreground">Missing data is never scored as zero.</span> That area is left out and the remaining weights are rescaled. Confidence shows how much of the weight had data.</li>
               <li>
-                <span className="font-medium text-slate-900">Bands:</span>{" "}
+                <span className="font-medium text-foreground">Bands:</span>{" "}
                 {bandsDesc.map((b, i) => (
-                  <span key={b.name}>{i > 0 && " · "}<span style={{ color: BAND_COLOR[b.name] }}>{b.name}</span> {b.min > 0 ? `${b.min}+` : `below ${bandsDesc[i - 1]?.min}`}</span>
+                  <span key={b.name}>{i > 0 && " · "}<span style={{ color: palette.band[b.name] }}>{b.name}</span> {b.min > 0 ? `${b.min}+` : `below ${bandsDesc[i - 1]?.min}`}</span>
                 ))}
               </li>
             </ul>
           </div>
-        ) : <p className="text-sm text-slate-500">Score settings haven&apos;t been published yet.</p>}
+        ) : <p className="text-sm text-muted-foreground">Score settings haven&apos;t been published yet.</p>}
       </Section>
 
       {weights && labels && (
         <Section title="Try different weights" description="See how the cohort would shift if the institution weighted the areas differently. Uses the same scoring engine as the live scores.">
           {isAdmin ? (
             current.length > 0 ? <WeightControls defaults={weights} labels={labels} current={current} />
-              : <p className="text-sm text-slate-500">No scored students yet.</p>
-          ) : <p className="text-sm text-slate-500">Only administrators can try different weights.</p>}
+              : <p className="text-sm text-muted-foreground">No scored students yet.</p>
+          ) : <p className="text-sm text-muted-foreground">Only administrators can try different weights.</p>}
         </Section>
       )}
 
       <Section title="Does the early-warning model work?" description={metrics ? `${metrics.target}. Trained on ${metrics.n_train?.toLocaleString("en-IN")} students, tested on ${metrics.n_test?.toLocaleString("en-IN")} held-out students they had never seen.` : undefined}>
         {metrics && baseline ? (
           <div className="space-y-4">
-            <p className="rounded-md bg-slate-50 p-3 text-sm">{verdict(metrics, baseline)}</p>
+            <p className="rounded-md bg-muted/50 p-3 text-sm">{verdict(metrics, baseline)}</p>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -152,15 +153,15 @@ function View({ data }: { data: Data }) {
                       <TableCell className="font-medium">{k}</TableCell>
                       <TableCell className="text-right tabular-nums">{mv}</TableCell>
                       <TableCell className="text-right tabular-nums">{bv}</TableCell>
-                      <TableCell className="text-slate-600">{help}</TableCell>
+                      <TableCell className="text-muted-foreground">{help}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
-            <p className="text-xs text-slate-500">Base rate: {pct(metrics.base_rate)} of test students failed at least one subject. Training window: {metrics.train_window}.</p>
+            <p className="text-xs text-muted-foreground">Base rate: {pct(metrics.base_rate)} of test students failed at least one subject. Training window: {metrics.train_window}.</p>
           </div>
-        ) : <p className="text-sm text-slate-500">The model hasn&apos;t been trained yet. Risk flags use the transparent rules only.</p>}
+        ) : <p className="text-sm text-muted-foreground">The model hasn&apos;t been trained yet. Risk flags use the transparent rules only.</p>}
       </Section>
 
       {model?.candidates && model.candidates.length > 0 && (
@@ -211,7 +212,7 @@ function View({ data }: { data: Data }) {
                 <TableBody>
                   {model.fairness.map((f) => (
                     <TableRow key={`${f.group_type}-${f.group}`}>
-                      <TableCell><span className="text-slate-500">{f.group_type === "residence" ? "Residence" : f.group_type === "gender" ? "Gender" : f.group_type}:</span> <span className="font-medium">{f.group}</span></TableCell>
+                      <TableCell><span className="text-muted-foreground">{f.group_type === "residence" ? "Residence" : f.group_type === "gender" ? "Gender" : f.group_type}:</span> <span className="font-medium">{f.group}</span></TableCell>
                       <TableCell className="text-right tabular-nums">{f.n}</TableCell>
                       <TableCell className="text-right tabular-nums">{pct(f.flag_rate, 1)}</TableCell>
                       <TableCell className="text-right tabular-nums">{pct(f.recall, 1)}</TableCell>
@@ -221,7 +222,7 @@ function View({ data }: { data: Data }) {
                 </TableBody>
               </Table>
             </div>
-            <ul className="space-y-1 text-sm text-slate-600">
+            <ul className="space-y-1 text-sm text-muted-foreground">
               {gaps.map(({ g, gap }) => (
                 <li key={g}>
                   By {g}: flag rates differ by {(gap * 100).toFixed(1)} percentage points
@@ -230,11 +231,11 @@ function View({ data }: { data: Data }) {
               ))}
             </ul>
           </div>
-        ) : <p className="text-sm text-slate-500">No fairness results yet.</p>}
+        ) : <p className="text-sm text-muted-foreground">No fairness results yet.</p>}
       </Section>
 
       <Section title="Limitations and responsible use">
-        <ul className="list-inside list-disc space-y-2 text-sm text-slate-700">
+        <ul className="list-inside list-disc space-y-2 text-sm text-foreground">
           <li><span className="font-medium">Synthetic data.</span> {model?.provenance ?? "All students and records are generated for this prototype."} The numbers above show the method works as designed, not how it would perform at a real college.</li>
           <li><span className="font-medium">Small test set.</span> Results come from {metrics?.n_test ?? "a few hundred"} held-out students, so small differences between models are within noise.</li>
           <li><span className="font-medium">A flag means &ldquo;needs a check-in&rdquo;</span>, never &ldquo;will fail&rdquo;. Every flag lists the reasons behind it so a mentor can judge it.</li>

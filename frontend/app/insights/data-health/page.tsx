@@ -3,14 +3,14 @@ import { DataHealth } from "@/components/insights/DataHealth";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-7xl space-y-6 p-6">
+    <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Data Health</h1>
-        <p className="text-slate-500">How seven disconnected campus systems were cleaned and joined into one student record.</p>
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Data Health</h1>
+        <p className="text-muted-foreground">How seven disconnected campus systems were cleaned and joined into one student record.</p>
       </header>
       <Suspense fallback={null}>
         <DataHealth />
       </Suspense>
-    </main>
+    </div>
   );
 }

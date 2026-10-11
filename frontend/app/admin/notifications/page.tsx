@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 interface Row { id: number; audience: string; title: string; body: string; created_at: string }
 
 const DEPARTMENTS = ["Comp", "IT", "ENTC", "AI&DS"];
-const FIELD = "h-9 w-full rounded-md border border-slate-300 bg-white px-3 text-sm";
+const FIELD = "h-9 w-full rounded-md border border-input bg-card px-3 text-sm";
 const TITLE_MAX = 120;
 const BODY_MAX = 1000;
 
@@ -55,8 +55,8 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Placement notifications</h1>
-        <p className="text-sm text-slate-500">Post drives, deadlines and workshops. Students see them in their notifications feed.</p>
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Placement notifications</h1>
+        <p className="text-sm text-muted-foreground">Post drives, deadlines and workshops. Students see them in their notifications feed.</p>
       </div>
 
       <Card className="space-y-3 p-4">
@@ -100,10 +100,10 @@ export default function NotificationsPage() {
         </label>
         <label className="block text-sm">
           Message
-          <textarea className="mt-1 w-full rounded-md border border-slate-300 p-2 text-sm" rows={4} maxLength={BODY_MAX} value={body} onChange={(e) => setBody(e.target.value)} />
-          <span className="text-xs text-slate-500">{body.length}/{BODY_MAX}</span>
+          <textarea className="mt-1 w-full rounded-md border border-input p-2 text-sm" rows={4} maxLength={BODY_MAX} value={body} onChange={(e) => setBody(e.target.value)} />
+          <span className="text-xs text-muted-foreground">{body.length}/{BODY_MAX}</span>
         </label>
-        {!audience.ok && kind !== "all" && target !== "" && <p className="text-xs text-red-700">{audience.error}</p>}
+        {!audience.ok && kind !== "all" && target !== "" && <p className="text-xs text-risk-red">{audience.error}</p>}
         <Button disabled={!valid || saving} onClick={send}>{saving ? "Posting…" : "Post notification"}</Button>
       </Card>
 
@@ -112,7 +112,7 @@ export default function NotificationsPage() {
         {error ? (
           <EmptyState>Could not load notifications: {error}</EmptyState>
         ) : rows === null ? (
-          <p className="text-sm text-slate-500">Loading…</p>
+          <p className="text-sm text-muted-foreground">Loading…</p>
         ) : rows.length === 0 ? (
           <EmptyState>No notifications posted yet.</EmptyState>
         ) : (
@@ -121,10 +121,10 @@ export default function NotificationsPage() {
               <li key={r.id} className="py-2">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <b>{r.title}</b>
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs">{describeAudience(r.audience)}</span>
-                  <span className="ml-auto text-xs text-slate-500">{new Date(r.created_at).toLocaleString()}</span>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{describeAudience(r.audience)}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</span>
                 </div>
-                <p className="text-slate-600">{r.body}</p>
+                <p className="text-muted-foreground">{r.body}</p>
               </li>
             ))}
           </ul>

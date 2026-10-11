@@ -32,10 +32,10 @@ async function load() {
 }
 
 const TONE: Record<RecoveryStatus, string> = {
-  Safe: "bg-emerald-50 text-emerald-800", Recoverable: "bg-amber-50 text-amber-800",
-  "Needs condonation": "bg-orange-50 text-orange-800", "Cannot recover": "bg-red-50 text-red-800", "No data": "bg-slate-100 text-slate-600",
+  Safe: "bg-risk-green-bg text-risk-green", Recoverable: "bg-risk-amber-bg text-risk-amber",
+  "Needs condonation": "bg-risk-amber-bg text-risk-amber", "Cannot recover": "bg-risk-red-bg text-risk-red", "No data": "bg-muted text-muted-foreground",
 };
-const FIELD = "w-20 rounded-md border border-slate-300 px-2 py-1 text-sm";
+const FIELD = "w-20 rounded-md border border-input px-2 py-1 text-sm";
 const FILTERS: (RecoveryStatus | "Needs attention")[] = ["Needs attention", "Recoverable", "Needs condonation", "Cannot recover", "Safe", "No data"];
 
 function download(name: string, text: string) {
@@ -71,8 +71,8 @@ export default function AttendancePage() {
   return (
     <div className="space-y-6">
       <div className="print:hidden">
-        <h1 className="text-2xl font-bold">Attendance recovery planner</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="font-serif text-[26px] font-semibold leading-tight tracking-[-0.01em] sm:text-[30px]">Attendance recovery planner</h1>
+        <p className="text-sm text-muted-foreground">
           How many of the remaining classes each student needs to attend to finish the term at the required attendance.
           Rules differ between universities, so set yours below. Percentages are each student&apos;s current average across subjects.
         </p>
@@ -87,7 +87,7 @@ export default function AttendancePage() {
           <label className="grid gap-1">Classes per week<input aria-label="Classes per week" className={FIELD} type="number" value={policy.classesPerWeek} onChange={(e) => setPolicy({ ...policy, classesPerWeek: Math.round(num(e.target.value, 1, 60, 15)) })} /></label>
           <label className="grid gap-1">Weeks completed<input aria-label="Weeks completed" className={FIELD} type="number" value={weekOverride !== "" ? weekOverride : data.week ?? ""} onChange={(e) => setWeekOverride(String(num(e.target.value, 0, 60, 0)))} /></label>
         </div>
-        {data.week == null && weekOverride === "" && <p className="mt-2 text-xs text-amber-700">The current week is not available from the data; enter weeks completed.</p>}
+        {data.week == null && weekOverride === "" && <p className="mt-2 text-xs text-risk-amber">The current week is not available from the data; enter weeks completed.</p>}
       </Card>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5 print:hidden">
@@ -101,7 +101,7 @@ export default function AttendancePage() {
           <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by status">
             {FILTERS.map((f) => (
               <button key={f} type="button" aria-pressed={filter === f} onClick={() => { setFilter(f); setLimit(50); }}
-                className={`rounded-full border px-3 py-1 text-xs ${filter === f ? "border-blue-600 bg-blue-50 text-blue-800" : "border-slate-300 text-slate-600"}`}>{f}</button>
+                className={`rounded-full border px-3 py-1 text-xs ${filter === f ? "border-primary bg-primary/10 text-primary" : "border-input text-muted-foreground"}`}>{f}</button>
             ))}
           </div>
           <div className="flex gap-2">
@@ -117,20 +117,20 @@ export default function AttendancePage() {
         ) : (
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="text-xs uppercase text-slate-500">
+              <thead className="text-xs uppercase text-muted-foreground">
                 <tr><th className="py-1 pr-3">Student</th><th className="pr-3">Now</th><th className="pr-3">Status</th><th className="pr-3">Needs to attend</th><th>What it means</th></tr>
               </thead>
               <tbody>
                 {shown.slice(0, limit).map((p) => (
-                  <tr key={p.student_id} className="border-t border-slate-100 align-top">
+                  <tr key={p.student_id} className="border-t border-border align-top">
                     <td className="py-1.5 pr-3">
-                      <Link className="text-blue-700 hover:underline print:text-black" href={`/faculty/student/${p.student_id}`}>{p.name}</Link>
-                      <span className="block text-xs text-slate-500">{p.student_id} · {p.department} · Year {p.year}</span>
+                      <Link className="text-primary hover:underline print:text-foreground" href={`/faculty/student/${p.student_id}`}>{p.name}</Link>
+                      <span className="block text-xs text-muted-foreground">{p.student_id} · {p.department} · Year {p.year}</span>
                     </td>
                     <td className="pr-3">{p.pct == null ? "–" : `${p.pct}%`}</td>
                     <td className="pr-3"><span className={`rounded-full px-2 py-0.5 text-xs ${TONE[p.r.status]}`}>{p.r.status}</span></td>
                     <td className="pr-3">{p.r.status === "No data" ? "–" : `${p.r.needed} of ${p.r.remaining}`}</td>
-                    <td className="text-xs text-slate-600">{describe(p.r, policy)}</td>
+                    <td className="text-xs text-muted-foreground">{describe(p.r, policy)}</td>
                   </tr>
                 ))}
               </tbody>
