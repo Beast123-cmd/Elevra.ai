@@ -1,0 +1,1001 @@
+student_id,category,skill,score,scale
+40000,technical,DSA,65.1,100
+40000,technical,Web development,4.0,10
+40000,technical,Databases,74.8,100
+40000,soft,Communication,66.8,100
+40000,soft,Teamwork,7.2,10
+40001,technical,DSA,4.5,10
+40001,technical,Cloud,4.0,10
+40001,technical,Databases,65.0,100
+40001,soft,Communication,3.8,10
+40001,soft,Teamwork,58.4,100
+40002,technical,Embedded systems,6.2,10
+40002,technical,Python,5.9,10
+40002,technical,VLSI,64.8,100
+40002,soft,Communication,6.2,10
+40002,soft,Teamwork,82.0,100
+40003,technical,Python,7.2,10
+40003,technical,Machine learning,8.0,10
+40003,technical,Statistics,5.9,10
+40003,soft,Communication,7.2,10
+40003,soft,Teamwork,68.1,100
+40004,technical,DSA,94.3,100
+40004,technical,Web development,77.9,100
+40004,technical,Databases,8.0,10
+40004,soft,Communication,7.7,10
+40004,soft,Teamwork,72.8,100
+40005,technical,DSA,38.4,100
+40005,technical,Cloud,2.8,10
+40005,technical,Databases,29.7,100
+40005,soft,Communication,6.8,10
+40005,soft,Teamwork,49.7,100
+40006,technical,Embedded systems,6.4,10
+40006,technical,Python,70.9,100
+40006,technical,VLSI,39.8,100
+40006,soft,Communication,6.3,10
+40006,soft,Teamwork,89.9,100
+40007,technical,Python,6.3,10
+40007,technical,Machine learning,59.0,100
+40007,technical,Statistics,7.9,10
+40007,soft,Communication,6.4,10
+40007,soft,Teamwork,60.9,100
+40008,technical,DSA,6.6,10
+40008,technical,Web development,62.4,100
+40008,technical,Databases,51.3,100
+40008,soft,Communication,6.4,10
+40008,soft,Teamwork,6.8,10
+40009,technical,DSA,10.0,10
+40009,technical,Cloud,88.5,100
+40009,technical,Databases,9.9,10
+40009,soft,Communication,7.1,10
+40009,soft,Teamwork,72.7,100
+40010,technical,Embedded systems,7.0,10
+40010,technical,Python,4.6,10
+40010,technical,VLSI,3.5,10
+40010,soft,Communication,7.0,10
+40010,soft,Teamwork,7.0,10
+40011,technical,Python,100,100
+40011,technical,Machine learning,89.3,100
+40011,technical,Statistics,10.0,10
+40011,soft,Communication,7.0,10
+40011,soft,Teamwork,75.4,100
+40012,technical,DSA,4.6,10
+40012,technical,Web development,4.9,10
+40012,technical,Databases,7.4,10
+40012,soft,Communication,60.0,100
+40012,soft,Teamwork,76.4,100
+40013,technical,DSA,3.7,10
+40013,technical,Cloud,3.9,10
+40013,technical,Databases,4.9,10
+40013,soft,Communication,9.1,10
+40013,soft,Teamwork,72.0,100
+40014,technical,Embedded systems,100,100
+40014,technical,Python,9.7,10
+40014,technical,VLSI,88.1,100
+40014,soft,Communication,59.9,100
+40014,soft,Teamwork,54.6,100
+40015,technical,Python,7.1,10
+40015,technical,Machine learning,81.9,100
+40015,technical,Statistics,69.4,100
+40015,soft,Communication,5.3,10
+40015,soft,Teamwork,57.8,100
+40016,technical,DSA,59.1,100
+40016,technical,Web development,6.4,10
+40016,technical,Databases,5.1,10
+40016,soft,Communication,57.1,100
+40016,soft,Teamwork,69.5,100
+40017,technical,DSA,6.0,10
+40017,technical,Cloud,7.6,10
+40017,technical,Databases,56.2,100
+40017,soft,Communication,7.8,10
+40017,soft,Teamwork,67.0,100
+40018,technical,Embedded systems,3.8,10
+40018,technical,Python,56.1,100
+40018,technical,VLSI,54.9,100
+40018,soft,Communication,70.0,100
+40018,soft,Teamwork,9.2,10
+40019,technical,Python,51.5,100
+40019,technical,Machine learning,7.6,10
+40019,technical,Statistics,71.7,100
+40019,soft,Communication,70.9,100
+40019,soft,Teamwork,7.0,10
+40020,technical,DSA,86.1,100
+40020,technical,Web development,7.1,10
+40020,technical,Databases,77.2,100
+40020,soft,Communication,76.0,100
+40020,soft,Teamwork,6.2,10
+40021,technical,DSA,6.0,10
+40021,technical,Cloud,5.1,10
+40021,technical,Databases,76.6,100
+40021,soft,Communication,81.2,100
+40021,soft,Teamwork,85.5,100
+40022,technical,Embedded systems,46.9,100
+40022,technical,Python,37.6,100
+40022,technical,VLSI,5.2,10
+40022,soft,Communication,55.5,100
+40022,soft,Teamwork,4.5,10
+40023,technical,Python,9.8,10
+40023,technical,Machine learning,10.0,10
+40023,technical,Statistics,9.3,10
+40023,soft,Communication,62.8,100
+40023,soft,Teamwork,57.8,100
+40024,technical,DSA,40.6,100
+40024,technical,Web development,2.2,10
+40024,technical,Databases,2.7,10
+40024,soft,Communication,72.6,100
+40024,soft,Teamwork,9.5,10
+40025,technical,DSA,74.2,100
+40025,technical,Cloud,4.5,10
+40025,technical,Databases,38.5,100
+40025,soft,Communication,8.7,10
+40025,soft,Teamwork,6.4,10
+40026,technical,Embedded systems,68.1,100
+40026,technical,Python,65.3,100
+40026,technical,VLSI,73.9,100
+40026,soft,Communication,93.9,100
+40026,soft,Teamwork,9.5,10
+40027,technical,Python,8.0,10
+40027,technical,Machine learning,8.2,10
+40027,technical,Statistics,80.7,100
+40027,soft,Communication,8.7,10
+40027,soft,Teamwork,7.9,10
+40028,technical,DSA,58.9,100
+40028,technical,Web development,7.6,10
+40028,technical,Databases,5.3,10
+40028,soft,Communication,94.6,100
+40028,soft,Teamwork,9.1,10
+40029,technical,DSA,5.8,10
+40029,technical,Cloud,4.2,10
+40029,technical,Databases,2.9,10
+40029,soft,Communication,8.7,10
+40029,soft,Teamwork,5.5,10
+40030,technical,Embedded systems,5.4,10
+40030,technical,Python,53.7,100
+40030,technical,VLSI,6.4,10
+40030,soft,Communication,63.0,100
+40030,soft,Teamwork,5.7,10
+40031,technical,Python,8.3,10
+40031,technical,Machine learning,80.4,100
+40031,technical,Statistics,10.0,10
+40031,soft,Communication,9.4,10
+40031,soft,Teamwork,8.0,10
+40032,technical,DSA,85.9,100
+40032,technical,Web development,76.4,100
+40032,technical,Databases,61.2,100
+40032,soft,Communication,6.7,10
+40032,soft,Teamwork,4.6,10
+40033,technical,DSA,6.1,10
+40033,technical,Cloud,5.5,10
+40033,technical,Databases,85.1,100
+40033,soft,Communication,6.2,10
+40033,soft,Teamwork,7.8,10
+40034,technical,Embedded systems,85.2,100
+40034,technical,Python,96.2,100
+40034,technical,VLSI,89.2,100
+40034,soft,Communication,93.8,100
+40034,soft,Teamwork,65.4,100
+40035,technical,Python,6.2,10
+40035,technical,Machine learning,52.0,100
+40035,technical,Statistics,73.2,100
+40035,soft,Communication,65.9,100
+40035,soft,Teamwork,94.6,100
+40036,technical,DSA,64.5,100
+40036,technical,Web development,60.2,100
+40036,technical,Databases,75.6,100
+40036,soft,Communication,6.3,10
+40036,soft,Teamwork,6.2,10
+40037,technical,DSA,5.8,10
+40037,technical,Cloud,73.6,100
+40037,technical,Databases,62.6,100
+40037,soft,Communication,94.9,100
+40037,soft,Teamwork,80.2,100
+40038,technical,Embedded systems,2.0,10
+40038,technical,Python,42.5,100
+40038,technical,VLSI,38.7,100
+40038,soft,Communication,70.2,100
+40038,soft,Teamwork,7.2,10
+40039,technical,Python,70.0,100
+40039,technical,Machine learning,8.3,10
+40039,technical,Statistics,6.8,10
+40039,soft,Communication,9.4,10
+40039,soft,Teamwork,84.9,100
+40040,technical,DSA,58.9,100
+40040,technical,Web development,5.3,10
+40040,technical,Databases,8.2,10
+40040,soft,Communication,75.5,100
+40040,soft,Teamwork,65.3,100
+40041,technical,DSA,72.7,100
+40041,technical,Cloud,8.8,10
+40041,technical,Databases,90.4,100
+40041,soft,Communication,56.1,100
+40041,soft,Teamwork,61.8,100
+40042,technical,Embedded systems,4.0,10
+40042,technical,Python,38.7,100
+40042,technical,VLSI,5.3,10
+40042,soft,Communication,57.4,100
+40042,soft,Teamwork,7.5,10
+40043,technical,Python,78.0,100
+40043,technical,Machine learning,56.7,100
+40043,technical,Statistics,5.1,10
+40043,soft,Communication,62.2,100
+40043,soft,Teamwork,50.8,100
+40044,technical,DSA,68.9,100
+40044,technical,Web development,66.2,100
+40044,technical,Databases,61.7,100
+40044,soft,Communication,69.1,100
+40044,soft,Teamwork,7.9,10
+40045,technical,DSA,77.3,100
+40045,technical,Cloud,88.3,100
+40045,technical,Databases,6.6,10
+40045,soft,Communication,44.5,100
+40045,soft,Teamwork,7.3,10
+40046,technical,Embedded systems,83.6,100
+40046,technical,Python,91.5,100
+40046,technical,VLSI,66.7,100
+40046,soft,Communication,74.0,100
+40046,soft,Teamwork,5.3,10
+40047,technical,Python,7.3,10
+40047,technical,Machine learning,4.7,10
+40047,technical,Statistics,5.9,10
+40047,soft,Communication,76.2,100
+40047,soft,Teamwork,7.0,10
+40048,technical,DSA,66.9,100
+40048,technical,Web development,3.5,10
+40048,technical,Databases,7.0,10
+40048,soft,Communication,48.1,100
+40048,soft,Teamwork,76.9,100
+40049,technical,DSA,9.2,10
+40049,technical,Cloud,8.4,10
+40049,technical,Databases,100,100
+40049,soft,Communication,4.3,10
+40049,soft,Teamwork,75.6,100
+40050,technical,Embedded systems,6.3,10
+40050,technical,Python,6.0,10
+40050,technical,VLSI,3.3,10
+40050,soft,Communication,7.4,10
+40050,soft,Teamwork,62.6,100
+40051,technical,Python,75.6,100
+40051,technical,Machine learning,6.0,10
+40051,technical,Statistics,5.1,10
+40051,soft,Communication,79.9,100
+40051,soft,Teamwork,75.4,100
+40052,technical,DSA,70.0,100
+40052,technical,Web development,9.6,10
+40052,technical,Databases,9.0,10
+40052,soft,Communication,49.6,100
+40052,soft,Teamwork,73.7,100
+40053,technical,DSA,73.4,100
+40053,technical,Cloud,65.2,100
+40053,technical,Databases,7.2,10
+40053,soft,Communication,52.5,100
+40053,soft,Teamwork,72.6,100
+40054,technical,Embedded systems,5.2,10
+40054,technical,Python,6.6,10
+40054,technical,VLSI,60.0,100
+40054,soft,Communication,6.5,10
+40054,soft,Teamwork,7.1,10
+40055,technical,Python,7.2,10
+40055,technical,Machine learning,8.4,10
+40055,technical,Statistics,62.9,100
+40055,soft,Communication,46.3,100
+40055,soft,Teamwork,47.7,100
+40056,technical,DSA,7.3,10
+40056,technical,Web development,66.6,100
+40056,technical,Databases,83.6,100
+40056,soft,Communication,61.8,100
+40056,soft,Teamwork,57.5,100
+40057,technical,DSA,6.3,10
+40057,technical,Cloud,78.0,100
+40057,technical,Databases,9.3,10
+40057,soft,Communication,41.1,100
+40057,soft,Teamwork,78.1,100
+40058,technical,Embedded systems,8.0,10
+40058,technical,Python,8.4,10
+40058,technical,VLSI,68.5,100
+40058,soft,Communication,58.4,100
+40058,soft,Teamwork,65.6,100
+40059,technical,Python,52.5,100
+40059,technical,Machine learning,5.9,10
+40059,technical,Statistics,5.3,10
+40059,soft,Communication,75.5,100
+40059,soft,Teamwork,6.6,10
+40060,technical,DSA,40.3,100
+40060,technical,Web development,3.4,10
+40060,technical,Databases,40.1,100
+40060,soft,Communication,5.9,10
+40060,soft,Teamwork,60.9,100
+40061,technical,DSA,6.6,10
+40061,technical,Cloud,7.1,10
+40061,technical,Databases,73.2,100
+40061,soft,Communication,83.3,100
+40061,soft,Teamwork,83.6,100
+40062,technical,Embedded systems,44.3,100
+40062,technical,Python,42.3,100
+40062,technical,VLSI,3.7,10
+40062,soft,Communication,90.1,100
+40062,soft,Teamwork,7.9,10
+40063,technical,Python,6.3,10
+40063,technical,Machine learning,3.9,10
+40063,technical,Statistics,5.6,10
+40063,soft,Communication,7.7,10
+40063,soft,Teamwork,8.4,10
+40064,technical,DSA,39.3,100
+40064,technical,Web development,54.9,100
+40064,technical,Databases,8.1,10
+40064,soft,Communication,50.8,100
+40064,soft,Teamwork,5.2,10
+40065,technical,DSA,52.8,100
+40065,technical,Cloud,5.0,10
+40065,technical,Databases,30.9,100
+40065,soft,Communication,65.2,100
+40065,soft,Teamwork,7.6,10
+40066,technical,Embedded systems,7.8,10
+40066,technical,Python,100,100
+40066,technical,VLSI,81.4,100
+40066,soft,Communication,69.7,100
+40066,soft,Teamwork,6.0,10
+40067,technical,Python,6.7,10
+40067,technical,Machine learning,6.4,10
+40067,technical,Statistics,69.5,100
+40067,soft,Communication,71.0,100
+40067,soft,Teamwork,4.9,10
+40068,technical,DSA,38.9,100
+40068,technical,Web development,5.2,10
+40068,technical,Databases,66.7,100
+40068,soft,Communication,10.0,10
+40068,soft,Teamwork,100,100
+40069,technical,DSA,3.1,10
+40069,technical,Cloud,5.9,10
+40069,technical,Databases,71.8,100
+40069,soft,Communication,78.8,100
+40069,soft,Teamwork,3.7,10
+40070,technical,Embedded systems,73.4,100
+40070,technical,Python,67.4,100
+40070,technical,VLSI,8.0,10
+40070,soft,Communication,3.9,10
+40070,soft,Teamwork,5.7,10
+40071,technical,Python,8.3,10
+40071,technical,Machine learning,7.0,10
+40071,technical,Statistics,7.5,10
+40071,soft,Communication,79.3,100
+40071,soft,Teamwork,72.8,100
+40072,technical,DSA,5.3,10
+40072,technical,Web development,6.0,10
+40072,technical,Databases,3.2,10
+40072,soft,Communication,64.9,100
+40072,soft,Teamwork,5.7,10
+40073,technical,DSA,9.3,10
+40073,technical,Cloud,76.3,100
+40073,technical,Databases,6.4,10
+40073,soft,Communication,74.6,100
+40073,soft,Teamwork,7.9,10
+40074,technical,Embedded systems,61.5,100
+40074,technical,Python,90.8,100
+40074,technical,VLSI,67.0,100
+40074,soft,Communication,5.1,10
+40074,soft,Teamwork,7.1,10
+40075,technical,Python,77.6,100
+40075,technical,Machine learning,64.3,100
+40075,technical,Statistics,64.7,100
+40075,soft,Communication,66.0,100
+40075,soft,Teamwork,5.9,10
+40076,technical,DSA,98.9,100
+40076,technical,Web development,94.7,100
+40076,technical,Databases,87.4,100
+40076,soft,Communication,72.6,100
+40076,soft,Teamwork,4.4,10
+40077,technical,DSA,7.5,10
+40077,technical,Cloud,5.1,10
+40077,technical,Databases,35.1,100
+40077,soft,Communication,73.8,100
+40077,soft,Teamwork,83.3,100
+40078,technical,Embedded systems,6.3,10
+40078,technical,Python,46.8,100
+40078,technical,VLSI,4.2,10
+40078,soft,Communication,5.9,10
+40078,soft,Teamwork,5.8,10
+40079,technical,Python,8.6,10
+40079,technical,Machine learning,7.6,10
+40079,technical,Statistics,85.0,100
+40079,soft,Communication,6.7,10
+40079,soft,Teamwork,8.4,10
+40080,technical,DSA,5.4,10
+40080,technical,Web development,5.5,10
+40080,technical,Databases,85.8,100
+40080,soft,Communication,10.0,10
+40080,soft,Teamwork,64.4,100
+40081,technical,DSA,8.5,10
+40081,technical,Cloud,7.0,10
+40081,technical,Databases,70.6,100
+40081,soft,Communication,4.5,10
+40081,soft,Teamwork,6.9,10
+40082,technical,Embedded systems,6.3,10
+40082,technical,Python,58.8,100
+40082,technical,VLSI,49.3,100
+40082,soft,Communication,8.8,10
+40082,soft,Teamwork,5.8,10
+40083,technical,Python,67.8,100
+40083,technical,Machine learning,4.5,10
+40083,technical,Statistics,62.4,100
+40083,soft,Communication,80.0,100
+40083,soft,Teamwork,6.9,10
+40084,technical,DSA,5.3,10
+40084,technical,Web development,8.1,10
+40084,technical,Databases,6.7,10
+40084,soft,Communication,73.4,100
+40084,soft,Teamwork,7.0,10
+40085,technical,DSA,5.9,10
+40085,technical,Cloud,61.2,100
+40085,technical,Databases,6.6,10
+40085,soft,Communication,62.9,100
+40085,soft,Teamwork,47.2,100
+40086,technical,Embedded systems,5.8,10
+40086,technical,Python,8.4,10
+40086,technical,VLSI,6.3,10
+40086,soft,Communication,62.4,100
+40086,soft,Teamwork,85.1,100
+40087,technical,Python,3.6,10
+40087,technical,Machine learning,7.0,10
+40087,technical,Statistics,47.6,100
+40087,soft,Communication,55.0,100
+40087,soft,Teamwork,48.7,100
+40088,technical,DSA,7.0,10
+40088,technical,Web development,68.4,100
+40088,technical,Databases,71.9,100
+40088,soft,Communication,64.4,100
+40088,soft,Teamwork,75.7,100
+40089,technical,DSA,49.8,100
+40089,technical,Cloud,43.7,100
+40089,technical,Databases,4.8,10
+40089,soft,Communication,4.1,10
+40089,soft,Teamwork,76.3,100
+40090,technical,Embedded systems,7.5,10
+40090,technical,Python,82.5,100
+40090,technical,VLSI,58.2,100
+40090,soft,Communication,7.7,10
+40090,soft,Teamwork,4.1,10
+40091,technical,Python,7.5,10
+40091,technical,Machine learning,6.0,10
+40091,technical,Statistics,57.5,100
+40091,soft,Communication,71.8,100
+40091,soft,Teamwork,7.9,10
+40092,technical,DSA,8.8,10
+40092,technical,Web development,58.1,100
+40092,technical,Databases,49.6,100
+40092,soft,Communication,5.9,10
+40092,soft,Teamwork,8.0,10
+40093,technical,DSA,7.8,10
+40093,technical,Cloud,5.2,10
+40093,technical,Databases,76.3,100
+40093,soft,Communication,96.5,100
+40093,soft,Teamwork,7.8,10
+40094,technical,Embedded systems,7.9,10
+40094,technical,Python,61.0,100
+40094,technical,VLSI,8.0,10
+40094,soft,Communication,71.5,100
+40094,soft,Teamwork,5.8,10
+40095,technical,Python,3.3,10
+40095,technical,Machine learning,4.2,10
+40095,technical,Statistics,2.0,10
+40095,soft,Communication,5.3,10
+40095,soft,Teamwork,81.1,100
+40096,technical,DSA,41.1,100
+40096,technical,Web development,19.3,100
+40096,technical,Databases,2.9,10
+40096,soft,Communication,5.7,10
+40096,soft,Teamwork,6.0,10
+40097,technical,DSA,93.5,100
+40097,technical,Cloud,78.9,100
+40097,technical,Databases,7.5,10
+40097,soft,Communication,7.3,10
+40097,soft,Teamwork,4.6,10
+40098,technical,Embedded systems,77.2,100
+40098,technical,Python,8.2,10
+40098,technical,VLSI,65.9,100
+40098,soft,Communication,88.6,100
+40098,soft,Teamwork,7.6,10
+40099,technical,Python,4.3,10
+40099,technical,Machine learning,49.2,100
+40099,technical,Statistics,4.2,10
+40099,soft,Communication,63.2,100
+40099,soft,Teamwork,8.0,10
+40100,technical,DSA,96.0,100
+40100,technical,Web development,82.1,100
+40100,technical,Databases,6.7,10
+40100,soft,Communication,82.0,100
+40100,soft,Teamwork,6.3,10
+40101,technical,DSA,8.7,10
+40101,technical,Cloud,100,100
+40101,technical,Databases,8.7,10
+40101,soft,Communication,6.6,10
+40101,soft,Teamwork,6.1,10
+40102,technical,Embedded systems,7.1,10
+40102,technical,Python,60.4,100
+40102,technical,VLSI,7.2,10
+40102,soft,Communication,86.5,100
+40102,soft,Teamwork,7.8,10
+40103,technical,Python,9.0,10
+40103,technical,Machine learning,10.0,10
+40103,technical,Statistics,8.5,10
+40103,soft,Communication,42.6,100
+40103,soft,Teamwork,5.2,10
+40104,technical,DSA,79.9,100
+40104,technical,Web development,85.2,100
+40104,technical,Databases,63.5,100
+40104,soft,Communication,79.8,100
+40104,soft,Teamwork,6.8,10
+40105,technical,DSA,6.4,10
+40105,technical,Cloud,7.5,10
+40105,technical,Databases,8.0,10
+40105,soft,Communication,6.7,10
+40105,soft,Teamwork,5.8,10
+40106,technical,Embedded systems,6.8,10
+40106,technical,Python,37.2,100
+40106,technical,VLSI,5.0,10
+40106,soft,Communication,55.1,100
+40106,soft,Teamwork,64.8,100
+40107,technical,Python,44.6,100
+40107,technical,Machine learning,70.8,100
+40107,technical,Statistics,6.0,10
+40107,soft,Communication,75.5,100
+40107,soft,Teamwork,7.6,10
+40108,technical,DSA,65.6,100
+40108,technical,Web development,81.2,100
+40108,technical,Databases,5.3,10
+40108,soft,Communication,7.0,10
+40108,soft,Teamwork,8.0,10
+40109,technical,DSA,6.1,10
+40109,technical,Cloud,47.8,100
+40109,technical,Databases,94.6,100
+40109,soft,Communication,9.2,10
+40109,soft,Teamwork,7.5,10
+40110,technical,Embedded systems,5.7,10
+40110,technical,Python,76.0,100
+40110,technical,VLSI,6.4,10
+40110,soft,Communication,6.5,10
+40110,soft,Teamwork,80.5,100
+40111,technical,Python,53.8,100
+40111,technical,Machine learning,49.3,100
+40111,technical,Statistics,5.6,10
+40111,soft,Communication,54.5,100
+40111,soft,Teamwork,49.8,100
+40112,technical,DSA,6.1,10
+40112,technical,Web development,38.3,100
+40112,technical,Databases,64.3,100
+40112,soft,Communication,5.1,10
+40112,soft,Teamwork,52.9,100
+40113,technical,DSA,78.1,100
+40113,technical,Cloud,5.8,10
+40113,technical,Databases,59.4,100
+40113,soft,Communication,4.3,10
+40113,soft,Teamwork,4.3,10
+40114,technical,Embedded systems,6.8,10
+40114,technical,Python,6.1,10
+40114,technical,VLSI,4.9,10
+40114,soft,Communication,47.8,100
+40114,soft,Teamwork,6.0,10
+40115,technical,Python,5.1,10
+40115,technical,Machine learning,77.1,100
+40115,technical,Statistics,7.9,10
+40115,soft,Communication,6.2,10
+40115,soft,Teamwork,5.8,10
+40116,technical,DSA,65.4,100
+40116,technical,Web development,53.0,100
+40116,technical,Databases,60.3,100
+40116,soft,Communication,7.0,10
+40116,soft,Teamwork,89.4,100
+40117,technical,DSA,10.0,10
+40117,technical,Cloud,10.0,10
+40117,technical,Databases,100,100
+40117,soft,Communication,6.8,10
+40117,soft,Teamwork,61.7,100
+40118,technical,Embedded systems,83.7,100
+40118,technical,Python,8.2,10
+40118,technical,VLSI,78.3,100
+40118,soft,Communication,55.3,100
+40118,soft,Teamwork,77.2,100
+40119,technical,Python,75.7,100
+40119,technical,Machine learning,70.5,100
+40119,technical,Statistics,7.6,10
+40119,soft,Communication,7.3,10
+40119,soft,Teamwork,8.2,10
+40120,technical,DSA,45.0,100
+40120,technical,Web development,6.4,10
+40120,technical,Databases,5.8,10
+40120,soft,Communication,5.3,10
+40120,soft,Teamwork,38.9,100
+40121,technical,DSA,44.2,100
+40121,technical,Cloud,7.2,10
+40121,technical,Databases,6.3,10
+40121,soft,Communication,6.4,10
+40121,soft,Teamwork,7.3,10
+40122,technical,Embedded systems,67.7,100
+40122,technical,Python,59.8,100
+40122,technical,VLSI,50.9,100
+40122,soft,Communication,7.1,10
+40122,soft,Teamwork,75.5,100
+40123,technical,Python,59.3,100
+40123,technical,Machine learning,7.4,10
+40123,technical,Statistics,6.3,10
+40123,soft,Communication,72.7,100
+40123,soft,Teamwork,5.3,10
+40124,technical,DSA,84.2,100
+40124,technical,Web development,4.5,10
+40124,technical,Databases,73.0,100
+40124,soft,Communication,52.1,100
+40124,soft,Teamwork,73.8,100
+40125,technical,DSA,83.6,100
+40125,technical,Cloud,69.5,100
+40125,technical,Databases,10.0,10
+40125,soft,Communication,7.3,10
+40125,soft,Teamwork,6.6,10
+40126,technical,Embedded systems,46.8,100
+40126,technical,Python,52.3,100
+40126,technical,VLSI,48.0,100
+40126,soft,Communication,87.9,100
+40126,soft,Teamwork,97.3,100
+40127,technical,Python,56.8,100
+40127,technical,Machine learning,3.7,10
+40127,technical,Statistics,45.8,100
+40127,soft,Communication,7.5,10
+40127,soft,Teamwork,37.1,100
+40128,technical,DSA,71.6,100
+40128,technical,Web development,67.6,100
+40128,technical,Databases,74.5,100
+40128,soft,Communication,73.0,100
+40128,soft,Teamwork,7.1,10
+40129,technical,DSA,29.1,100
+40129,technical,Cloud,6.9,10
+40129,technical,Databases,5.8,10
+40129,soft,Communication,53.1,100
+40129,soft,Teamwork,53.8,100
+40130,technical,Embedded systems,78.9,100
+40130,technical,Python,98.0,100
+40130,technical,VLSI,95.5,100
+40130,soft,Communication,5.7,10
+40130,soft,Teamwork,86.9,100
+40131,technical,Python,6.5,10
+40131,technical,Machine learning,8.0,10
+40131,technical,Statistics,49.8,100
+40131,soft,Communication,5.3,10
+40131,soft,Teamwork,47.4,100
+40132,technical,DSA,5.3,10
+40132,technical,Web development,3.0,10
+40132,technical,Databases,55.4,100
+40132,soft,Communication,96.3,100
+40132,soft,Teamwork,78.6,100
+40133,technical,DSA,7.0,10
+40133,technical,Cloud,8.5,10
+40133,technical,Databases,77.6,100
+40133,soft,Communication,7.5,10
+40133,soft,Teamwork,6.9,10
+40134,technical,Embedded systems,47.0,100
+40134,technical,Python,7.0,10
+40134,technical,VLSI,60.6,100
+40134,soft,Communication,93.7,100
+40134,soft,Teamwork,8.4,10
+40135,technical,Python,5.4,10
+40135,technical,Machine learning,6.2,10
+40135,technical,Statistics,4.8,10
+40135,soft,Communication,8.1,10
+40135,soft,Teamwork,6.4,10
+40136,technical,DSA,6.3,10
+40136,technical,Web development,2.5,10
+40136,technical,Databases,4.8,10
+40136,soft,Communication,3.7,10
+40136,soft,Teamwork,50.3,100
+40137,technical,DSA,36.0,100
+40137,technical,Cloud,48.9,100
+40137,technical,Databases,44.2,100
+40137,soft,Communication,7.1,10
+40137,soft,Teamwork,8.3,10
+40138,technical,Embedded systems,7.7,10
+40138,technical,Python,6.5,10
+40138,technical,VLSI,70.2,100
+40138,soft,Communication,61.4,100
+40138,soft,Teamwork,77.1,100
+40139,technical,Python,57.7,100
+40139,technical,Machine learning,69.2,100
+40139,technical,Statistics,8.0,10
+40139,soft,Communication,6.4,10
+40139,soft,Teamwork,5.8,10
+40140,technical,DSA,6.0,10
+40140,technical,Web development,48.5,100
+40140,technical,Databases,56.2,100
+40140,soft,Communication,81.8,100
+40140,soft,Teamwork,62.0,100
+40141,technical,DSA,81.5,100
+40141,technical,Cloud,8.1,10
+40141,technical,Databases,6.9,10
+40141,soft,Communication,5.7,10
+40141,soft,Teamwork,75.2,100
+40142,technical,Embedded systems,8.7,10
+40142,technical,Python,7.5,10
+40142,technical,VLSI,7.8,10
+40142,soft,Communication,6.1,10
+40142,soft,Teamwork,8.1,10
+40143,technical,Python,1.4,10
+40143,technical,Machine learning,4.5,10
+40143,technical,Statistics,70.4,100
+40143,soft,Communication,54.1,100
+40143,soft,Teamwork,67.1,100
+40144,technical,DSA,8.5,10
+40144,technical,Web development,84.4,100
+40144,technical,Databases,83.0,100
+40144,soft,Communication,4.4,10
+40144,soft,Teamwork,69.6,100
+40145,technical,DSA,6.1,10
+40145,technical,Cloud,59.2,100
+40145,technical,Databases,5.6,10
+40145,soft,Communication,70.1,100
+40145,soft,Teamwork,44.5,100
+40146,technical,Embedded systems,5.9,10
+40146,technical,Python,9.2,10
+40146,technical,VLSI,6.1,10
+40146,soft,Communication,77.2,100
+40146,soft,Teamwork,7.4,10
+40147,technical,Python,5.5,10
+40147,technical,Machine learning,7.2,10
+40147,technical,Statistics,52.9,100
+40147,soft,Communication,64.7,100
+40147,soft,Teamwork,67.2,100
+40148,technical,DSA,7.3,10
+40148,technical,Web development,68.5,100
+40148,technical,Databases,7.8,10
+40148,soft,Communication,5.5,10
+40148,soft,Teamwork,60.0,100
+40149,technical,DSA,2.3,10
+40149,technical,Cloud,30.3,100
+40149,technical,Databases,43.7,100
+40149,soft,Communication,8.9,10
+40149,soft,Teamwork,71.5,100
+40150,technical,Embedded systems,24.8,100
+40150,technical,Python,34.7,100
+40150,technical,VLSI,31.8,100
+40150,soft,Communication,6.6,10
+40150,soft,Teamwork,6.2,10
+40151,technical,Python,8.6,10
+40151,technical,Machine learning,7.3,10
+40151,technical,Statistics,63.2,100
+40151,soft,Communication,8.0,10
+40151,soft,Teamwork,7.6,10
+40152,technical,DSA,3.6,10
+40152,technical,Web development,51.2,100
+40152,technical,Databases,5.1,10
+40152,soft,Communication,7.0,10
+40152,soft,Teamwork,6.0,10
+40153,technical,DSA,6.4,10
+40153,technical,Cloud,6.2,10
+40153,technical,Databases,74.0,100
+40153,soft,Communication,5.9,10
+40153,soft,Teamwork,6.7,10
+40154,technical,Embedded systems,5.4,10
+40154,technical,Python,70.0,100
+40154,technical,VLSI,5.3,10
+40154,soft,Communication,9.2,10
+40154,soft,Teamwork,64.0,100
+40155,technical,Python,61.5,100
+40155,technical,Machine learning,6.3,10
+40155,technical,Statistics,5.6,10
+40155,soft,Communication,7.2,10
+40155,soft,Teamwork,6.6,10
+40156,technical,DSA,6.3,10
+40156,technical,Web development,54.1,100
+40156,technical,Databases,5.3,10
+40156,soft,Communication,4.6,10
+40156,soft,Teamwork,55.3,100
+40157,technical,DSA,6.7,10
+40157,technical,Cloud,8.9,10
+40157,technical,Databases,7.9,10
+40157,soft,Communication,67.8,100
+40157,soft,Teamwork,6.6,10
+40158,technical,Embedded systems,6.9,10
+40158,technical,Python,7.2,10
+40158,technical,VLSI,83.2,100
+40158,soft,Communication,85.5,100
+40158,soft,Teamwork,4.2,10
+40159,technical,Python,43.2,100
+40159,technical,Machine learning,30.9,100
+40159,technical,Statistics,4.4,10
+40159,soft,Communication,83.0,100
+40159,soft,Teamwork,86.4,100
+40160,technical,DSA,5.4,10
+40160,technical,Web development,34.4,100
+40160,technical,Databases,61.7,100
+40160,soft,Communication,79.0,100
+40160,soft,Teamwork,63.8,100
+40161,technical,DSA,65.8,100
+40161,technical,Cloud,55.8,100
+40161,technical,Databases,43.3,100
+40161,soft,Communication,59.5,100
+40161,soft,Teamwork,65.4,100
+40162,technical,Embedded systems,57.3,100
+40162,technical,Python,8.4,10
+40162,technical,VLSI,76.3,100
+40162,soft,Communication,61.6,100
+40162,soft,Teamwork,45.0,100
+40163,technical,Python,32.8,100
+40163,technical,Machine learning,37.5,100
+40163,technical,Statistics,45.8,100
+40163,soft,Communication,56.8,100
+40163,soft,Teamwork,5.3,10
+40164,technical,DSA,6.7,10
+40164,technical,Web development,77.5,100
+40164,technical,Databases,87.9,100
+40164,soft,Communication,64.9,100
+40164,soft,Teamwork,6.6,10
+40165,technical,DSA,9.9,10
+40165,technical,Cloud,8.5,10
+40165,technical,Databases,48.8,100
+40165,soft,Communication,8.1,10
+40165,soft,Teamwork,65.1,100
+40166,technical,Embedded systems,6.5,10
+40166,technical,Python,72.7,100
+40166,technical,VLSI,55.2,100
+40166,soft,Communication,43.7,100
+40166,soft,Teamwork,74.9,100
+40167,technical,Python,78.6,100
+40167,technical,Machine learning,6.3,10
+40167,technical,Statistics,79.4,100
+40167,soft,Communication,62.6,100
+40167,soft,Teamwork,79.6,100
+40168,technical,DSA,5.9,10
+40168,technical,Web development,5.3,10
+40168,technical,Databases,4.4,10
+40168,soft,Communication,74.4,100
+40168,soft,Teamwork,46.8,100
+40169,technical,DSA,7.1,10
+40169,technical,Cloud,4.7,10
+40169,technical,Databases,51.3,100
+40169,soft,Communication,86.6,100
+40169,soft,Teamwork,7.5,10
+40170,technical,Embedded systems,5.8,10
+40170,technical,Python,5.7,10
+40170,technical,VLSI,5.4,10
+40170,soft,Communication,6.5,10
+40170,soft,Teamwork,6.0,10
+40171,technical,Python,6.2,10
+40171,technical,Machine learning,6.9,10
+40171,technical,Statistics,56.8,100
+40171,soft,Communication,80.7,100
+40171,soft,Teamwork,6.2,10
+40172,technical,DSA,4.8,10
+40172,technical,Web development,67.4,100
+40172,technical,Databases,56.2,100
+40172,soft,Communication,76.3,100
+40172,soft,Teamwork,62.2,100
+40173,technical,DSA,31.2,100
+40173,technical,Cloud,3.8,10
+40173,technical,Databases,50.7,100
+40173,soft,Communication,5.2,10
+40173,soft,Teamwork,8.6,10
+40174,technical,Embedded systems,6.3,10
+40174,technical,Python,44.8,100
+40174,technical,VLSI,5.4,10
+40174,soft,Communication,73.4,100
+40174,soft,Teamwork,57.0,100
+40175,technical,Python,7.1,10
+40175,technical,Machine learning,8.1,10
+40175,technical,Statistics,7.6,10
+40175,soft,Communication,54.2,100
+40175,soft,Teamwork,65.4,100
+40176,technical,DSA,88.3,100
+40176,technical,Web development,96.1,100
+40176,technical,Databases,80.1,100
+40176,soft,Communication,4.5,10
+40176,soft,Teamwork,5.9,10
+40177,technical,DSA,5.5,10
+40177,technical,Cloud,46.1,100
+40177,technical,Databases,6.6,10
+40177,soft,Communication,51.8,100
+40177,soft,Teamwork,5.7,10
+40178,technical,Embedded systems,68.6,100
+40178,technical,Python,59.2,100
+40178,technical,VLSI,6.1,10
+40178,soft,Communication,76.2,100
+40178,soft,Teamwork,6.5,10
+40179,technical,Python,64.0,100
+40179,technical,Machine learning,47.9,100
+40179,technical,Statistics,61.9,100
+40179,soft,Communication,52.9,100
+40179,soft,Teamwork,66.0,100
+40180,technical,DSA,73.9,100
+40180,technical,Web development,79.9,100
+40180,technical,Databases,60.9,100
+40180,soft,Communication,5.9,10
+40180,soft,Teamwork,79.0,100
+40181,technical,DSA,80.5,100
+40181,technical,Cloud,8.0,10
+40181,technical,Databases,5.7,10
+40181,soft,Communication,80.5,100
+40181,soft,Teamwork,4.7,10
+40182,technical,Embedded systems,7.4,10
+40182,technical,Python,8.3,10
+40182,technical,VLSI,78.9,100
+40182,soft,Communication,80.1,100
+40182,soft,Teamwork,83.0,100
+40183,technical,Python,67.0,100
+40183,technical,Machine learning,100,100
+40183,technical,Statistics,8.5,10
+40183,soft,Communication,63.3,100
+40183,soft,Teamwork,6.0,10
+40184,technical,DSA,70.5,100
+40184,technical,Web development,45.9,100
+40184,technical,Databases,59.8,100
+40184,soft,Communication,71.2,100
+40184,soft,Teamwork,6.1,10
+40185,technical,DSA,58.9,100
+40185,technical,Cloud,6.7,10
+40185,technical,Databases,3.9,10
+40185,soft,Communication,75.0,100
+40185,soft,Teamwork,4.5,10
+40186,technical,Embedded systems,8.1,10
+40186,technical,Python,5.6,10
+40186,technical,VLSI,77.9,100
+40186,soft,Communication,7.6,10
+40186,soft,Teamwork,62.2,100
+40187,technical,Python,47.1,100
+40187,technical,Machine learning,60.1,100
+40187,technical,Statistics,40.6,100
+40187,soft,Communication,67.0,100
+40187,soft,Teamwork,52.0,100
+40188,technical,DSA,6.2,10
+40188,technical,Web development,4.7,10
+40188,technical,Databases,48.2,100
+40188,soft,Communication,71.9,100
+40188,soft,Teamwork,53.1,100
+40189,technical,DSA,4.8,10
+40189,technical,Cloud,70.6,100
+40189,technical,Databases,71.8,100
+40189,soft,Communication,58.8,100
+40189,soft,Teamwork,6.8,10
+40190,technical,Embedded systems,9.0,10
+40190,technical,Python,9.6,10
+40190,technical,VLSI,8.9,10
+40190,soft,Communication,67.4,100
+40190,soft,Teamwork,52.4,100
+40191,technical,Python,7.5,10
+40191,technical,Machine learning,68.6,100
+40191,technical,Statistics,7.5,10
+40191,soft,Communication,6.3,10
+40191,soft,Teamwork,8.6,10
+40192,technical,DSA,65.5,100
+40192,technical,Web development,5.2,10
+40192,technical,Databases,7.1,10
+40192,soft,Communication,66.5,100
+40192,soft,Teamwork,8.3,10
+40193,technical,DSA,3.5,10
+40193,technical,Cloud,5.8,10
+40193,technical,Databases,5.5,10
+40193,soft,Communication,7.0,10
+40193,soft,Teamwork,6.7,10
+40194,technical,Embedded systems,65.7,100
+40194,technical,Python,7.7,10
+40194,technical,VLSI,78.1,100
+40194,soft,Communication,55.9,100
+40194,soft,Teamwork,5.7,10
+40195,technical,Python,75.3,100
+40195,technical,Machine learning,9.9,10
+40195,technical,Statistics,82.0,100
+40195,soft,Communication,6.2,10
+40195,soft,Teamwork,82.0,100
+40196,technical,DSA,78.8,100
+40196,technical,Web development,7.3,10
+40196,technical,Databases,6.8,10
+40196,soft,Communication,8.0,10
+40196,soft,Teamwork,83.6,100
+40197,technical,DSA,43.7,100
+40197,technical,Cloud,52.1,100
+40197,technical,Databases,3.2,10
+40197,soft,Communication,28.2,100
+40197,soft,Teamwork,76.4,100
+40198,technical,Embedded systems,5.5,10
+40198,technical,Python,62.9,100
+40198,technical,VLSI,44.4,100
+40198,soft,Communication,6.4,10
+40198,soft,Teamwork,66.8,100
+40199,technical,Python,71.1,100
+40199,technical,Machine learning,100,100
+40199,technical,Statistics,93.5,100
+40199,soft,Communication,66.8,100
+40199,soft,Teamwork,39.1,100
