@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { clearQueryCache, setCacheOwner } from "./queryCache";
+import { isExplicitSignOutPending } from "./session";
 
 /** Dispatched by lib/api.ts when the API answers 401, i.e. the access token was rejected. */
 export const UNAUTHORIZED_EVENT = "elevra:unauthorized";
@@ -31,7 +32,7 @@ export function SessionGuard() {
     const supabase = createClient();
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       setCacheOwner(session?.user.id ?? null);
-      if (event === "SIGNED_OUT") leaveToLogin();
+      if (event === "SIGNED_OUT" && !isExplicitSignOutPending()) leaveToLogin();
     });
 
     async function onUnauthorized() {
