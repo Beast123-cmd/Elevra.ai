@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { StudentNav } from "@/components/student/StudentNav";
 import { useStudentProfile } from "@/components/student/useStudentProfile";
 import { Interview } from "@/components/student/Interview";
+import { StudentAssistant } from "@/components/student/assistant/StudentAssistant";
 
 export function StudentWorkspace({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -82,11 +83,17 @@ export function StudentWorkspace({ children }: { children: ReactNode }) {
         </header>
         {children}
         <Interview />
+        <StudentAssistant theme={theme} />
       </div>
       <style jsx global>{`
         [data-student-theme="light"] { background-color: #f5f6f1; color: #25332e; }
         [data-student-theme="light"] [class~="bg-white"] { background-color: #fffefa !important; }
         [data-student-theme="dark"] { background-color: #111a17; color: #e3ebe6; color-scheme: dark; }
+        [data-student-theme="dark"] [data-assistant-panel] {
+          background-color: #1b2d26 !important;
+          border-color: #83ad9c !important;
+          box-shadow: 0 24px 72px rgb(0 0 0 / 62%), 0 0 0 1px rgb(173 212 193 / 10%) !important;
+        }
         [data-student-theme="dark"] [class*="bg-white"],
         [data-student-theme="dark"] [class*="bg-slate-50"],
         [data-student-theme="dark"] [class*="bg-slate-100"],

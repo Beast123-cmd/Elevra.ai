@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ArrowLeft, ArrowRight, ExternalLink, History, MessageCircle, Plus, Send, Trash2, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { ChatChart, type ChartSpec } from "@/components/insights/assistant/ChatChart";
@@ -43,7 +43,8 @@ function RichText({ text }: { text: string }) {
   );
 }
 
-export function StudentAssistant() {
+export function StudentAssistant({ theme }: { theme: "light" | "dark" }) {
+  const [portalReady, setPortalReady] = useState(false);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
@@ -51,10 +52,10 @@ export function StudentAssistant() {
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [conversations, setConversations] = useState<Conversation[] | null>(null);
-  const path = usePathname();
   const scroller = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
 
+  useEffect(() => { setPortalReady(true); }, []);
   useEffect(() => { scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" }); }, [messages, busy]);
   useEffect(() => { if (open) input.current?.focus(); }, [open]);
   useEffect(() => {
@@ -106,13 +107,8 @@ export function StudentAssistant() {
 
   const submit = (e: FormEvent) => { e.preventDefault(); void ask(draft); };
   const last = messages[messages.length - 1];
-  // The interview room has its own answer box and mic at the bottom of the screen: keep the assistant out of its way.
-  const hidden = path === "/student/interview";
-
-  if (hidden) return null;
-  return (
-    <>
-      <div aria-hidden="true" className="h-20" /> {/* room at the bottom of every page so content can scroll clear of the button */}
+  const content = (
+    <div data-student-theme={theme} className="contents">
       {!open && (
         <button type="button" onClick={() => setOpen(true)} aria-label="Ask Elevra, your study assistant" title="Ask Elevra"
           className="fixed bottom-4 right-4 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-[#18574e] px-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:bg-[#12473f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2 sm:px-4">
@@ -121,22 +117,23 @@ export function StudentAssistant() {
       )}
       {open && (
         <section role="dialog" aria-label="Ask Elevra" aria-modal="false"
-          className="fixed inset-0 z-50 flex flex-col bg-white sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[600px] sm:max-h-[calc(100vh-2.5rem)] sm:w-[400px] sm:rounded-2xl sm:border sm:border-[#dce7e1] sm:shadow-2xl sm:shadow-slate-900/20">
-          <header className="flex items-center justify-between gap-2 border-b border-[#dce7e1] px-4 py-3">
+          data-assistant-panel
+          className="fixed inset-0 z-50 flex flex-col overflow-hidden border-2 border-[#9bbfae] bg-[#fffefa] shadow-[0_24px_72px_rgba(13,31,25,0.36)] sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[600px] sm:max-h-[calc(100vh-2.5rem)] sm:w-[400px] sm:rounded-2xl sm:ring-1 sm:ring-[#18574e]/20">
+          <header className="flex items-center justify-between gap-2 border-b border-white/20 bg-[#18574e] px-4 py-3 text-white">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#172824]">{showHistory ? "Past chats" : "Ask Elevra"}</p>
-              <p className="truncate text-xs text-slate-500">{showHistory ? "Saved on your account" : "About your own record only · answers can be imperfect"}</p>
+              <p className="text-sm font-semibold text-white">{showHistory ? "Past chats" : "Ask Elevra"}</p>
+              <p className="truncate text-xs text-white/75">{showHistory ? "Saved on your account" : "About your own record only · answers can be imperfect"}</p>
             </div>
             <div className="flex shrink-0 items-center gap-1">
               {showHistory ? (
-                <button type="button" onClick={() => setShowHistory(false)} aria-label="Back to chat" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"><ArrowLeft className="h-4 w-4" aria-hidden="true" /></button>
+                <button type="button" onClick={() => setShowHistory(false)} aria-label="Back to chat" className="rounded-md p-1.5 text-white/85 hover:bg-white/10 hover:text-white"><ArrowLeft className="h-4 w-4" aria-hidden="true" /></button>
               ) : (
                 <>
-                  <button type="button" onClick={newChat} aria-label="New chat" title="New chat" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"><Plus className="h-4 w-4" aria-hidden="true" /></button>
-                  <button type="button" onClick={() => { setShowHistory(true); loadConversations(); }} aria-label="Past chats" title="Past chats" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"><History className="h-4 w-4" aria-hidden="true" /></button>
+                  <button type="button" onClick={newChat} aria-label="New chat" title="New chat" className="rounded-md p-1.5 text-white/85 hover:bg-white/10 hover:text-white"><Plus className="h-4 w-4" aria-hidden="true" /></button>
+                  <button type="button" onClick={() => { setShowHistory(true); loadConversations(); }} aria-label="Past chats" title="Past chats" className="rounded-md p-1.5 text-white/85 hover:bg-white/10 hover:text-white"><History className="h-4 w-4" aria-hidden="true" /></button>
                 </>
               )}
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close assistant" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close assistant" className="rounded-md p-1.5 text-white/85 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
@@ -246,6 +243,7 @@ export function StudentAssistant() {
           </form>
         </section>
       )}
-    </>
+    </div>
   );
+  return portalReady ? createPortal(content, document.body) : content;
 }
