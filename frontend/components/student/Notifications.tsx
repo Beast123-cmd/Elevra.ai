@@ -10,6 +10,7 @@ import { StudentLoading } from "./StudentPage";
 import { StudentReveal } from "./StudentReveal";
 import { ProfileGate } from "./ProfileGate";
 import { useSearchParams } from "next/navigation";
+import { StudentNextStep } from "./StudentNextStep";
 
 interface Note { id: number; audience: string; title: string; body: string; created_at: string }
 type State = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; notes: Note[] };
@@ -52,6 +53,7 @@ function Feed({ p }: { p: Profile }) {
   const mock = useSearchParams().get("mock") === "1";
   const [state, setState] = useState<State>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (mock) {
@@ -90,26 +92,53 @@ function Feed({ p }: { p: Profile }) {
     );
   }
   return (
-    <ul className="space-y-3">
-      {state.notes.map((n) => (
-        <li key={n.id}>
-          <StudentReveal>
-          <Card className="overflow-hidden rounded-xl border-slate-200 shadow-sm shadow-slate-900/[0.02] transition-shadow hover:shadow-md hover:shadow-slate-900/[0.04]">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">{n.title}</CardTitle>
-              <CardDescription>
-                {new Date(n.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm">{n.body}</CardContent>
-          </Card>
-          </StudentReveal>
-        </li>
-      ))}
-    </ul>
+    <section className="space-y-4" aria-labelledby="inbox-updates-heading">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h2 id="inbox-updates-heading" className="text-base font-semibold text-[#172824]">Latest campus updates</h2>
+          <p className="mt-1 text-sm text-slate-500">{state.notes.length} update{state.notes.length === 1 ? "" : "s"} for your department, year or account.</p>
+        </div>
+        {state.notes.length > 5 && (
+          <Button variant="ghost" size="sm" className="min-h-10 text-[#1d6158]" onClick={() => setShowAll((value) => !value)} aria-expanded={showAll}>
+            {showAll ? "Show recent only" : `Show all ${state.notes.length}`}
+          </Button>
+        )}
+      </div>
+      <ul className="space-y-3">
+        {(showAll ? state.notes : state.notes.slice(0, 5)).map((n) => (
+          <li key={n.id}>
+            <StudentReveal>
+              <Card className="overflow-hidden rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.02]">
+                <CardHeader className="px-4 pb-2 pt-4 sm:px-5">
+                  <CardTitle className="text-base leading-6 text-[#172824]">{n.title}</CardTitle>
+                  <CardDescription>
+                    {new Date(n.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="px-4 pb-4 text-sm leading-6 text-slate-600 sm:px-5">{n.body}</CardContent>
+              </Card>
+            </StudentReveal>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 export function Notifications() {
-  return <ProfileGate>{(p) => <Feed p={p} />}</ProfileGate>;
+  return (
+    <ProfileGate>
+      {(p) => (
+        <div className="space-y-5 sm:space-y-6">
+          <Feed p={p} />
+          <StudentNextStep
+            label="KEEP GOING"
+            title="Return to your plan"
+            description="Pick up with one practical action based on your current records."
+            href="/student/improve"
+          />
+        </div>
+      )}
+    </ProfileGate>
+  );
 }
