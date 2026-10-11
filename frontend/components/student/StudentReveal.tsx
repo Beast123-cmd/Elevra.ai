@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 
-export function StudentReveal({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function StudentReveal({ children, className = "", delayMs = 0 }: { children: ReactNode; className?: string; delayMs?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const element = ref.current;
@@ -15,5 +15,6 @@ export function StudentReveal({ children, className = "" }: { children: ReactNod
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
-  return <div ref={ref} className={className}>{children}</div>;
+  const style: CSSProperties = delayMs > 0 ? { animationDelay: `${delayMs}ms` } : {};
+  return <div ref={ref} className={className} style={style}>{children}</div>;
 }
