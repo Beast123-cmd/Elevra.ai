@@ -77,7 +77,7 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
 
   return (
     <Card className="overflow-hidden rounded-xl border-[#d5e2db] bg-white shadow-sm shadow-slate-900/[0.025]">
-      <CardHeader className="border-b border-slate-100 bg-[#fbfcfb] px-5 py-5 sm:px-6">
+      <CardHeader className="border-b border-[#dce7e1] bg-[#edf4f0] px-5 py-5 sm:px-6">
         <p className="text-[10px] font-semibold uppercase tracking-[.13em] text-[#286a62]">Explore a scenario</p>
         <CardTitle className="mt-1 text-xl tracking-[-.03em] text-[#172824]">See how a change could affect your score</CardTitle>
         <CardDescription className="max-w-2xl leading-5">Adjust the values below to explore a possible outcome. This is a simulation only; it does not change your records.</CardDescription>
@@ -90,7 +90,7 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {(["Study habits", "Career preparation"] as const).map((group) => (
-              <fieldset key={group} className="min-w-0 rounded-lg border border-[#e5ece7] p-3.5 sm:p-4">
+              <fieldset key={group} className="min-w-0 rounded-lg border border-[#dce7e1] bg-[#f3f7f4] p-3.5 sm:p-4">
                 <legend className="px-1 text-xs font-semibold text-slate-700">{group}</legend>
                 <div className="space-y-5">
                   {CONTROLS.filter((c) => c.group === group).map((c) => {

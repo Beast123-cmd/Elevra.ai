@@ -62,30 +62,32 @@ body {
   animation: student-value-in 850ms cubic-bezier(.2, .7, .2, 1) both;
 }
 
-.what-if-slider [data-radix-slider-track] {
-  height: 7px;
-  background: #e3ebe6;
+.what-if-slider > span:first-child {
+  height: 9px;
+  border: 1px solid #bdcec4;
+  background: #dce6e0;
 }
 
-.what-if-slider [data-radix-slider-range] {
+.what-if-slider > span:first-child > span {
+  border-radius: inherit;
   background: #286a62;
 }
 
-.what-if-slider [role="slider"] {
-  width: 19px;
-  height: 19px;
+.what-if-slider > span[role="slider"] {
+  width: 22px;
+  height: 22px;
   border: 2px solid #286a62;
   background: #fff;
-  box-shadow: 0 1px 3px rgb(20 45 37 / 22%), 0 0 0 3px rgb(40 106 98 / 10%);
+  box-shadow: 0 1px 3px rgb(20 45 37 / 24%), 0 0 0 4px rgb(40 106 98 / 12%);
   cursor: grab;
 }
 
-.what-if-slider [role="slider"]:active {
+.what-if-slider > span[role="slider"]:active {
   cursor: grabbing;
-  box-shadow: 0 1px 3px rgb(20 45 37 / 22%), 0 0 0 5px rgb(40 106 98 / 16%);
+  box-shadow: 0 1px 3px rgb(20 45 37 / 24%), 0 0 0 6px rgb(40 106 98 / 18%);
 }
 
-.what-if-slider [role="slider"]:focus-visible {
+.what-if-slider > span[role="slider"]:focus-visible {
   outline: 3px solid rgb(40 106 98 / 28%);
   outline-offset: 3px;
 }
