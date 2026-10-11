@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Award, Bell, BookOpen, House, Mic2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { Award, Bell, BookOpen, House, LogOut, Mic2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
 const LINKS = [
   { href: "/student", label: "Home", icon: House },
@@ -14,6 +17,24 @@ const LINKS = [
 
 export function StudentNav() {
   const path = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState(false);
+
+  async function signOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    setSignOutError(false);
+    try {
+      const { error } = await createClient().auth.signOut();
+      if (error) throw error;
+      router.replace("/login");
+      router.refresh();
+    } catch {
+      setSigningOut(false);
+      setSignOutError(true);
+    }
+  }
 
   return (
     <aside className="flex min-w-0 flex-col border-b border-slate-200 bg-white px-3 py-3 md:sticky md:top-0 md:h-screen md:border-b-0 md:border-r md:px-3.5 md:py-5">
@@ -38,9 +59,16 @@ export function StudentNav() {
           );
         })}
       </nav>
-      <div className="mt-auto hidden border-t border-slate-100 px-2.5 pt-4 md:block">
-        <p className="text-[10px] font-medium text-slate-700">Your student space</p>
-        <p className="mt-0.5 text-[9px] text-slate-500">Your records and next steps</p>
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 md:mt-auto md:px-2.5 md:pt-4">
+        <div className="hidden md:block">
+          <p className="text-[10px] font-medium text-slate-700">Your student space</p>
+          <p className="mt-0.5 text-[9px] text-slate-500">Your records and next steps</p>
+        </div>
+        {signOutError && <span role="alert" className="text-xs text-red-700">Couldn&apos;t sign out. Try again.</span>}
+        <Button variant="ghost" size="sm" className="ml-auto text-slate-600" onClick={signOut} disabled={signingOut}>
+          <LogOut className="h-4 w-4" aria-hidden="true" />
+          {signingOut ? "Signing out…" : "Sign out"}
+        </Button>
       </div>
     </aside>
   );
