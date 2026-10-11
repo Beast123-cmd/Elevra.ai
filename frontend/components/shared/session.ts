@@ -10,6 +10,13 @@ export interface Identity {
   facultyId: string | null;
 }
 
+let explicitSignOutPending = false;
+
+/** Lets the auth listener avoid racing the explicit logout redirect. */
+export function isExplicitSignOutPending(): boolean {
+  return explicitSignOutPending;
+}
+
 /**
  * Who is signed in, read from the local session: no network round trip. The server has already verified the
  * session on every page load (middleware), and the database enforces what each person may read (RLS), so the
@@ -30,10 +37,12 @@ export async function getIdentity(): Promise<Identity | null> {
 
 /** Sign out, forget cached data, and leave with a full page load so no protected page lingers in the browser. */
 export async function signOutAndLeave(): Promise<void> {
+  if (explicitSignOutPending) return;
+  explicitSignOutPending = true;
   clearQueryCache();
   try {
     await createClient().auth.signOut();
   } finally {
-    window.location.assign("/login");
+    window.location.replace("/login");
   }
 }
