@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { signOutAndLeave } from "@/components/shared/session";
 
 const LINKS = [
   ["/admin", "Overview"],
@@ -18,13 +18,6 @@ const LINKS = [
 
 export function AdminNav() {
   const path = usePathname();
-  const router = useRouter();
-
-  async function signOut() {
-    await createClient().auth.signOut();
-    router.replace("/login");
-    router.refresh();
-  }
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -46,7 +39,7 @@ export function AdminNav() {
             );
           })}
         </nav>
-        <Button variant="ghost" size="sm" className="ml-auto" onClick={signOut}>
+        <Button variant="ghost" size="sm" className="ml-auto" onClick={signOutAndLeave}>
           Sign out
         </Button>
       </div>

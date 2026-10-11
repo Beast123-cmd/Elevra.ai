@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { getIdentity, signOutAndLeave } from "@/components/shared/session";
 
 const LINKS = [
   ["/faculty", "Action Queue"],
@@ -15,18 +15,11 @@ const LINKS = [
 
 export function FacultyNav() {
   const path = usePathname();
-  const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    createClient().auth.getSession().then(({ data }) => setIsAdmin(data.session?.user.app_metadata?.role === "admin"));
+    getIdentity().then((id) => setIsAdmin(id?.role === "admin"));
   }, []);
-
-  async function signOut() {
-    await createClient().auth.signOut();
-    router.replace("/login");
-    router.refresh();
-  }
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -50,7 +43,7 @@ export function FacultyNav() {
             );
           })}
         </nav>
-        <Button variant="ghost" size="sm" className="ml-auto" onClick={signOut}>
+        <Button variant="ghost" size="sm" className="ml-auto" onClick={signOutAndLeave}>
           Sign out
         </Button>
       </div>
