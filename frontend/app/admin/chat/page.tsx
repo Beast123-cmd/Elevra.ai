@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { describeChatError, formatCell, SUGGESTIONS, type ChatErrorKind } from "@/components/admin/chatUi";
 import { EmptyState } from "@/components/shared/Kpi";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,11 @@ export default function ChatPage() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Answer | null>(null);
   const [error, setError] = useState<{ kind: ChatErrorKind; message: string } | null>(null);
+
+  // Cheap request on load: it makes the API open its database connection now, so the first real question is not slow.
+  useEffect(() => {
+    api("/chat/suggestions").catch(() => undefined);
+  }, []);
 
   async function ask(q: string) {
     const text = q.trim();

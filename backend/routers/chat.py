@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -110,25 +111,74 @@ def shape_result(columns: list[str], rows) -> tuple[list[str], list[list], bool]
     return list(columns), [[_jsonable(v) for v in row] for row in rows[:ROW_CAP]], truncated
 
 
-def run_readonly(sql: str, claims: dict | None = None):
-    """Run already-validated SQL: READ ONLY transaction, `authenticated` role (so row-level security applies once
-    enabled), statement timeout, hard row cap. The DB connection is never exposed to the model or the browser."""
+_conn = None
+_conn_lock = threading.Lock()
+
+
+def _open_connection():
     import psycopg
 
     if not settings.SUPABASE_DB_URL:
         raise RuntimeError("SUPABASE_DB_URL is not set")
-    with psycopg.connect(settings.SUPABASE_DB_URL, connect_timeout=10, autocommit=False) as conn:
-        conn.read_only = True
-        try:
-            with conn.cursor() as cur:
-                cur.execute(f"set local statement_timeout = {STATEMENT_TIMEOUT_MS}")
-                cur.execute("set local role authenticated")
-                cur.execute("select set_config('request.jwt.claims', %s, true)", (json.dumps(claims or {}),))
-                cur.execute(wrap_with_cap(sql))
-                columns = [d.name for d in cur.description]
-                return shape_result(columns, cur.fetchall())
-        finally:
-            conn.rollback()
+    # autocommit: the read-only transaction is opened and closed explicitly inside one batched statement
+    return psycopg.connect(settings.SUPABASE_DB_URL, connect_timeout=10, autocommit=True)
+
+
+def _batch(sql: str, claims: dict | None) -> str:
+    """The whole read-only block as ONE multi-statement string, so it costs a single network round trip.
+    The claims travel as hex and are decoded in SQL, so no quoting is involved and nothing in them can break out.
+    `sql` has already passed the allowlist: no comments, no semicolons, balanced parentheses, one SELECT."""
+    claims_hex = json.dumps(claims or {}).encode("utf-8").hex()
+    return (
+        "begin read only;"
+        f"set local statement_timeout = {STATEMENT_TIMEOUT_MS};"
+        "set local role authenticated;"
+        f"select set_config('request.jwt.claims', convert_from(decode('{claims_hex}', 'hex'), 'UTF8'), true);"
+        f"{wrap_with_cap(sql)};"
+        "rollback;"
+    )
+
+
+def run_readonly(sql: str, claims: dict | None = None):
+    """Run already-validated SQL: READ ONLY transaction, `authenticated` role (so row-level security applies),
+    statement timeout, hard row cap. The DB connection is never exposed to the model or the browser.
+
+    Opening a connection to the hosted database costs several seconds, so one connection is kept and reused
+    (admin chat is low-traffic; the lock serialises queries). If the connection has died it is replaced once."""
+    import psycopg
+
+    global _conn
+    with _conn_lock:
+        for attempt in (1, 2):
+            if _conn is None or getattr(_conn, "closed", False):
+                _conn = _open_connection()
+            conn = _conn
+            try:
+                result = None
+                with conn.cursor() as cur:
+                    cur.execute(_batch(sql, claims))
+                    while True:  # the last result set that has columns is the wrapped query's
+                        if cur.description is not None:
+                            result = shape_result([d.name for d in cur.description], cur.fetchall())
+                        if not cur.nextset():
+                            break
+                return result
+            except psycopg.OperationalError:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                if getattr(conn, "broken", False) or getattr(conn, "closed", False):
+                    _conn = None  # dead connection: replace it and retry once
+                    if attempt == 1:
+                        continue
+                raise  # e.g. statement timeout: the connection is fine, do not retry
+            except Exception:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                raise
 
 
 def _plan_with_ai(question: str) -> tuple[str, str] | tuple[None, str]:
@@ -197,6 +247,21 @@ def ask(body: Ask, caller: Caller = Depends(require_role("admin"))):
         raise HTTPException(422, str(exc))
 
 
+def warm_up() -> None:
+    """Open the database connection in the background; the chat page calls /chat/suggestions on load."""
+    def work():
+        global _conn
+        with _conn_lock:
+            if _conn is None or getattr(_conn, "closed", False):
+                try:
+                    _conn = _open_connection()
+                except Exception as exc:  # warm-up is best effort
+                    log.info("chat warm-up skipped: %s", type(exc).__name__)
+
+    threading.Thread(target=work, daemon=True).start()
+
+
 @router.get("/suggestions")
 def suggestions(_: Caller = Depends(require_role("admin"))):
+    warm_up()
     return {"suggestions": SUGGESTIONS}
