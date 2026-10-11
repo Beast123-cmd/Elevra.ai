@@ -464,7 +464,7 @@ export function Interview() {
             {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-primary"><span className="student-loading-dot" aria-hidden="true" /> Reading your resume and preparing the interview…</p>}
             <div className="flex flex-col gap-2 border-t border-border pt-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs leading-5 text-muted-foreground">{ready ? "Your practice session is ready to begin." : "Add a PDF or at least 20 characters of resume text to continue."}</p>
-              <Button onClick={start} disabled={busy !== null || !ready} className="min-h-10 w-full gap-2 rounded-lg bg-primary px-5 font-semibold text-primary-foreground shadow-none hover:bg-primary/90 disabled:bg-muted disabled:text-slate-500 sm:w-auto">
+              <Button data-tour="student-interview-start" onClick={start} disabled={busy !== null || !ready} className="min-h-10 w-full gap-2 rounded-lg bg-primary px-5 font-semibold text-primary-foreground shadow-none hover:bg-primary/90 disabled:bg-muted disabled:text-slate-500 sm:w-auto">
                 {busy === "starting" ? "Preparing…" : <>Start interview <ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
               </Button>
             </div>

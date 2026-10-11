@@ -94,6 +94,7 @@ function SegmentsView({ data }: { data: SegmentsData }) {
     <div className="space-y-4">
       <SearchFilterBar
         label="Find students by segment"
+        dataTour="shared-segment-filter"
         placeholder="Search students by name or ID"
         value={query}
         onChange={setQuery}

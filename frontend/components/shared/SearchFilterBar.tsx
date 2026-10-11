@@ -12,11 +12,12 @@ interface SearchFilterBarProps {
   filters: ReactNode;
   activeFilters?: number;
   onClear?: () => void;
+  dataTour?: string;
 }
 
 /** Shared search row and compact expandable filter panel for dashboard catalogs and tables. */
 export function SearchFilterBar({
-  label, placeholder, value, onChange, onSearch, filters, activeFilters = 0, onClear,
+  label, placeholder, value, onChange, onSearch, filters, activeFilters = 0, onClear, dataTour,
 }: SearchFilterBarProps) {
   const panelId = useId();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -27,7 +28,7 @@ export function SearchFilterBar({
   }
 
   return (
-    <section aria-label={label} data-motion-card className="rounded-xl border border-border bg-muted/60 p-3 sm:p-4">
+    <section aria-label={label} data-tour={dataTour} data-motion-card className="rounded-xl border border-border bg-muted/60 p-3 sm:p-4">
       <form onSubmit={submit} className="flex min-w-0 gap-2">
         <label className="relative min-w-0 flex-1">
           <span className="sr-only">{label}</span>

@@ -140,6 +140,7 @@ function CertificationsBody({ profile }: { profile: Profile }) {
             <h2 className="text-lg font-bold leading-tight tracking-tight text-foreground">Certifications</h2>
             <SearchFilterBar
               label="Find a certification"
+              dataTour="student-course-search"
               placeholder="Search skills, courses, or providers"
               value={searchText}
               onChange={(value) => { setResultsRefined(true); setSearchText(value); }}

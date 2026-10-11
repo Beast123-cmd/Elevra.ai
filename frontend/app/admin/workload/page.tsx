@@ -123,7 +123,7 @@ export default function WorkloadPage() {
             <h2 className="text-sm font-semibold">Programme task</h2>
             <p className="text-xs text-muted-foreground">Create a planned check-in, due in 3 days, for each Red student who has not been contacted this week.</p>
           </div>
-          <Button size="sm" onClick={assignCheckIns} disabled={busy !== null || waiting.length === 0}>
+          <Button data-tour="admin-workload-tasks" size="sm" onClick={assignCheckIns} disabled={busy !== null || waiting.length === 0}>
             {busy === "bulk" ? "Creating…" : `Create ${waiting.filter((s) => s.mentor_faculty_id).length} check-in tasks`}
           </Button>
         </div>

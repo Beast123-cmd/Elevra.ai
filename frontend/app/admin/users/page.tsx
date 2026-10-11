@@ -163,7 +163,7 @@ export default function UsersPage() {
               </>
             )}
           </div>
-          <Button disabled={creating || !canCreate} onClick={createUser}>
+          <Button data-tour="admin-create-user" disabled={creating || !canCreate} onClick={createUser}>
             {creating ? "Creating…" : "Create account"}
           </Button>
         </Card>

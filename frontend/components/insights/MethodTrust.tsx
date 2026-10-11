@@ -58,9 +58,9 @@ function verdict(m: EvalMetrics, b: EvalMetrics): string {
   return `The model ${ranking}. It ${alarms} but ${misses}. That is why risk flags combine the model with transparent rules rather than relying on it alone.`;
 }
 
-function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+function Section({ title, description, children, dataTour }: { title: string; description?: string; children: React.ReactNode; dataTour?: string }) {
   return (
-    <Card>
+    <Card data-tour={dataTour}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
@@ -87,7 +87,7 @@ function View({ data }: { data: Data }) {
 
   return (
     <div className="space-y-6">
-      <Section title="How the Success Score works" description="Seven areas, each scored 0–100 on an absolute scale, then combined with fixed weights.">
+      <Section dataTour="shared-method-score" title="How the Success Score works" description="Seven areas, each scored 0–100 on an absolute scale, then combined with fixed weights.">
         {weights && labels ? (
           <div className="space-y-4">
             <div className="overflow-x-auto">
@@ -120,7 +120,7 @@ function View({ data }: { data: Data }) {
       </Section>
 
       {weights && labels && (
-        <Section title="Try different weights" description="See how the cohort would shift if the institution weighted the areas differently. Uses the same scoring engine as the live scores.">
+        <Section dataTour={isAdmin ? "admin-method-weights" : undefined} title="Try different weights" description="See how the cohort would shift if the institution weighted the areas differently. Uses the same scoring engine as the live scores.">
           {isAdmin ? (
             current.length > 0 ? <WeightControls defaults={weights} labels={labels} current={current} />
               : <p className="text-sm text-muted-foreground">No scored students yet.</p>

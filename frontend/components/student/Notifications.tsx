@@ -129,7 +129,7 @@ export function Notifications() {
   return (
     <ProfileGate>
       {(p) => (
-        <div className="space-y-5 sm:space-y-6">
+        <div data-tour="student-inbox" className="space-y-5 sm:space-y-6">
           <Feed p={p} />
           <StudentNextStep
             label="KEEP GOING"

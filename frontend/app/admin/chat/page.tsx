@@ -54,6 +54,7 @@ export default function ChatPage() {
             className="h-10 flex-1 rounded-md border border-input bg-card px-3 text-sm"
             placeholder="e.g. Which year 4 students have a success score below 45?"
             maxLength={300}
+            data-tour="admin-chat-question"
             value={question}
             disabled={busy}
             onChange={(e) => setQuestion(e.target.value)}

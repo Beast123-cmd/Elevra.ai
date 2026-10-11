@@ -103,7 +103,7 @@ export default function EvidencePage() {
       <Card data-motion-card className="rounded-xl border-border shadow-sm shadow-slate-900/[0.02] p-4 print:border-0">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Slow and advanced learners by department</h2>
-          <Button size="sm" variant="outline" className="print:hidden" onClick={() => download("learners.csv", learnersCsv(data.learners.filter((l) => classify(l.academic, t) !== "Average"), t))}>
+          <Button data-tour="admin-evidence-download" size="sm" variant="outline" className="print:hidden" onClick={() => download("learners.csv", learnersCsv(data.learners.filter((l) => classify(l.academic, t) !== "Average"), t))}>
             Download student list (CSV)
           </Button>
         </div>
