@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
@@ -52,6 +52,8 @@ export function Interview() {
   const [result, setResult] = useState<FinishResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const answerWrites = useRef<Promise<void>>(Promise.resolve());
+  const answerWriteError = useRef<unknown>(null);
 
   const call = <T,>(path: string, body: unknown, fake: T): Promise<T> => (mock ? Promise.resolve(fake) : api<T>(path, body));
 
@@ -60,26 +62,44 @@ export function Interview() {
     setBusy(true); setError(null);
     try {
       const s = await call("/interview/start", { resume_text: resume.trim() }, MOCK_START);
+      answerWrites.current = Promise.resolve();
+      answerWriteError.current = null;
       setSession(s); setAnswers(s.questions.map(() => "")); setIndex(0); setPhase("asking");
     } catch (e) { setError(friendlyError(e)); } finally { setBusy(false); }
   }
 
   async function next() {
     if (busy || !session) return;
-    setBusy(true); setError(null);
+    const text = answers[index].trim();
+    setError(null);
+    if (text) {
+      answerWrites.current = answerWrites.current.then(async () => {
+        if (answerWriteError.current) return;
+        try {
+          await call("/interview/answer", { session_id: session.session_id, index, answer_text: text }, { ok: true });
+        } catch (e) {
+          answerWriteError.current = e;
+          setError(friendlyError(e));
+        }
+      });
+    }
+    if (index < session.questions.length - 1) {
+      setIndex(index + 1);
+      return;
+    }
+
+    setBusy(true);
     try {
-      const text = answers[index].trim();
-      if (text) await call("/interview/answer", { session_id: session.session_id, index, answer_text: text }, { ok: true });
-      if (index < session.questions.length - 1) {
-        setIndex(index + 1);
-      } else {
-        setResult(await call("/interview/finish", { session_id: session.session_id }, MOCK_FINISH));
-        setPhase("result");
-      }
+      await answerWrites.current;
+      if (answerWriteError.current) throw answerWriteError.current;
+      setResult(await call("/interview/finish", { session_id: session.session_id }, MOCK_FINISH));
+      setPhase("result");
     } catch (e) { setError(friendlyError(e)); } finally { setBusy(false); }
   }
 
   function reset() {
+    answerWrites.current = Promise.resolve();
+    answerWriteError.current = null;
     setPhase("intro"); setSession(null); setResult(null); setAnswers([]); setIndex(0); setError(null);
   }
 

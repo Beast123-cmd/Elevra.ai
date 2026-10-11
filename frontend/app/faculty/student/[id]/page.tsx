@@ -26,14 +26,15 @@ export default function StudentDetailPage() {
     const supabase = createClient();
     (async () => {
       try {
-        const { data: auth } = await supabase.auth.getUser();
-        const role = (auth.user?.app_metadata?.role as string | undefined) ?? "";
-        const facultyId = (auth.user?.app_metadata?.faculty_id as string | undefined) ?? null;
-        const [scored, cohort] = await Promise.all([
+        const [{ data: auth, error: authError }, scored, cohort] = await Promise.all([
+          supabase.auth.getSession(),
           supabase.from("scores").select("profile").eq("student_id", id).maybeSingle(),
           supabase.from("analytics").select("payload").eq("key", "cohort").maybeSingle(),
         ]);
+        if (authError) throw new Error(authError.message);
         if (scored.error) throw new Error(scored.error.message);
+        const role = (auth.session?.user.app_metadata?.role as string | undefined) ?? "";
+        const facultyId = (auth.session?.user.app_metadata?.faculty_id as string | undefined) ?? null;
         const profile = scored.data?.profile as Profile | undefined;
         if (!profile) return setState({ kind: "missing" });
         if (!canViewStudent({ role, facultyId }, profile.mentor_faculty_id)) return setState({ kind: "forbidden" });

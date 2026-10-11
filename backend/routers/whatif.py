@@ -1,11 +1,13 @@
 """What-if simulation and cohort re-scoring using the shared scoring engine."""
 from __future__ import annotations
 
+import asyncio
 import math
 from collections.abc import Mapping
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from starlette.concurrency import run_in_threadpool
 
 from common.auth import Caller, require_role
 from common.db import db
@@ -130,14 +132,17 @@ def _score_result(result: Mapping, previous_score: object) -> dict:
 
 
 @router.post("/whatif")
-def whatif(body: WhatIf, caller: Caller = Depends(require_role("admin", "faculty", "student"))):
+async def whatif(body: WhatIf, caller: Caller = Depends(require_role("admin", "faculty", "student"))):
     if caller.role == "student" and caller.student_id != body.student_id:
         raise HTTPException(403, "Students can only simulate their own score")
 
-    profile = _student_profile(body.student_id)
+    profile, card = await asyncio.gather(
+        run_in_threadpool(_student_profile, body.student_id),
+        run_in_threadpool(_model_card),
+    )
     metrics = {**profile["metrics"], **body.overrides}
     try:
-        result = evaluate(metrics, card=_model_card())
+        result = evaluate(metrics, card=card)
     except (TypeError, ValueError, OverflowError):
         raise HTTPException(503, "Student scoring data could not be evaluated") from None
     return _score_result(result, profile.get("score"))

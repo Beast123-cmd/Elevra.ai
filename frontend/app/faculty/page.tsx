@@ -24,9 +24,11 @@ export default function FacultyPage() {
     const supabase = createClient();
     (async () => {
       try {
-        const { data } = await supabase.auth.getUser();
-        const admin = data.user?.app_metadata?.role === "admin";
-        const facultyId = data.user?.app_metadata?.faculty_id as string | undefined;
+        const { data, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw new Error(sessionError.message);
+        const user = data.session?.user;
+        const admin = user?.app_metadata?.role === "admin";
+        const facultyId = user?.app_metadata?.faculty_id as string | undefined;
         setIsAdmin(admin);
         if (!admin && !facultyId) throw new Error("This login is not linked to a faculty record.");
         const raw = await fetchAllRows<Raw>((from, to) => {

@@ -19,7 +19,7 @@ export function FacultyNav() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => setIsAdmin(data.user?.app_metadata?.role === "admin"));
+    createClient().auth.getSession().then(({ data }) => setIsAdmin(data.session?.user.app_metadata?.role === "admin"));
   }, []);
 
   async function signOut() {

@@ -30,10 +30,10 @@ const pct = (v: number | null | undefined, d = 0) => (v === null || v === undefi
 
 async function load(): Promise<Data> {
   const sb = createClient();
-  const [{ data: auth }, an] = await Promise.all([sb.auth.getUser(), sb.from("analytics").select("key,payload").in("key", ["model", "cohort"])]);
+  const [{ data: auth }, an] = await Promise.all([sb.auth.getSession(), sb.from("analytics").select("key,payload").in("key", ["model", "cohort"])]);
   if (an.error) throw new Error(an.error.message);
   const get = (k: string) => an.data?.find((r) => r.key === k)?.payload ?? null;
-  const isAdmin = auth.user?.app_metadata?.role === "admin";
+  const isAdmin = auth.session?.user.app_metadata?.role === "admin";
   const current: Scored[] = [];
   if (isAdmin) {
     for (let from = 0; ; from += PAGE) {
