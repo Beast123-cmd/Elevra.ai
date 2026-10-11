@@ -22,13 +22,24 @@ export function Waterfall({ contributions }: { contributions: Profile["contribut
     <ResponsiveContainer width="100%" height={Math.max(220, data.length * 36)}>
       <BarChart data={data} layout="vertical" margin={{ left: 4, right: 40 }}>
         <CartesianGrid {...c.grid} horizontal={false} vertical />
-        <XAxis type="number" {...c.axis} />
+        <XAxis type="number" {...c.axis} domain={[(min: number) => Math.floor(Math.min(min, 0) - 1.5), (max: number) => Math.ceil(Math.max(max, 0) + 1.5)]} />
         <YAxis type="category" dataKey="name" width={130} {...c.axis} tick={{ ...c.axis.tick, fill: p.ink }} />
         <ReferenceLine x={0} stroke={p.muted} />
         <Tooltip {...c.tooltip} formatter={(v) => [`${Number(v) > 0 ? "+" : ""}${Number(v).toFixed(1)} pts vs cohort`, "Effect"]} />
         <Bar isAnimationActive={false} dataKey="points" barSize={16}>
           {data.map((d) => <Cell key={d.name} fill={d.points >= 0 ? p.green : p.brick} />)}
-          <LabelList dataKey="points" position="right" formatter={(v: number) => `${v > 0 ? "+" : ""}${v}`} style={{ fill: p.muted, fontSize: 11 }} />
+          <LabelList dataKey="points" content={(props) => {
+            // the value sits just beyond the outer end of each bar, so it never collides with the axis labels
+            const { x = 0, y = 0, width = 0, height = 0, value } = props as { x?: number; y?: number; width?: number; height?: number; value?: number };
+            const v = Number(value);
+            const left = Math.min(Number(x), Number(x) + Number(width));
+            const right = Math.max(Number(x), Number(x) + Number(width));
+            return (
+              <text x={v >= 0 ? right + 4 : left - 4} y={Number(y) + Number(height) / 2} dy={4} textAnchor={v >= 0 ? "start" : "end"} fill={p.muted} fontSize={11}>
+                {`${v > 0 ? "+" : ""}${v}`}
+              </text>
+            );
+          }} />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
