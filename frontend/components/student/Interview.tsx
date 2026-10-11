@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { FileText, Upload } from "lucide-react";
 import { api } from "@/lib/api";
 import { fmt } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,17 @@ interface FinishResponse {
 const MIN_RESUME = 20;
 const MAX_RESUME = 8000;
 const MAX_ANSWER = 4000;
+const MAX_PDF_BYTES = 5 * 1024 * 1024;
+
+/** Reads a file and returns its contents as base64 (without the data: URL prefix). */
+function readAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",", 2)[1] ?? "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
 // Sample responses for previewing with ?mock=1 when the API isn't running.
 const MOCK_START: StartResponse = {
@@ -34,7 +46,7 @@ const MOCK_FINISH: FinishResponse = {
 function friendlyError(e: unknown): string {
   const msg = e instanceof Error ? e.message : "";
   if (/failed: (401|403)/.test(msg)) return "Your session has expired. Please sign in again.";
-  if (/failed: 422/.test(msg)) return "Your resume text should be between 20 and 8,000 characters.";
+  if (/failed: 422/.test(msg)) return "We couldn't use that resume. Upload a PDF of up to 5 MB, or paste between 20 and 8,000 characters of text.";
   if (/failed: 409/.test(msg)) return "This interview is already finished. Start a new one.";
   if (/failed: 400/.test(msg)) return "Answer at least one question before finishing.";
   return "The interview service is offline right now. Your dashboard still works. Please try again in a few minutes.";
@@ -46,14 +58,13 @@ export function Interview() {
   const mock = useSearchParams().get("mock") === "1";
   const [phase, setPhase] = useState<Phase>("intro");
   const [resume, setResume] = useState("");
+  const [pdf, setPdf] = useState<{ name: string; base64: string } | null>(null);
   const [session, setSession] = useState<StartResponse | null>(null);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [result, setResult] = useState<FinishResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const answerWrites = useRef<Promise<void>>(Promise.resolve());
-  const answerWriteError = useRef<unknown>(null);
 
   const call = <T,>(path: string, body: unknown, fake: T): Promise<T> => (mock ? Promise.resolve(fake) : api<T>(path, body));
 
@@ -61,45 +72,40 @@ export function Interview() {
     if (busy) return;
     setBusy(true); setError(null);
     try {
-      const s = await call("/interview/start", { resume_text: resume.trim() }, MOCK_START);
-      answerWrites.current = Promise.resolve();
-      answerWriteError.current = null;
+      const body = pdf ? { resume_pdf_base64: pdf.base64 } : { resume_text: resume.trim() };
+      const s = await call("/interview/start", body, MOCK_START);
       setSession(s); setAnswers(s.questions.map(() => "")); setIndex(0); setPhase("asking");
     } catch (e) { setError(friendlyError(e)); } finally { setBusy(false); }
   }
 
   async function next() {
     if (busy || !session) return;
-    const text = answers[index].trim();
-    setError(null);
-    if (text) {
-      answerWrites.current = answerWrites.current.then(async () => {
-        if (answerWriteError.current) return;
-        try {
-          await call("/interview/answer", { session_id: session.session_id, index, answer_text: text }, { ok: true });
-        } catch (e) {
-          answerWriteError.current = e;
-          setError(friendlyError(e));
-        }
-      });
-    }
-    if (index < session.questions.length - 1) {
-      setIndex(index + 1);
-      return;
-    }
-
-    setBusy(true);
+    setBusy(true); setError(null);
     try {
-      await answerWrites.current;
-      if (answerWriteError.current) throw answerWriteError.current;
-      setResult(await call("/interview/finish", { session_id: session.session_id }, MOCK_FINISH));
-      setPhase("result");
+      const text = answers[index].trim();
+      if (text) await call("/interview/answer", { session_id: session.session_id, index, answer_text: text }, { ok: true });
+      if (index < session.questions.length - 1) {
+        setIndex(index + 1);
+      } else {
+        setResult(await call("/interview/finish", { session_id: session.session_id }, MOCK_FINISH));
+        setPhase("result");
+      }
     } catch (e) { setError(friendlyError(e)); } finally { setBusy(false); }
   }
 
+  async function choosePdf(file: File | undefined) {
+    setError(null);
+    if (!file) return;
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) { setError("Please choose a PDF file."); return; }
+    if (file.size > MAX_PDF_BYTES) { setError("That PDF is larger than 5 MB. Try a smaller file or paste the text instead."); return; }
+    try {
+      setPdf({ name: file.name, base64: await readAsBase64(file) });
+    } catch {
+      setError("We couldn't read that file. Try again or paste the text instead.");
+    }
+  }
+
   function reset() {
-    answerWrites.current = Promise.resolve();
-    answerWriteError.current = null;
     setPhase("intro"); setSession(null); setResult(null); setAnswers([]); setIndex(0); setError(null);
   }
 
@@ -108,27 +114,49 @@ export function Interview() {
 
   if (phase === "intro") {
     const len = resume.trim().length;
+    const ready = pdf !== null || len >= MIN_RESUME;
     return (
       <div className="space-y-4">
         {banner}
         <Card>
           <CardHeader>
-            <CardTitle>Paste your resume</CardTitle>
+            <CardTitle>Add your resume</CardTitle>
             <CardDescription>
-              You&apos;ll get 5 questions based on it: 2 technical, 2 about your projects and 1 HR. Your resume text and answers are
-              sent to an AI service to write the questions and mark your answers.
+              You&apos;ll get 5 questions based on it: 2 technical, 2 about your projects and 1 HR. Your resume and answers are
+              sent to an AI service to write the questions and mark your answers. Your resume is not stored.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <Textarea
-              value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={10}
-              placeholder="Paste the text of your resume here: education, projects, skills, internships…" aria-label="Resume text"
-            />
-            <div className="flex items-center justify-between text-xs text-slate-500">
-              <span>{len < MIN_RESUME ? `Add at least ${MIN_RESUME - len} more characters` : `${len.toLocaleString("en-IN")} characters`}</span>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border border-dashed border-slate-300 p-4">
+              {pdf ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                  <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-slate-500" /><span className="font-medium">{pdf.name}</span></span>
+                  <button type="button" onClick={() => setPdf(null)} className="text-sm text-slate-600 underline underline-offset-2">Remove</button>
+                </div>
+              ) : (
+                <label className="flex cursor-pointer flex-col items-center gap-2 text-center text-sm text-slate-600">
+                  <Upload className="h-5 w-5" />
+                  <span><span className="font-medium text-slate-900 underline underline-offset-2">Upload your resume</span> (PDF, up to 5 MB)</span>
+                  <input type="file" accept="application/pdf,.pdf" className="sr-only"
+                    onChange={(e) => { void choosePdf(e.target.files?.[0]); e.target.value = ""; }} />
+                </label>
+              )}
+            </div>
+
+            <div className={pdf ? "pointer-events-none opacity-50" : ""} aria-disabled={pdf !== null}>
+              <p className="mb-2 text-sm text-slate-500">{pdf ? "Using your PDF. Remove it to paste text instead." : "Or paste the text of your resume"}</p>
+              <Textarea
+                value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={8} disabled={pdf !== null}
+                placeholder="Education, projects, skills, internships…" aria-label="Resume text"
+              />
+              {!pdf && len > 0 && (
+                <p className="mt-1 text-xs text-slate-500">
+                  {len < MIN_RESUME ? `Add at least ${MIN_RESUME - len} more characters` : `${len.toLocaleString("en-IN")} characters`}
+                </p>
+              )}
             </div>
             {errorBox}
-            <Button onClick={start} disabled={busy || len < MIN_RESUME}>{busy ? "Preparing your questions…" : "Start interview"}</Button>
+            <Button onClick={start} disabled={busy || !ready}>{busy ? "Preparing your questions…" : "Start interview"}</Button>
           </CardContent>
         </Card>
       </div>
