@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { ExternalLink, Trophy } from "lucide-react";
 import type { Profile } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ProfileGate } from "../ProfileGate";
 import { HACKATHONS, type Hackathon } from "./data";
 
@@ -19,24 +18,11 @@ const suits = (h: Hackathon, dept: string) => h.departments.length === 0 || h.de
 
 function YourRecord({ p }: { p: Profile }) {
   const count = Number(p.metrics.hackathons ?? 0);
-  const flagged = p.placement_risk.drivers.some((d) => /hackathon/i.test(d.label));
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-teal-50 p-2.5 text-teal-800"><Trophy className="h-5 w-5" aria-hidden="true" /></div>
-          <div>
-            <p className="text-2xl font-semibold tabular-nums">{count}</p>
-            <p className="text-sm text-slate-500">verified hackathon{count === 1 ? "" : "s"} on your record</p>
-          </div>
-        </div>
-        <p className="text-sm text-slate-600 sm:ml-6 sm:border-l sm:pl-6">
-          {flagged
-            ? "Your placement outlook lists “no verified hackathons or certifications”. Taking part in one removes that flag and adds to your co-curricular score."
-            : count === 0
-              ? "Hackathons add to your co-curricular score and show recruiters you can build under pressure."
-              : "Nice. Each verified hackathon adds to your co-curricular score. Another one in your branch's focus area makes your profile stronger."}
-        </p>
+    <Card className="rounded-xl border-[#dce7e1] bg-[#f4f7f5] shadow-none">
+      <CardContent className="flex items-center gap-3 px-4 py-3">
+        <Trophy className="h-4 w-4 shrink-0 text-[#286a62]" aria-hidden="true" />
+        <p className="text-sm text-slate-700"><span className="font-semibold tabular-nums text-[#172824]">{count}</span> verified hackathon{count === 1 ? "" : "s"} on your record</p>
       </CardContent>
     </Card>
   );
@@ -49,53 +35,39 @@ function List({ p }: { p: Profile }) {
     .sort((a, b) => Number(suits(b, p.department)) - Number(suits(a, p.department)));
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div role="tablist" aria-label="Filter hackathons" className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1">
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div role="group" aria-label="Filter hackathons" className="flex flex-wrap gap-1 rounded-lg bg-[#edf2ef] p-1">
           {FILTERS.map((f) => (
-            <button key={f.key} role="tab" aria-selected={filter === f.key} onClick={() => setFilter(f.key)}
-              className={`rounded-md px-3 py-1.5 text-sm ${filter === f.key ? "bg-white font-medium text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+            <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}
+              className={`min-h-9 rounded-md px-3 py-1.5 text-xs transition-colors ${filter === f.key ? "bg-white font-medium text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
               {f.label}
             </button>
           ))}
         </div>
-        <p className="text-xs text-slate-500">Dates change every year, so check each official site for the current edition.</p>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm text-slate-500">Nothing in this filter yet.</p>
+        <p className="rounded-lg border border-[#dce7e1] bg-white px-4 py-5 text-sm text-slate-500">No events match this filter.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="divide-y divide-[#e7eeea] rounded-xl border border-[#dce7e1] bg-white px-4 sm:px-5">
           {items.map((h) => (
-            <Card key={h.name} className="flex flex-col">
-              <CardHeader className="pb-2">
-                <div className="mb-2 flex flex-wrap gap-1.5">
-                  <Badge variant="secondary">{h.kind}</Badge>
-                  <Badge variant="outline">{h.format}</Badge>
-                  {suits(h, p.department) && h.departments.length > 0 && <Badge>Fits {p.department}</Badge>}
-                </div>
-                <CardTitle className="text-base leading-snug">{h.name}</CardTitle>
-                <p className="text-xs text-slate-500">{h.organiser}</p>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col gap-3">
-                <p className="text-sm text-slate-700">{h.about}</p>
-                <p className="text-xs text-slate-500">{h.focus.join(" · ")}</p>
-                <a href={h.url} target="_blank" rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-teal-800 underline underline-offset-2">
-                  Visit official site <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                </a>
-              </CardContent>
-            </Card>
+            <li key={h.name} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium leading-5 text-[#172824]">{h.name}</p>
+                <p className="mt-1 text-xs text-slate-500">{h.organiser} · {h.kind} · {h.format}</p>
+                <p className="mt-1 text-xs text-slate-500">{h.focus.join(" · ")}</p>
+              </div>
+              <a href={h.url} target="_blank" rel="noopener noreferrer"
+                className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-sm font-semibold text-[#1d6158] no-underline hover:bg-[#eef5f1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">
+                Official site <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
-      <Card className="bg-slate-50">
-        <CardContent className="p-5 text-sm text-slate-600">
-          <span className="font-medium text-slate-900">Make it count:</span> after the event, share your participation or
-          winner certificate with your faculty mentor so it&apos;s verified and added to your record.
-        </CardContent>
-      </Card>
+      <p className="text-xs leading-5 text-slate-500">Check official sites for current dates. Share proof of participation with your faculty mentor to add it to your record.</p>
     </div>
   );
 }
