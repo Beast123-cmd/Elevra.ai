@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BriefCard } from "@/components/faculty/BriefCard";
 import { canViewStudent } from "@/components/faculty/interventions";
 import { InterventionPanel } from "@/components/faculty/InterventionPanel";
 import { EmptyState } from "@/components/shared/Kpi";
@@ -63,7 +64,12 @@ export default function StudentDetailPage() {
         profile={profile}
         cohortMeans={means}
         mode="faculty"
-        actions={<InterventionPanel studentId={profile.student_id} scoreBefore={profile.score} facultyId={facultyId} />}
+        actions={
+          <div className="space-y-4">
+            <BriefCard profile={profile} />
+            <InterventionPanel studentId={profile.student_id} scoreBefore={profile.score} facultyId={facultyId} />
+          </div>
+        }
       />
     </div>
   );
