@@ -74,6 +74,14 @@ Never put secrets in this file. Keys live in `.env` and `frontend/.env.local` (g
 | Frontend unit tests (`npm test`) | 52 pass |
 | Chat, brief card and loading/offline states in headless Chrome with real sessions | no console or network errors |
 
+### Session and cache review (16:30), real browser and real Supabase
+Reported: sessions and caching felt unmanaged, going to another page seemed to re-render home, and URLs like `/student/interview?_rsc=19m99` appeared.
+- **`?_rsc=...`** is Next.js's internal cache-busting parameter on background (RSC) page fetches; it shows in the Network tab and terminal. It reaches the address bar only when such a fetch fails and the browser falls back to a full page load. `SessionGuard` now strips it. Verified.
+- **"Renders home again"** could not be reproduced in the production build or in `next dev`: clicks go straight to their page. In dev, the first visit to each route compiles on demand (the very first `/login` took 16 s), which feels like being stuck. Each page also re-ran its own auth round trip and data fetch on every visit, which looked like a re-render.
+- **Real bugs found and fixed:** (1) the middleware dropped refreshed session cookies on redirects, so users were signed out on the next request (fixed independently on `main` by Aayush with `redirectWithAuthCookies`; my test confirms it); (2) a vanished or expired session left the user clicking cached pages with no redirect, and signing out in one tab did nothing in another; (3) no `Cache-Control: no-store` on protected pages, so the back button could restore them; (4) no data cache, so returning to the admin overview re-downloaded 1,500 rows (2.2 s).
+- **Added:** `SessionGuard` (sends the user to `/login` on sign-out in any tab, an expired or rejected session, or an API 401; strips `_rsc`), a `no-store` header on protected pages and the redirects away from them, a stale-while-revalidate cache for the admin overview, faculty queue and Student 360 (emptied on sign-out or user change; returning to the overview now takes about 90 ms), login and sign-out using a full page load, and a shared `SignOutButton`.
+- Verified on the integrated build: 60 frontend unit tests, server-side checks (refreshed cookies on normal pages and redirects, `no-store`, garbage cookie gives a clean redirect), 43/43 role guards, 12/12 real-browser flows (login, cached navigation, sign-out then Back, `_rsc` cleanup, cross-tab sign-out), and all 17 pages with no console or network errors.
+
 ## 4. Decisions
 - **Absolute pillar scores, not batch percentiles.** Percentiles make every batch average 50, so "% at risk" would mean nothing. Percentiles are display text only.
 - **Placement risk is rule-based, with no placement ML model.** There are no real placement outcomes, so any label would be circular. The academic model trains on last semester and predicts end-of-semester results.
