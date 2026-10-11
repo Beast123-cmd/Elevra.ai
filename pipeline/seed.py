@@ -86,6 +86,8 @@ def _write_sql(payload: dict, replace_existing_cohort: bool = False) -> Path:
     lines = ["BEGIN;", "SET LOCAL statement_timeout = '90s';"]
     # Cleaning logs describe the active source snapshot, so replace that snapshot atomically.
     lines.append("DELETE FROM public.data_quality;")
+    # Pipeline-owned intervention examples are rebuilt atomically; live rows are preserved.
+    lines.append("DELETE FROM public.interventions WHERE is_seeded = TRUE;")
     if replace_existing_cohort:
         student_ids = sorted({row["student_id"] for row in payload["students"]})
         id_list = ",".join(_sql_value(student_id) for student_id in student_ids)
@@ -94,6 +96,12 @@ def _write_sql(payload: dict, replace_existing_cohort: bool = False) -> Path:
             lines.append(f"DELETE FROM public.{table} WHERE student_id IN ({id_list});")
     for table in ("faculty", "students", "academics", "attendance", "lms_activity", "placement", "skills", "feedback", "scores", "score_history", "analytics", "source_stats"):
         lines.append(_insert_sql(table, payload.get(table, [])))
+    intervention_rows = payload.get("interventions", [])
+    if intervention_rows:
+        columns = ("student_id", "faculty_id", "type", "note", "status", "followup_date", "score_before", "score_after", "is_seeded")
+        tuples = ",\n".join("(" + ",".join(_sql_value(row.get(column)) for column in columns) + ")"
+                             for row in intervention_rows)
+        lines.append(f"INSERT INTO public.interventions ({','.join(columns)}) VALUES\n" + tuples + ";")
     # Engagement has no natural unique key in the frozen schema. Insert only unseen events so reruns are safe.
     events = payload.get("engagement", [])
     if events:

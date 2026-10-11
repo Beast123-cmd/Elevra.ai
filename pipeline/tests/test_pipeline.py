@@ -41,6 +41,19 @@ class ScoringTests(unittest.TestCase):
         self.assertEqual(result["academic_risk"]["level"], "Red")
         self.assertTrue(result["academic_risk"]["drivers"][0]["label"].startswith("Attendance below detention"))
 
+    def test_tree_model_cards_produce_probability_and_explanation(self):
+        feature = {"name": "attendance_pct", "source": "attendance_pct",
+            "label": "Attendance", "mean": 75, "std": 10}
+        tree = {"prob": 0.4, "n": 100, "leaf": False,
+            "feature": 0, "threshold": 65, "left": {"prob": 0.8, "n": 25, "leaf": True},
+            "right": {"prob": 0.25, "n": 75, "leaf": True}}
+        card = {"algorithm": "decision_tree", "features": [feature], "tree": tree}
+        result = evaluate({**BASE, "attendance_pct": 60}, card=card)
+        self.assertEqual(result["model"]["prob"], 0.8)
+        self.assertIn("Attendance ≤ 65.00", result["model"]["factors"][0]["label"])
+        forest = evaluate({**BASE, "attendance_pct": 60}, card={**card, "algorithm": "random_forest", "trees": [tree, tree]})
+        self.assertEqual(forest["model"]["prob"], 0.8)
+
     def test_ordered_segments_and_whatif_monotonicity(self):
         star = evaluate({**BASE, "cgpa": 9.2, "internal_pct": 90, "aptitude": 40, "coding": 35, "mock": 2})
         silent = evaluate({**BASE, "engagement_drop": 1, "login_trend": -0.7})
@@ -97,7 +110,9 @@ class PipelineTests(unittest.TestCase):
         student = {"student_id": "40000", "name": "Synthetic Student", "department": "Comp", "year": 2,
                    "batch": "2026-2027", "section": "A", "gender": "F", "residence": "Hostel",
                    "mentor_faculty_id": "F01", "email": "40000@campus.edu"}
-        payload = {"students": [student]}
+        payload = {"students": [student], "interventions": [{"student_id": "40000", "faculty_id": "F01",
+            "type": "Mentoring call", "note": "Synthetic seeded example.", "status": "done",
+            "followup_date": None, "score_before": 60, "score_after": 66, "is_seeded": True}]}
         self.assertTrue(_student_profiles_match([dict(student)], payload))
         changed = {**student, "name": "Unexpected Student"}
         self.assertFalse(_student_profiles_match([changed], payload))
@@ -114,6 +129,8 @@ class PipelineTests(unittest.TestCase):
             sql_path.unlink(missing_ok=True)
         self.assertIn("DELETE FROM public.engagement WHERE student_id IN ('40000');", sql)
         self.assertNotIn("DELETE FROM public.students", sql)
+        self.assertIn("DELETE FROM public.interventions WHERE is_seeded = TRUE;", sql)
+        self.assertIn("INSERT INTO public.interventions", sql)
         self.assertLess(sql.index("DELETE FROM public.scores"), sql.index("INSERT INTO public.students"))
 
     def test_payload_matches_database_contract_and_has_demo_personas(self):
@@ -129,8 +146,24 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(model["metrics"]["n_train"] + model["metrics"]["n_test"], 200)
         self.assertEqual(len(model["features"]), 7)
         self.assertIn("synthetic", model["metrics"]["target"])
+        self.assertEqual({row["name"] for row in model["candidates"]},
+                         {"logistic_regression", "decision_tree", "random_forest"})
+        self.assertEqual(model["algorithm"], max(model["candidates"],
+                         key=lambda row: (row["metrics"]["cv_auc"],
+                                          {"logistic_regression": 2, "decision_tree": 1, "random_forest": 0}[row["name"]]))["name"])
+        self.assertEqual({row["group_type"] for row in model["fairness"]}, {"residence", "gender"})
+        self.assertEqual(len(payload["analytics"][0]["payload"]["lead_time"]), 8)
+        self.assertEqual(len(payload["interventions"]), 200)
+        self.assertEqual({row["type"] for row in payload["interventions"]},
+                         {"Mentoring call", "Remedial classes", "Coding bootcamp", "Attendance counselling", "Mock interviews"})
         self.assertTrue(any(row["profile"]["model"]["prob"] > 0 for row in payload["scores"]))
         profiles = [row["profile"] for row in payload["scores"]]
+        self.assertTrue(all({"attendance", "cgpa", "lms"}.issubset(profile["percentiles"])
+                            for profile in profiles))
+        self.assertTrue(all(0 <= value <= 100 for profile in profiles for value in profile["percentiles"].values()))
+        self.assertTrue(all(profile["declining"] == (len(profile["history"]) >= 3 and
+                            profile["history"][-1]["score"] - profile["history"][-3]["score"] <= -10)
+                            for profile in profiles))
         self.assertTrue(any(p["mentor_faculty_id"] == "F01" and p["academic_risk"]["level"] == "Red" for p in profiles))
         self.assertTrue(any(p["mentor_faculty_id"] == "F01" and p["segment"] == "Academic stars, placement unready" for p in profiles))
         self.assertTrue(all(p["placement_risk"]["level"] == "Not assessed" and p["confidence"] < 100
@@ -150,6 +183,16 @@ class PipelineTests(unittest.TestCase):
             low_attendance = [row["label"] for row in examples if row["features"]["attendance_pct"] < 65]
             other_students = [row["label"] for row in examples if row["features"]["attendance_pct"] >= 65]
             self.assertGreater(sum(low_attendance) / len(low_attendance), sum(other_students) / len(other_students))
+            drop_rates = {}
+            for outcome in (0, 1):
+                members = [row for row in examples if row["label"] == outcome]
+                drops = []
+                for row in members:
+                    early = sum(week["logins"] or 0 for week in row["weekly"][:4]) / 4
+                    late = sum(week["logins"] or 0 for week in row["weekly"][5:8]) / 3
+                    drops.append(int(early >= 2 and late < 0.6 * early))
+                drop_rates[outcome] = sum(drops) / len(drops)
+            self.assertGreaterEqual(drop_rates[1], 2 * drop_rates[0])
             small = {key: value[:30] if isinstance(value, list) else value for key, value in clean.items()}
             with self.assertRaises(ValueError):
                 train_model(small)

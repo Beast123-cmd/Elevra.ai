@@ -64,11 +64,12 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             ability, diligence = 1.15, 0.75
         if index == 8:
             ability, diligence = -0.15, -0.7
+        low_attendance = index == 8 or rng.random() < 0.15
         traits[student_id] = {
             "ability": ability, "diligence": diligence,
             "career": 0.3 * ability + 0.95 * rng.gauss(0, 1),
-            "low_attendance": index == 8 or rng.random() < 0.15,
-            "drop": False if index == 4 else rng.random() < 0.13,
+            "low_attendance": low_attendance,
+            "drop": False if index == 4 else rng.random() < (0.8 if low_attendance else 0.01),
             "placement_lag": index == 4 or rng.random() < 0.18,
             "demo_star": index == 4,
             "gender": gender,
@@ -94,7 +95,7 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
                 external = ""
                 if completed:
                     # Preserve the deliberately high-performing guided-demo student.
-                    fail = not t["demo_star"] and rng.random() < (0.25 if is_low else 0.065)
+                    fail = not t["demo_star"] and rng.random() < (0.15 if is_low else 0.025)
                     total = max(0, min(100, round(base + rng.gauss(0, 11))))
                     if fail:
                         # Make the planted attendance/backlog relationship visible in exam marks.
@@ -112,7 +113,7 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             if semester < 1:
                 continue
             for week in range(1, weeks + 1):
-                current_drop = t["drop"] and semester == current_semester
+                current_drop = t["drop"] and semester in (current_semester - 1, current_semester)
                 attendance = 0.82 - (0.22 if t["low_attendance"] else 0) + 0.035 * t["diligence"]
                 if current_drop and week >= 5:
                     attendance -= 0.08 * (week - 4)
@@ -159,8 +160,8 @@ def generate_all(out_dir: Path, n: int = DEFAULT_STUDENT_COUNT, seed: int = SEED
             aptitude = max(5, min(100, 58 + 8 * t["ability"] + 8 * t["career"] + rng.gauss(0, 11)))
             coding = max(5, min(100, 55 + 7 * t["ability"] + 13 * t["career"] + rng.gauss(0, 13)))
             if t["placement_lag"]:
-                coding = max(8, coding - 42)
-                aptitude = max(10, aptitude - 10)
+                coding = max(8, coding - (80 if t["demo_star"] else 42))
+                aptitude = max(10, aptitude - (20 if t["demo_star"] else 10))
             mock = "" if rng.random() < 0.15 else max(1, min(5, round(3.2 + 0.7 * t["career"] + rng.gauss(0, 0.9))))
             raw["placement"].append({" Student ID": f"SCA-{sid} ", "Aptitude": round(aptitude),
                 "Coding": round(coding), "Mock interview (1-5)": mock})

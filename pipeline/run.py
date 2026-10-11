@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
+import random
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -15,7 +17,7 @@ if str(ROOT) not in sys.path:
 from clean.clean import clean_all
 from generate.generate import DEFAULT_STUDENT_COUNT, DEPARTMENTS, generate_all
 from scoring.engine import PILLARS, WEIGHTS, evaluate, success_score
-from scoring.model import train_model
+from scoring.model import historical_examples, train_model
 
 RAW_DIR = ROOT / "data" / "raw"
 OUT_DIR = ROOT / "pipeline" / "out"
@@ -55,7 +57,7 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
     feedback_by_student = {row["student_id"]: row for row in clean["feedback"]}
 
     academics_out, attendance_out, lms_out, engagement_out, placement_out, skills_out, feedback_out = [], [], [], [], [], [], []
-    metrics_by_sid, weekly_by_sid, history_by_sid = {}, {}, {}
+    metrics_by_sid, weekly_by_sid, semester_history_by_sid = {}, {}, {}
     current_sem_by_sid = {}
     for student in students:
         sid = student["student_id"]
@@ -68,7 +70,7 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
             semester_groups[row["semester"]].append(row)
         running_grade_points, running_subjects = [], []
         latest_backlogs = 0
-        history = []
+        completed_history = []
         for semester, semester_rows in sorted(semester_groups.items()):
             marks = []
             for row in semester_rows:
@@ -89,14 +91,13 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
                 academics_out.append({"student_id": sid, "semester": semester, "sgpa": round(sgpa, 2) if sgpa is not None else None,
                                       "cgpa": round(cgpa, 2) if cgpa is not None else None,
                                       "backlogs": latest_backlogs, "subject_marks": marks})
-                historical_pillars = {"academic": min(100, (sgpa or 0) * 10 - 5 * latest_backlogs)}
-                score = success_score({**historical_pillars, **{key: None for key in PILLARS if key != "academic"}})
-                history.append({"semester": semester, "score": score["score"], "sgpa": round(sgpa, 2) if sgpa is not None else None})
+                completed_history.append({"semester": semester, "sgpa": sgpa,
+                    "backlogs_up_to_semester": sum(1 for value in running_subjects if value < 40)})
             else:
                 # Current in-progress marks are retained for drill-down but do not affect cumulative GPA.
                 academics_out.append({"student_id": sid, "semester": semester, "sgpa": None, "cgpa": None,
                                       "backlogs": latest_backlogs, "subject_marks": marks})
-        history_by_sid[sid] = history
+        semester_history_by_sid[sid] = completed_history
 
         att_rows = attendance_by_student[sid]
         current_att = [row for row in att_rows if row["semester"] == current_sem and 1 <= row["week"] <= 8]
@@ -180,6 +181,41 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
 
     model = train_model(clean)
     evaluations = {sid: evaluate(metrics, card=model) for sid, metrics in metrics_by_sid.items()}
+    historical = historical_examples(clean)
+    history_by_sid = {}
+    for sid, semesters in semester_history_by_sid.items():
+        current_pillars = evaluations[sid]["pillars"]
+        history = []
+        for entry in semesters:
+            historic_academic = max(0.0, min(100.0,
+                (entry["sgpa"] or 0.0) * 10 - 5 * entry["backlogs_up_to_semester"]))
+            historic_score = success_score({**current_pillars, "academic": historic_academic})["score"]
+            history.append({"semester": entry["semester"], "score": historic_score,
+                            "sgpa": round(entry["sgpa"], 2) if entry["sgpa"] is not None else None})
+        history_by_sid[sid] = history
+
+    batch_metrics = defaultdict(lambda: defaultdict(list))
+    percentile_fields = {"coding": "coding", "aptitude": "aptitude", "attendance": "attendance_pct",
+                         "cgpa": "cgpa", "lms": "lms"}
+    for student in students:
+        sid, batch = student["student_id"], student["batch"]
+        values = {**metrics_by_sid[sid], "lms": evaluations[sid]["pillars"]["lms"]}
+        for key, field in percentile_fields.items():
+            value = values.get(field)
+            if value is not None:
+                batch_metrics[batch][key].append(value)
+    percentiles_by_sid = {}
+    for student in students:
+        sid, batch = student["student_id"], student["batch"]
+        values = {**metrics_by_sid[sid], "lms": evaluations[sid]["pillars"]["lms"]}
+        percentiles_by_sid[sid] = {
+            key: round(100 * sum(peer <= value for peer in batch_metrics[batch][key]) /
+                       len(batch_metrics[batch][key]), 1)
+            for key, field in percentile_fields.items()
+            if (value := values.get(field)) is not None and batch_metrics[batch][key]
+        }
+
+    lead_time = _lead_time_curve(historical)
     pillar_means = {pillar: _mean([evaluation["pillars"][pillar] for evaluation in evaluations.values()]) for pillar in PILLARS}
     score_mean = _mean([result["score"] for result in evaluations.values()]) or 0
     profiles, scores_out, score_history_out = [], [], []
@@ -202,7 +238,8 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
             "academic_risk": result["academic_risk"], "placement_risk": result["placement_risk"],
             "model": result["model"], "segment": result["segment"], "priority": result["priority"],
             "actions": _actions(result), "engagement_drop": bool(metrics["engagement_drop"]),
-            "declining": False, "metrics": metrics, "percentiles": {}, "weekly": weekly_by_sid[sid],
+            "declining": _is_declining(history_by_sid[sid]), "metrics": metrics,
+            "percentiles": percentiles_by_sid[sid], "weekly": weekly_by_sid[sid],
             "history": history_by_sid[sid],
         }
         profiles.append(profile)
@@ -210,7 +247,7 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
             "band": result["band"], "confidence": result["confidence"],
             **result["pillars"], "academic_risk": result["academic_risk"]["level"],
             "academic_risk_prob": result["model"]["prob"], "placement_risk": result["placement_risk"]["level"],
-            "segment": result["segment"], "priority": result["priority"], "declining": False,
+            "segment": result["segment"], "priority": result["priority"], "declining": profile["declining"],
             "engagement_drop": bool(metrics["engagement_drop"]), "drivers": {
                 "academic": result["academic_risk"]["drivers"], "placement": result["placement_risk"]["drivers"],
                 "contributions": contributions, "model": result["model"]["factors"]}, "profile": profile})
@@ -246,12 +283,14 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
         "pillar_labels": {"academic": "Academic", "attendance": "Attendance", "lms": "LMS engagement",
                           "placement": "Placement readiness", "skills": "Skills", "engagement": "Co-curricular", "feedback": "Feedback"},
         "pillar_means": {key: round(value, 2) for key, value in pillar_means.items() if value is not None},
-        "dept_pillars": dept_pillars, "weekly_trend": weekly_trend, "lead_time": [], "segments": segments}
-    insights = _build_insights(profiles, score_mean)
+        "dept_pillars": dept_pillars, "weekly_trend": weekly_trend, "lead_time": lead_time, "segments": segments}
+    insights = _build_insights(profiles, score_mean, historical)
+    interventions = _seeded_interventions(profiles)
     payload = {
         "faculty": clean["faculty"], "students": students, "academics": academics_out, "attendance": attendance_out,
         "lms_activity": lms_out, "engagement": engagement_out, "placement": placement_out, "skills": skills_out,
         "feedback": feedback_out, "scores": scores_out, "score_history": score_history_out,
+        "interventions": interventions,
         "analytics": [{"key": "cohort", "payload": cohort}, {"key": "model", "payload": model}, {"key": "insights", "payload": insights}],
         "data_quality": issues, "source_stats": stats,
         "summary": {"students": len(students), "scores": len(scores_out), "requested_students": n_requested,
@@ -285,19 +324,59 @@ def _actions(result: dict) -> list[str]:
     return actions[:4]
 
 
-def _build_insights(profiles: list[dict], cohort_score: float) -> list[dict]:
-    attendance_risk = [p for p in profiles if p["metrics"]["attendance_pct"] is not None and p["metrics"]["attendance_pct"] < 65]
-    low_att_fail = sum(p["metrics"]["backlogs"] > 0 for p in attendance_risk) / max(1, len(attendance_risk))
-    other = [p for p in profiles if p not in attendance_risk]
-    other_fail = sum(p["metrics"]["backlogs"] > 0 for p in other) / max(1, len(other))
+def _is_declining(history: list[dict]) -> bool:
+    return len(history) >= 3 and history[-1]["score"] - history[-3]["score"] <= -10
+
+
+def _lead_time_curve(examples: list[dict]) -> list[dict]:
+    curve = []
+    for week in range(1, 9):
+        point = {"week": week}
+        for label, prefix in ((1, "failed"), (0, "passed")):
+            rows = [example["weekly"][week - 1] for example in examples if example["label"] == label]
+            point[f"{prefix}_logins"] = round(_mean([row["logins"] for row in rows]) or 0, 2)
+            point[f"{prefix}_attendance"] = round(_mean([row["attendance"] for row in rows]) or 0, 2)
+        curve.append(point)
+    return curve
+
+
+def _seeded_interventions(profiles: list[dict]) -> list[dict]:
+    intervention_types = (("Mentoring call", 6), ("Remedial classes", 5), ("Coding bootcamp", 7),
+                          ("Attendance counselling", 4), ("Mock interviews", 5))
+    order = sorted(profiles, key=lambda profile: (-profile["priority"], profile["student_id"]))
+    selected = order[:min(300, len(order))]
+    interventions = []
+    for index, profile in enumerate(selected):
+        kind, effect = intervention_types[index % len(intervention_types)]
+        seed = int.from_bytes(hashlib.sha256(f"intervention:{profile['student_id']}:{kind}".encode()).digest()[:8], "big")
+        noise = random.Random(seed).uniform(-1.5, 1.5)
+        before = profile["score"]
+        interventions.append({"student_id": profile["student_id"], "faculty_id": profile["mentor_faculty_id"],
+            "type": kind, "note": "Synthetic seeded example; score change is simulated.", "status": "done",
+            "followup_date": None, "score_before": before,
+            "score_after": round(max(0.0, min(100.0, before + effect + noise)), 1), "is_seeded": True})
+    return interventions
+
+
+def _build_insights(profiles: list[dict], cohort_score: float, historical: list[dict]) -> list[dict]:
+    low_attendance = [example for example in historical if example["features"]["attendance_pct"] < 65]
+    other_attendance = [example for example in historical if example["features"]["attendance_pct"] >= 65]
+    low_att_fail = sum(row["label"] for row in low_attendance) / len(low_attendance) if low_attendance else 0.0
+    other_fail = sum(row["label"] for row in other_attendance) / len(other_attendance) if other_attendance else 0.0
     drops = [p for p in profiles if p["engagement_drop"]]
     placement_missing = sum(p["placement_risk"]["level"] == "Not assessed" for p in profiles)
+    day_scholars = [p["metrics"]["submit_rate"] for p in profiles if p["residence"] == "Day Scholar"]
+    hostel = [p["metrics"]["submit_rate"] for p in profiles if p["residence"] == "Hostel"]
+    day_submission, hostel_submission = _mean(day_scholars), _mean(hostel)
+    day_submission_label = f"{day_submission:.0%}" if day_submission is not None else "not available"
+    hostel_submission_label = f"{hostel_submission:.0%}" if hostel_submission is not None else "not available"
     return [
         {"id": "cohort-score", "title": "Cohort success score", "detail": f"Mean score is {cohort_score:.1f} across {len(profiles)} synthetic student profiles.", "severity": "info"},
-        {"id": "attendance-checkin", "title": "Attendance needs attention", "detail": f"{len(attendance_risk)} students are below the 65% detention line; their observed backlog rate is {low_att_fail:.0%}, compared with {other_fail:.0%} for others.", "severity": "critical" if attendance_risk else "info"},
+        {"id": "attendance-checkin", "title": "Attendance and exam outcomes", "detail": f"In the historical back-test, {len(low_attendance)} students below 65% week-8 attendance failed at least one subject at a rate of {low_att_fail:.0%}, compared with {other_fail:.0%} among {len(other_attendance)} students at or above 65%. Synthetic cohort association; not causal evidence.", "severity": "warning" if low_att_fail > other_fail else "info"},
         {"id": "lms-drop", "title": "LMS engagement drop", "detail": f"{len(drops)} students show a sharp week 6–8 login decline and may benefit from a timely check-in.", "severity": "warning" if drops else "info"},
         {"id": "placement-coverage", "title": "Placement data coverage", "detail": f"{placement_missing} students have no placement assessment; their placement risk is marked Not assessed.", "severity": "info"},
         {"id": "early-warning-limit", "title": "Synthetic model back-test", "detail": "The early-warning model is evaluated on held-out synthetic students. Its metrics describe this generated cohort and are not evidence of real-world predictive performance.", "severity": "info"},
+        {"id": "commute-submissions", "title": "Attendance and assignment access", "detail": f"Average assignment submission rate is {day_submission_label} for day scholars and {hostel_submission_label} for hostel residents; attendance and submission behavior are tracked separately.", "severity": "info"},
     ]
 
 
