@@ -36,3 +36,8 @@ export function setCacheOwner(userId: string | null): void {
   if (userId !== owner) store.clear();
   owner = userId;
 }
+
+/** Forget cached entries whose key starts with `prefix`, e.g. after a write that makes them out of date. */
+export function invalidateCache(prefix: string): void {
+  for (const key of Array.from(store.keys())) if (key.startsWith(prefix)) store.delete(key);
+}

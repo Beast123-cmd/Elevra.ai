@@ -1,4 +1,5 @@
 import type { Driver, Tier } from "../../lib/types.ts";
+import { isRed } from "../shared/cases.ts";
 
 export interface QueueRow {
   student_id: string; name: string; department: string; year: number;
@@ -10,7 +11,7 @@ export interface QueueRow {
 
 export interface QueueFilters {
   q: string; year: string; segment: string; mentor: string;
-  risk: "Any" | "Academic Red" | "Placement Red" | "Early warning";
+  risk: "Any" | "Needs contact" | "Academic Red" | "Placement Red" | "Early warning";
   hideContacted: boolean;
 }
 
@@ -23,6 +24,7 @@ export function filterQueue(rows: QueueRow[], f: QueueFilters, contacted: Set<st
         (f.segment === "All" || r.segment === f.segment) &&
         (f.mentor === "All" || r.mentor_faculty_id === f.mentor) &&
         (f.risk === "Any" ||
+          (f.risk === "Needs contact" && isRed(r) && !contacted.has(r.student_id)) ||
           (f.risk === "Academic Red" && r.academic_risk === "Red") ||
           (f.risk === "Placement Red" && r.placement_risk === "Red") ||
           (f.risk === "Early warning" && r.engagement_drop)) &&
@@ -52,25 +54,4 @@ export function toCsv(rows: QueueRow[]): string {
       topReasons(r, 1)[0]?.label ?? "", (r.actions ?? []).join("; ")].map(cell).join(","),
   );
   return [HEADER.join(","), ...lines].join("\n");
-}
-
-type Store = Pick<Storage, "getItem" | "setItem">;
-const KEY = "elevra-contacted";
-
-/** "Contacted" ticks live in the browser only; any storage failure just means an empty list. */
-export function readContacted(store: Store | null): Set<string> {
-  try {
-    const parsed = JSON.parse(store?.getItem(KEY) ?? "{}") as Record<string, boolean>;
-    return new Set(Object.keys(parsed).filter((k) => parsed[k]));
-  } catch {
-    return new Set();
-  }
-}
-
-export function writeContacted(store: Store | null, state: Record<string, boolean>): void {
-  try {
-    store?.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* storage unavailable (private mode, quota): ticks simply will not persist */
-  }
 }

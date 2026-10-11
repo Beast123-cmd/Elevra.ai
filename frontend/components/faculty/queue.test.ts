@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  filterQueue, readContacted, toCsv, topReasons, writeContacted, type QueueFilters, type QueueRow,
+  filterQueue, toCsv, topReasons, type QueueFilters, type QueueRow,
 } from "./queue.ts";
 
 const NONE: QueueFilters = { q: "", year: "All", risk: "Any", segment: "All", mentor: "All", hideContacted: false };
@@ -81,14 +81,19 @@ test("csv of nothing is just the header", () => {
   assert.equal(toCsv([]).split("\n").length, 1);
 });
 
-test("contacted list survives bad or missing storage", () => {
-  const store = new Map<string, string>();
-  const ok = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) };
-  writeContacted(ok, { 40001: true, 40002: false });
-  assert.deepEqual(Array.from(readContacted(ok)), ["40001"]);
-  assert.deepEqual(Array.from(readContacted({ getItem: () => "{not json", setItem: () => {} })), []);
-  const broken = { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } };
-  assert.deepEqual(Array.from(readContacted(broken)), []);
-  assert.doesNotThrow(() => writeContacted(broken, { 1: true }));
-  assert.deepEqual(Array.from(readContacted(null)), []);
+test("'Needs contact' picks Red students who were not contacted within the target", () => {
+  const rows = [
+    row({ student_id: "a", academic_risk: "Red" }),
+    row({ student_id: "b", placement_risk: "Red" }),
+    row({ student_id: "c", academic_risk: "Red" }),
+    row({ student_id: "d" }),
+  ];
+  const contacted = new Set(["c"]);
+  const ids = filterQueue(rows, { ...NONE, risk: "Needs contact" }, contacted).map((r) => r.student_id).sort();
+  assert.deepEqual(ids, ["a", "b"]);
+});
+
+test("hide-contacted hides students contacted within the target", () => {
+  const rows = [row({ student_id: "a" }), row({ student_id: "b" })];
+  assert.deepEqual(filterQueue(rows, { ...NONE, hideContacted: true }, new Set(["a"])).map((r) => r.student_id), ["b"]);
 });
