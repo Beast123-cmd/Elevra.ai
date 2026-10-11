@@ -38,7 +38,10 @@ function Dashboard({ profile }: { profile: Profile }) {
           <h1 className="mt-1 break-words text-[clamp(1.5rem,5vw,1.85rem)] font-semibold tracking-[-.04em] text-[#172824]">Hi, {profile.name}</h1>
           <p className="mt-1 text-sm text-slate-500">A clear view of your progress and what to focus on next.</p>
         </div>
-        <p className="text-xs text-slate-500">{profile.department} <span className="px-1.5 text-slate-300">/</span> Year {profile.year}</p>
+        <p className="text-xs text-slate-500">
+          <span className="rounded-md bg-[#eef5f1] px-2 py-0.5 font-semibold tabular-nums text-[#315c50]" title="Quote this ID when you contact your mentor">ID {profile.student_id}</span>
+          <span className="px-1.5 text-slate-300">/</span>{profile.department} <span className="px-1.5 text-slate-300">/</span> Year {profile.year}
+        </p>
       </header>
 
       <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[1.08fr_.92fr]">
