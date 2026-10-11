@@ -40,6 +40,7 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
     {
       label: "Tools",
       items: [
+        { href: "/insights/assistant", label: "Ask Elevra", icon: "chat" },
         { href: "/admin/chat", label: "Ask your data", icon: "chat" },
         { href: "/admin/users", label: "Users", icon: "users" },
         { href: "/demo", label: "Guided demo", icon: "demo" },
@@ -56,7 +57,13 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
       ],
     },
     { label: "Data & trust", items: INSIGHTS },
-    { label: "Help", items: [{ href: "/demo", label: "Guided demo", icon: "demo" }] },
+    {
+      label: "Help",
+      items: [
+        { href: "/insights/assistant", label: "Ask Elevra", icon: "chat" },
+        { href: "/demo", label: "Guided demo", icon: "demo" },
+      ],
+    },
   ],
   student: [
     {
