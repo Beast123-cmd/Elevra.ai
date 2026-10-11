@@ -11,6 +11,7 @@ import re
 import time
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from common import settings
 from common.auth import Caller, require_role
@@ -160,9 +161,84 @@ def make_brief(p: dict) -> dict:
     return result
 
 
-# ---------- route ----------
-@router.post("/{student_id}")
-def student_brief(student_id: str, caller: Caller = Depends(require_role("faculty", "admin"))):
+# ---------- message drafts ----------
+MESSAGE_KINDS = {
+    "student_checkin": "a friendly check-in message from the mentor to the student, inviting a short conversation",
+    "guardian_attendance": "a respectful note from the mentor to the student's parent or guardian about attendance, asking to support attendance and offering a call",
+    "placement_nudge": "a message from the mentor to the student suggesting one specific placement-preparation step this week",
+    "encouragement": "a short, genuine message from the mentor to the student recognising effort or progress and offering support",
+}
+MESSAGE_MAX_WORDS = 90
+
+
+def template_message(kind: str, p: dict) -> str:
+    """Deterministic draft built from the profile; it never quotes a score or a risk colour."""
+    name = p["name"]
+    prep = [a for a in (p.get("actions") or []) if re.search(r"mock|coding|aptitude|interview|bootcamp|placement", a, re.IGNORECASE)]
+    action = (prep[0] if prep else "").rstrip(".")
+    if kind == "guardian_attendance":
+        return (f"Dear Parent/Guardian, I am {name}'s mentor. I would like to speak with you about {name}'s attendance this term, "
+                "so that we can support them together before it affects their eligibility for exams. "
+                "Could we have a short call this week? Thank you for your support.")
+    if kind == "placement_nudge":
+        step = action or "pick one coding or aptitude practice task and finish it by Friday"
+        return (f"Hi {name}, placement season is closer than it feels. A good step for this week: {step[0].lower() + step[1:]}. "
+                "Send me what you finish and I will give feedback. Happy to help you plan the rest.")
+    if kind == "encouragement":
+        return (f"Hi {name}, I wanted to say that your effort has not gone unnoticed. Keep going, and if anything is getting in "
+                "the way, tell me and we will sort it out together.")
+    return (f"Hi {name}, this is your mentor checking in. I would like to hear how things are going and see how I can help. "
+            "Do you have a few minutes this week for a quick chat? No pressure; this is just to support you.")
+
+
+def build_message_prompt(kind: str, p: dict) -> str:
+    return (
+        f"Write {MESSAGE_KINDS[kind]}.\n"
+        "Rules:\n"
+        f"- At most {MESSAGE_MAX_WORDS - 20} words, warm, plain language, no emojis.\n"
+        "- Use ONLY the facts in FACTS. Do not invent numbers, causes, events or personal circumstances.\n"
+        "- Never say a risk colour (Red, Amber, Green), a score or a prediction, and never say the student will fail. "
+        "Say you want to check in and help.\n"
+        "- Refer to the student by name or as \"they\". Never use he, she, his, her or him.\n"
+        "- Do not include any numbers (no minutes, dates or scores). Do not guess health, family or money problems.\n"
+        "- Sign off only with \"Your mentor\".\n"
+        "- Respond as JSON: {\"message\": \"...\"}\n\n"
+        f"FACTS:\n{json.dumps(_facts(p), ensure_ascii=False)}"
+    )
+
+
+RISK_WORDS = re.compile(r"\b(red|amber)\b|success score|\bband\b", re.IGNORECASE)
+
+
+def message_ok(text: str, allowed: list[float]) -> bool:
+    if len(text.split()) > MESSAGE_MAX_WORDS or RISK_WORDS.search(text):
+        return False
+    return is_grounded(text, allowed)
+
+
+def make_message(kind: str, p: dict) -> dict:
+    fallback = {"message": template_message(kind, p), "source": "template"}
+    allowed, reason = allowed_numbers(p), "AI returned nothing usable, showing the standard message"
+    for _ in range(2):
+        try:
+            data = generate_json(build_message_prompt(kind, p), max_tokens=300, temperature=0.5)
+        except LlmUnavailable:
+            return {**fallback, "reason": "AI unavailable, showing the standard message"}
+        draft = data.get("message")
+        if not isinstance(draft, str) or not draft.strip():
+            continue
+        if not message_ok(draft, allowed):
+            reason = "AI wording failed the fact check, showing the standard message"
+            continue
+        return {"message": draft.strip(), "source": "ai"}
+    return {**fallback, "reason": reason}
+
+
+class MessageRequest(BaseModel):
+    kind: str
+
+
+def _load_profile(student_id: str, caller: Caller) -> dict:
     scored = db().table("scores").select("profile").eq("student_id", student_id).limit(1).execute().data
     if not scored:
         raise HTTPException(404, f"No scored student with id {student_id}")
@@ -170,4 +246,18 @@ def student_brief(student_id: str, caller: Caller = Depends(require_role("facult
         mentor = db().table("students").select("mentor_faculty_id").eq("student_id", student_id).limit(1).execute().data
         if not mentor or mentor[0]["mentor_faculty_id"] != caller.faculty_id:
             raise HTTPException(403, "This student is not one of your mentees")
-    return {"student_id": student_id, **make_brief(scored[0]["profile"])}
+    return scored[0]["profile"]
+
+
+@router.post("/{student_id}/message")
+def student_message(student_id: str, body: MessageRequest, caller: Caller = Depends(require_role("faculty", "admin"))):
+    if body.kind not in MESSAGE_KINDS:
+        raise HTTPException(422, f"kind must be one of {sorted(MESSAGE_KINDS)}")
+    return {"student_id": student_id, "kind": body.kind, **make_message(body.kind, _load_profile(student_id, caller))}
+
+
+# ---------- route ----------
+@router.post("/{student_id}")
+def student_brief(student_id: str, caller: Caller = Depends(require_role("faculty", "admin"))):
+    profile = _load_profile(student_id, caller)
+    return {"student_id": student_id, **make_brief(profile)}

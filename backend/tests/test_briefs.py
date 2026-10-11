@@ -155,3 +155,40 @@ class Generation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Messages(unittest.TestCase):
+    def test_every_kind_has_a_clean_template_draft(self):
+        for kind in briefs.MESSAGE_KINDS:
+            m = briefs.template_message(kind, PROFILE)
+            self.assertIn("Diya Kumar", m)
+            self.assertTrue(briefs.message_ok(m, briefs.allowed_numbers(PROFILE)), kind)
+            self.assertNotRegex(m, r"\b(red|amber)\b|success score")
+
+    def test_guardian_note_does_not_disclose_scores_or_risk(self):
+        m = briefs.template_message("guardian_attendance", PROFILE)
+        self.assertNotRegex(m, r"\d")
+        self.assertIn("attendance", m)
+
+    def test_ai_draft_is_used_when_it_passes_the_checks(self):
+        with mock.patch.object(briefs, "generate_json", return_value={"message": "Hi Diya Kumar, can we talk for a few minutes this week? Your mentor"}):
+            r = briefs.make_message("student_checkin", PROFILE)
+        self.assertEqual(r["source"], "ai")
+
+    def test_risk_colours_pronouns_and_invented_numbers_fall_back(self):
+        for bad in ("Hi Diya, your status is Red, let us talk.", "Hi, she should come by.", "Hi Diya, your attendance is 12.3%.",
+                    "Hi Diya, your success score is 50.1."):
+            with mock.patch.object(briefs, "generate_json", return_value={"message": bad}):
+                r = briefs.make_message("student_checkin", PROFILE)
+            self.assertEqual(r["source"], "template", bad)
+            self.assertIn("reason", r)
+
+    def test_unavailable_ai_falls_back(self):
+        with mock.patch.object(briefs, "generate_json", side_effect=LlmUnavailable("down")):
+            r = briefs.make_message("placement_nudge", PROFILE)
+        self.assertEqual(r["source"], "template")
+
+    def test_too_long_draft_is_rejected(self):
+        long = "Hi Diya Kumar " + "word " * 100
+        with mock.patch.object(briefs, "generate_json", return_value={"message": long}):
+            self.assertEqual(briefs.make_message("encouragement", PROFILE)["source"], "template")

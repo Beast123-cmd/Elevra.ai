@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { BriefCard } from "@/components/faculty/BriefCard";
 import { canViewStudent } from "@/components/faculty/interventions";
 import { InterventionPanel } from "@/components/faculty/InterventionPanel";
+import { MessageDrafts } from "@/components/faculty/MessageDrafts";
 import { EmptyState } from "@/components/shared/Kpi";
 import { getIdentity } from "@/components/shared/session";
 import { StudentProfile } from "@/components/shared/StudentProfile";
@@ -57,6 +58,7 @@ export default function StudentDetailPage() {
         actions={
           <div className="space-y-4">
             <BriefCard profile={profile} />
+            <MessageDrafts profile={profile} />
             <InterventionPanel studentId={profile.student_id} scoreBefore={profile.score} facultyId={facultyId} />
           </div>
         }
