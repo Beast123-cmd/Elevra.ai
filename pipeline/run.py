@@ -13,8 +13,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from clean.clean import clean_all
-from generate.generate import DEPARTMENTS, generate_all
+from generate.generate import DEFAULT_STUDENT_COUNT, DEPARTMENTS, generate_all
 from scoring.engine import PILLARS, WEIGHTS, evaluate, success_score
+from scoring.model import train_model
 
 RAW_DIR = ROOT / "data" / "raw"
 OUT_DIR = ROOT / "pipeline" / "out"
@@ -177,7 +178,8 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
                            if lms and lms["assignments_due"] else None})
         weekly_by_sid[sid] = weekly
 
-    evaluations = {sid: evaluate(metrics) for sid, metrics in metrics_by_sid.items()}
+    model = train_model(clean)
+    evaluations = {sid: evaluate(metrics, card=model) for sid, metrics in metrics_by_sid.items()}
     pillar_means = {pillar: _mean([evaluation["pillars"][pillar] for evaluation in evaluations.values()]) for pillar in PILLARS}
     score_mean = _mean([result["score"] for result in evaluations.values()]) or 0
     profiles, scores_out, score_history_out = [], [], []
@@ -246,12 +248,6 @@ def _build_payload(clean: dict, issues: list[dict], stats: list[dict], n_request
         "pillar_means": {key: round(value, 2) for key, value in pillar_means.items() if value is not None},
         "dept_pillars": dept_pillars, "weekly_trend": weekly_trend, "lead_time": [], "segments": segments}
     insights = _build_insights(profiles, score_mean)
-    model = {"features": [], "intercept": 0.0, "metrics": {
-        "target": "Not trained: historical outcome model is a P1 task", "train_window": "not available",
-        "n_train": 0, "n_test": 0, "base_rate": 0, "threshold": 0.6, "auc": 0.5,
-        "cv_auc": 0.5, "precision": 0, "recall": 0, "f1": 0,
-        "baseline": {"rule": "Prior CGPA < 6.5 (not evaluated)", "auc": 0.5, "precision": 0, "recall": 0, "f1": 0}},
-        "fairness": []}
     payload = {
         "faculty": clean["faculty"], "students": students, "academics": academics_out, "attendance": attendance_out,
         "lms_activity": lms_out, "engagement": engagement_out, "placement": placement_out, "skills": skills_out,
@@ -301,11 +297,11 @@ def _build_insights(profiles: list[dict], cohort_score: float) -> list[dict]:
         {"id": "attendance-checkin", "title": "Attendance needs attention", "detail": f"{len(attendance_risk)} students are below the 65% detention line; their observed backlog rate is {low_att_fail:.0%}, compared with {other_fail:.0%} for others.", "severity": "critical" if attendance_risk else "info"},
         {"id": "lms-drop", "title": "LMS engagement drop", "detail": f"{len(drops)} students show a sharp week 6–8 login decline and may benefit from a timely check-in.", "severity": "warning" if drops else "info"},
         {"id": "placement-coverage", "title": "Placement data coverage", "detail": f"{placement_missing} students have no placement assessment; their placement risk is marked Not assessed.", "severity": "info"},
-        {"id": "early-warning-limit", "title": "Model validation is pending", "detail": "The current run uses transparent rule-based risk flags. The historical model remains untrained until the back-test task is completed.", "severity": "info"},
+        {"id": "early-warning-limit", "title": "Synthetic model back-test", "detail": "The early-warning model is evaluated on held-out synthetic students. Its metrics describe this generated cohort and are not evidence of real-world predictive performance.", "severity": "info"},
     ]
 
 
-def run(n: int = 200, regenerate: bool = False) -> dict:
+def run(n: int = DEFAULT_STUDENT_COUNT, regenerate: bool = False) -> dict:
     raw = generate_all(RAW_DIR, n=n)
     clean, issues, stats = clean_all(raw)
     payload = _build_payload(clean, issues, stats, n)
@@ -315,11 +311,17 @@ def run(n: int = 200, regenerate: bool = False) -> dict:
     return payload
 
 
-def main() -> None:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--n", type=int, default=1500, help="number of synthetic students (1–1500)")
+    parser.add_argument("--n", type=int, default=DEFAULT_STUDENT_COUNT,
+                        help=f"number of synthetic students (1–{DEFAULT_STUDENT_COUNT})")
     parser.add_argument("--regenerate", action="store_true", help="rewrite deterministic raw CSV sources")
     parser.add_argument("--no-db", action="store_true", help="write local outputs only")
+    return parser
+
+
+def main() -> None:
+    parser = build_parser()
     args = parser.parse_args()
     payload = run(n=args.n, regenerate=args.regenerate)
     print(json.dumps(payload["summary"], sort_keys=True))

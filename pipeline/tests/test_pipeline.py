@@ -2,15 +2,18 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
 from clean.clean import clean_all, normalize_id
-from generate.generate import generate_all
-from run import _build_payload
+from generate.generate import DEFAULT_STUDENT_COUNT, generate_all
+from run import _build_payload, build_parser, run
+from seed import _student_profiles_match, _write_sql
 from scoring.engine import WEIGHTS, evaluate, pillars_from_metrics, success_score
+from scoring.model import historical_examples, train_model
 
 BASE = {
     "cgpa": 8.0, "internal_pct": 75.0, "backlogs": 0, "attendance_pct": 88.0,
@@ -51,6 +54,12 @@ class ScoringTests(unittest.TestCase):
 
 
 class PipelineTests(unittest.TestCase):
+    def test_default_cohort_size_is_consistent(self):
+        self.assertEqual(DEFAULT_STUDENT_COUNT, 1500)
+        self.assertEqual(inspect.signature(generate_all).parameters["n"].default, DEFAULT_STUDENT_COUNT)
+        self.assertEqual(inspect.signature(run).parameters["n"].default, DEFAULT_STUDENT_COUNT)
+        self.assertEqual(build_parser().parse_args([]).n, DEFAULT_STUDENT_COUNT)
+
     def test_ids_normalize_all_specified_formats(self):
         self.assertEqual([normalize_id(value) for value in (" SCA-42178 ", "sca42178", "42178@CAMPUS.EDU")],
                          ["42178", "42178", "42178"])
@@ -72,6 +81,41 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(len(stats), 8)
             self.assertTrue(any(issue["issue"] == "Duplicate source row" for issue in issues))
 
+    def test_existing_student_sources_stay_stable_when_cohort_grows(self):
+        with tempfile.TemporaryDirectory() as smaller_dir, tempfile.TemporaryDirectory() as larger_dir:
+            smaller, _, _ = clean_all(generate_all(Path(smaller_dir), n=60))
+            larger, _, _ = clean_all(generate_all(Path(larger_dir), n=120))
+        smaller_ids = {row["student_id"] for row in smaller["students"]}
+        self.assertEqual(smaller["students"], [row for row in larger["students"] if row["student_id"] in smaller_ids])
+        for table in ("academic", "attendance", "lms", "engagement", "placement", "skills", "feedback"):
+            left = sorted(json.dumps(row, sort_keys=True) for row in smaller[table])
+            right = sorted(json.dumps(row, sort_keys=True) for row in larger[table]
+                           if row["student_id"] in smaller_ids)
+            self.assertEqual(left, right, table)
+
+    def test_cohort_replacement_is_scoped_and_student_guard_detects_mismatch(self):
+        student = {"student_id": "40000", "name": "Synthetic Student", "department": "Comp", "year": 2,
+                   "batch": "2026-2027", "section": "A", "gender": "F", "residence": "Hostel",
+                   "mentor_faculty_id": "F01", "email": "40000@campus.edu"}
+        payload = {"students": [student]}
+        self.assertTrue(_student_profiles_match([dict(student)], payload))
+        changed = {**student, "name": "Unexpected Student"}
+        self.assertFalse(_student_profiles_match([changed], payload))
+        normal_path = _write_sql(payload)
+        try:
+            normal_sql = normal_path.read_text(encoding="utf-8")
+        finally:
+            normal_path.unlink(missing_ok=True)
+        self.assertNotIn("DELETE FROM public.engagement", normal_sql)
+        sql_path = _write_sql(payload, replace_existing_cohort=True)
+        try:
+            sql = sql_path.read_text(encoding="utf-8")
+        finally:
+            sql_path.unlink(missing_ok=True)
+        self.assertIn("DELETE FROM public.engagement WHERE student_id IN ('40000');", sql)
+        self.assertNotIn("DELETE FROM public.students", sql)
+        self.assertLess(sql.index("DELETE FROM public.scores"), sql.index("INSERT INTO public.students"))
+
     def test_payload_matches_database_contract_and_has_demo_personas(self):
         with tempfile.TemporaryDirectory() as raw_dir:
             raw = generate_all(Path(raw_dir), n=200)
@@ -81,12 +125,34 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(len(payload["scores"]), 200)
         self.assertEqual(len(payload["source_stats"]), 8)
         self.assertEqual(len(payload["analytics"]), 3)
+        model = next(row["payload"] for row in payload["analytics"] if row["key"] == "model")
+        self.assertEqual(model["metrics"]["n_train"] + model["metrics"]["n_test"], 200)
+        self.assertEqual(len(model["features"]), 7)
+        self.assertIn("synthetic", model["metrics"]["target"])
+        self.assertTrue(any(row["profile"]["model"]["prob"] > 0 for row in payload["scores"]))
         profiles = [row["profile"] for row in payload["scores"]]
         self.assertTrue(any(p["mentor_faculty_id"] == "F01" and p["academic_risk"]["level"] == "Red" for p in profiles))
         self.assertTrue(any(p["mentor_faculty_id"] == "F01" and p["segment"] == "Academic stars, placement unready" for p in profiles))
         self.assertTrue(all(p["placement_risk"]["level"] == "Not assessed" and p["confidence"] < 100
                             for p in profiles if p["year"] == 2))
         json.dumps(payload, allow_nan=False)
+
+    def test_historical_model_is_deterministic_and_rejects_small_cohorts(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            raw = generate_all(Path(raw_dir), n=200)
+            clean, _, _ = clean_all(raw)
+            first = train_model(clean)
+            second = train_model(clean)
+            self.assertEqual(first, second)
+            self.assertGreater(first["metrics"]["auc"], 0.5)
+            self.assertGreater(first["metrics"]["n_test"], 0)
+            examples = historical_examples(clean)
+            low_attendance = [row["label"] for row in examples if row["features"]["attendance_pct"] < 65]
+            other_students = [row["label"] for row in examples if row["features"]["attendance_pct"] >= 65]
+            self.assertGreater(sum(low_attendance) / len(low_attendance), sum(other_students) / len(other_students))
+            small = {key: value[:30] if isinstance(value, list) else value for key, value in clean.items()}
+            with self.assertRaises(ValueError):
+                train_model(small)
 
 
 if __name__ == "__main__":
