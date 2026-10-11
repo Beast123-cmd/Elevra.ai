@@ -83,7 +83,9 @@ Prerequisites: Node 22+, Python 3.11+, a Supabase project, and a Gemini API key 
 # 0. configuration: copy .env.example to .env (read by the API) and to .env.local (read by the data loader, same
 #    values), and put only the NEXT_PUBLIC_* lines in frontend/.env.local. All are git-ignored. Never commit them.
 
-# 1. database: run db/migrations/001_init.sql, then 002_rls.sql, in the Supabase SQL editor
+# 1. database: run db/migrations/001_init.sql, 002_rls.sql, 003_interview_coach.sql and 004_assistant_history.sql,
+#    in that order, in the Supabase SQL editor (003 and 004 power interview coaching and saved chats; the app still
+#    works without them, it just won't remember interviews or conversations)
 
 # 2. Python dependencies (shared by the API and the pipeline)
 pip install -r backend/requirements.txt

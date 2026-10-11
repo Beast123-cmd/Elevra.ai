@@ -11,6 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from typing import Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = ROOT / ".env.local"
@@ -260,7 +261,9 @@ def _student_profiles_match(existing: list[dict], payload: dict) -> bool:
     return True
 
 
-def seed_database(payload: dict, create_demo_users: bool = True, replace_existing_cohort: bool = False) -> None:
+def seed_database(payload: dict, create_demo_users: bool = True, replace_existing_cohort: bool = False,
+                  progress: Callable[[str], None] | None = None) -> None:
+    report = progress or (lambda _message: None)
     env = _load_env()
     database_url = env.get("SUPABASE_DB_URL", "")
     if not database_url:
@@ -275,8 +278,10 @@ def seed_database(payload: dict, create_demo_users: bool = True, replace_existin
         if not (env.get("DEMO_PASSWORD") or env.get("NEXT_PUBLIC_DEMO_PASSWORD")):
             raise RuntimeError("DEMO_PASSWORD is required to create demo accounts")
         # Validate Auth connectivity before the database transaction, without creating any users yet.
+        report("Checking Supabase Auth connection")
         _auth_request(api_url, env["SUPABASE_SERVICE_ROLE_KEY"], "GET", "/auth/v1/admin/users?page=1&per_page=1")
     # Protect existing data: this seed expects the fresh, empty schema verified before the first run.
+    report("Checking target database and existing cohort")
     check = _psql(database_url, ["-At", "-c", "select count(*) from public.students"])
     if check.returncode:
         raise RuntimeError("Could not verify the target database before seeding")
@@ -299,14 +304,18 @@ def seed_database(payload: dict, create_demo_users: bool = True, replace_existin
             raise RuntimeError("Target already contains a different student cohort; refusing to mix seed data")
     sql_path = _write_sql(payload, replace_existing_cohort=replace)
     try:
+        report("Writing pipeline tables in one database transaction")
         _run_psql(database_url, sql_path)
     finally:
         sql_path.unlink(missing_ok=True)
+    report("Pipeline tables updated")
+    if create_demo_users:
+        report("Creating or updating demo accounts")
     users = _ensure_demo_users(payload, env) if create_demo_users else []
     if users:
         _upsert_user_rows(users, database_url)
     print(json.dumps({"seeded_students": len(expected_ids), "demo_accounts": len(users),
-                      "data_quality_rows": len(payload.get("data_quality", []))}, sort_keys=True))
+                      "data_quality_rows": len(payload.get("data_quality", []))}, sort_keys=True), flush=True)
 
 
 if __name__ == "__main__":

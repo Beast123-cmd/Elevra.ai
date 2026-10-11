@@ -31,6 +31,12 @@ from common.llm import generate_json
 log = logging.getLogger("hackathons")
 router = APIRouter()
 
+# 'Ask Elevra' assistants (routers/assistant.py) are attached here because this router is already registered in
+# main.py, which is frozen. Endpoints: POST /assistant/student, POST /assistant/faculty, GET /assistant/faculty/suggestions.
+from routers import assistant as _assistant  # noqa: E402
+
+router.include_router(_assistant.router)
+
 FEED_KEY = "hackathons"
 REFRESH_EVERY = timedelta(hours=24)
 CHECK_EVERY_S = 3600

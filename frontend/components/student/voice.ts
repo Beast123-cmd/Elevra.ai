@@ -56,6 +56,39 @@ export async function speak(text: string, useApi = true, onEnd?: () => void): Pr
   return "none";
 }
 
+// Short acknowledgements played the moment a student sends an answer, so the interviewer responds instantly while the
+// next question is being written. Fetched once in advance and kept as in-memory audio.
+const clips = new Map<string, Promise<string | null>>();
+
+async function fetchClip(text: string): Promise<string | null> {
+  try {
+    const { data } = await createClient().auth.getSession();
+    const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token ?? ""}` },
+      body: JSON.stringify({ text }),
+    });
+    return r.ok ? URL.createObjectURL(await r.blob()) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch the given phrases in the interviewer's voice ahead of time. Safe to call more than once. */
+export function preloadClips(texts: string[]) {
+  texts.forEach((t) => { if (!clips.has(t)) clips.set(t, fetchClip(t)); });
+}
+
+/** Play a preloaded phrase right away. Does nothing if it isn't ready, so it never delays anything. */
+export async function playClip(text: string) {
+  const url = await Promise.race([clips.get(text) ?? Promise.resolve(null), new Promise<null>((r) => setTimeout(() => r(null), 50))]);
+  if (!url) return;
+  stopSpeaking();
+  const audio = new Audio(url);
+  current = audio;
+  audio.play().catch(() => { /* autoplay blocked: skip silently */ });
+}
+
 // ---------------------------------------------------------------------------------------------
 // Speech to text: ElevenLabs Scribe v2 Realtime streamed from the browser, falling back to the
 // browser's own SpeechRecognition (Chrome/Edge) if ElevenLabs is unavailable.
@@ -128,6 +161,7 @@ export function useLiveTranscription(sessionId: number | null, onCommitted: (tex
   const [listening, setListening] = useState(false);
   const [partial, setPartial] = useState("");
   const [engine, setEngine] = useState<Engine | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const committed = useRef(onCommitted);
   committed.current = onCommitted;
@@ -198,10 +232,12 @@ export function useLiveTranscription(sessionId: number | null, onCommitted: (tex
   }
 
   async function startElevenLabs() {
+    // Request microphone access before the token/network round-trip. This also surfaces browser
+    // permission failures in the same turn that the student chooses Speak.
+    await ensureMic();
     prefetch();
     const { token: t, keyterms } = await token.current!.p;
     token.current = null; // single use
-    await ensureMic();
     const q = new URLSearchParams({ model_id: "scribe_v2_realtime", audio_format: "pcm_16000", commit_strategy: "vad", language_code: "en", token: t });
     keyterms.forEach((k) => q.append("keyterms", k));
     await new Promise<void>((resolve, reject) => {
@@ -241,7 +277,20 @@ export function useLiveTranscription(sessionId: number | null, onCommitted: (tex
         setPartialBoth(interim);
       };
       // Chrome stops by itself after a silence; restart while the student still wants to talk.
-      r.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") wantBrowser.current = false; };
+      r.onerror = (e) => {
+        const messages: Record<string, string> = {
+          "not-allowed": "Microphone access is blocked. Allow it for this site in your browser settings, then try Speak again.",
+          "service-not-allowed": "Browser speech recognition is unavailable. Try Chrome or Edge, or type your answer.",
+          "audio-capture": "No microphone was detected. Connect a microphone or type your answer.",
+          network: "Speech recognition couldn't connect. Check your connection, or type your answer.",
+          "language-not-supported": "Speech recognition does not support the selected language in this browser.",
+        };
+        setError(messages[e.error] ?? "Voice input stopped. Try Speak again, or type your answer.");
+        if (["not-allowed", "service-not-allowed", "audio-capture", "network", "language-not-supported"].includes(e.error)) {
+          wantBrowser.current = false;
+          setListening(false);
+        }
+      };
       r.onend = () => {
         rec.current = null;
         if (wantBrowser.current) setTimeout(() => { if (wantBrowser.current) run(); }, 250);
@@ -256,17 +305,26 @@ export function useLiveTranscription(sessionId: number | null, onCommitted: (tex
   /** Start listening. Tries ElevenLabs first, then the browser's recognition. Rejects if neither works. */
   const start = useCallback(async () => {
     if (listening) return;
-    setListening(true); setPartialBoth("");
+    setListening(true); setPartialBoth(""); setError(null);
     try {
       await startElevenLabs();
       engineRef.current = "elevenlabs"; setEngine("elevenlabs");
-    } catch {
+    } catch (elevenLabsError) {
       ws.current?.close(); ws.current = null; sending.current = false;
       try {
         startBrowser();
         engineRef.current = "browser"; setEngine("browser");
       } catch (e) {
         setListening(false);
+        const name = e instanceof Error ? e.name : "";
+        const message = name === "NotAllowedError" || name === "PermissionDeniedError"
+          ? "Microphone access is blocked. Allow it for this site in your browser settings, then try Speak again."
+          : name === "NotFoundError" || name === "DevicesNotFoundError"
+            ? "No microphone was detected. Connect a microphone or type your answer."
+            : elevenLabsError instanceof Error && elevenLabsError.message === "no recognition"
+              ? "Voice input is not supported in this browser. Try Chrome or Edge, or type your answer."
+              : "Voice input couldn't start. Check microphone permissions and try again, or type your answer.";
+        setError(message);
         throw e;
       }
     }
@@ -321,5 +379,5 @@ export function useLiveTranscription(sessionId: number | null, onCommitted: (tex
 
   useEffect(() => dispose, [dispose]);
 
-  return { supported, listening, partial, engine, start, stop, prefetch, dispose };
+  return { supported, listening, partial, engine, error, start, stop, prefetch, dispose };
 }
