@@ -17,6 +17,9 @@ The web app keeps working if the API is down (the shell shows a banner), so depl
 
 ## 1. API on the Hostinger VPS (Ubuntu 22.04 or 24.04)
 
+**Python 3.11 or newer is required** (the pinned numpy 2.3 does not install on 3.10). Ubuntu 24.04 ships 3.12 and works as is. On Ubuntu 22.04, which ships 3.10, install 3.11 first:
+`add-apt-repository ppa:deadsnakes/ppa && apt install -y python3.11 python3.11-venv`, and create the environment with `python3.11 -m venv .venv`.
+
 ```bash
 # as root or with sudo
 apt update && apt install -y python3 python3-venv python3-pip git nginx certbot python3-certbot-nginx
@@ -62,6 +65,8 @@ curl -s https://YOUR-HOSTNAME-HERE/health        # {"ok":true}
 ```
 
 Open ports 80 and 443 in the Hostinger firewall panel.
+
+Memory: the API uses roughly 100 MB per worker when idle, so the two workers in the service file are fine on 1 GB or more. On a 512 MB server change `--workers 2` to `--workers 1`.
 
 ## 2. Web app on Vercel
 1. New Project → import `Beast123-cmd/Elevra.ai`.

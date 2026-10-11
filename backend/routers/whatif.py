@@ -84,6 +84,25 @@ class Rescore(BaseModel):
         return values
 
 
+def _mentee_ids(faculty_id: str | None) -> set[str]:
+    """Ids of the students a mentor is responsible for. The service-role client bypasses row-level security, so
+    anything returned to a faculty login must be filtered here to the same scope the database policies give them."""
+    if not faculty_id:
+        return set()
+    ids: set[str] = set()
+    offset = 0
+    try:
+        while True:
+            rows = (db().table("students").select("student_id").eq("mentor_faculty_id", faculty_id)
+                    .order("student_id").range(offset, offset + RESCORE_PAGE_SIZE - 1).execute().data or [])
+            ids.update(r["student_id"] for r in rows)
+            offset += len(rows)
+            if len(rows) < RESCORE_PAGE_SIZE:
+                return ids
+    except Exception:
+        raise HTTPException(503, "Mentee list is temporarily unavailable") from None
+
+
 def _student_profile(student_id: str) -> Mapping:
     try:
         response = (db().table("scores").select("profile")
@@ -135,6 +154,8 @@ def _score_result(result: Mapping, previous_score: object) -> dict:
 async def whatif(body: WhatIf, caller: Caller = Depends(require_role("admin", "faculty", "student"))):
     if caller.role == "student" and caller.student_id != body.student_id:
         raise HTTPException(403, "Students can only simulate their own score")
+    if caller.role == "faculty" and body.student_id not in await run_in_threadpool(_mentee_ids, caller.faculty_id):
+        raise HTTPException(403, "This student is not one of your mentees")
 
     profile, card = await asyncio.gather(
         run_in_threadpool(_student_profile, body.student_id),
@@ -151,6 +172,8 @@ async def whatif(body: WhatIf, caller: Caller = Depends(require_role("admin", "f
 @router.post("/rescore")
 def rescore(body: Rescore, caller: Caller = Depends(require_role("admin", "faculty"))):
     weights = {**WEIGHTS, **body.weights}
+    # a mentor only ever sees their own mentees' scores, here as everywhere else
+    scope = _mentee_ids(caller.faculty_id) if caller.role == "faculty" else None
     try:
         client = db()
         results = []
@@ -166,6 +189,8 @@ def rescore(body: Rescore, caller: Caller = Depends(require_role("admin", "facul
                 metrics = profile.get("metrics") if isinstance(profile, Mapping) else None
                 if not isinstance(metrics, Mapping) or not row.get("student_id"):
                     raise HTTPException(503, "Cohort scoring data is incomplete")
+                if scope is not None and row["student_id"] not in scope:
+                    continue
                 result = evaluate(metrics, weights=weights)
                 results.append({"student_id": row["student_id"],
                                 "score": result["score"], "band": result["band"]})
