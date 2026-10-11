@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Lightbulb, Plus, Send, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Lightbulb, Plus, Send, Trash2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import { ChatChart, type ChartSpec } from "./ChatChart";
@@ -11,18 +12,21 @@ interface Answer {
   question: string; asked: string; answer: string; sql: string | null; columns: string[]; rows: (string | number | boolean | null)[][];
   row_count: number; truncated: boolean; source: "ai" | "template" | "none";
   chart: ChartSpec | null; summary: string; actions: string[]; follow_ups: string[]; conversation_id?: number | null;
+  links?: { label: string; href: string }[] | null; mode?: "data" | "navigate" | "help" | "chat";
 }
 interface Turn { question: string; answer?: Answer; error?: string }
 
 const FALLBACK_SUGGESTIONS = [
   "Which of my mentees need attention first?", "How many of my mentees are below 75% attendance?",
   "Average success score of my mentees by year", "Placement risk of my mentees by department",
+  "Open the attendance planner", "How do I log an intervention?",
 ];
 const pretty = (s: string) => s.replace(/_/g, " ");
 const cell = (v: unknown) => (v === null || v === undefined ? "—" : typeof v === "boolean" ? (v ? "Yes" : "No") : String(v));
 
 function ResultTable({ a }: { a: Answer }) {
   if (a.rows.length === 0) return null;
+  const idCol = a.columns.indexOf("student_id"); // when present, each student's id and name open their full record
   return (
     <details className="rounded-lg border border-[#e2ebe6] bg-white" open={!a.chart}>
       <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-slate-600">
@@ -35,7 +39,18 @@ function ResultTable({ a }: { a: Answer }) {
           </thead>
           <tbody>
             {a.rows.map((r, i) => (
-              <tr key={i} className="border-t border-[#eef3f0]">{r.map((v, j) => <td key={j} className="whitespace-nowrap px-3 py-1.5">{cell(v)}</td>)}</tr>
+              <tr key={i} className="border-t border-[#eef3f0]">
+                {r.map((v, j) => {
+                  const col = a.columns[j];
+                  const sid = idCol >= 0 ? String(r[idCol] ?? "") : "";
+                  const linked = sid !== "" && (col === "student_id" || col === "name");
+                  return (
+                    <td key={j} className="whitespace-nowrap px-3 py-1.5">
+                      {linked ? <Link href={`/faculty/student/${sid}`} className="font-medium text-[#18574e] underline underline-offset-2 hover:text-[#12473f]">{cell(v)}</Link> : cell(v)}
+                    </td>
+                  );
+                })}
+              </tr>
             ))}
           </tbody>
         </table>
@@ -155,8 +170,18 @@ export function FacultyAssistant() {
             {!t.answer && !t.error && <p className="w-fit rounded-2xl bg-[#f1f6f3] px-4 py-2.5 text-sm text-slate-500">Looking at the data…</p>}
             {t.answer && (
               <div className="space-y-3 rounded-2xl border border-[#dce7e1] bg-white p-4 shadow-sm shadow-slate-900/[0.03]">
-                {t.answer.asked !== t.question && <p className="text-xs text-slate-500">Understood as: &ldquo;{t.answer.asked.replace(/^\(Data is already limited[^)]*\)\s*/, "")}&rdquo;</p>}
+                {t.answer.mode === "data" && t.answer.asked !== t.question && <p className="text-xs text-slate-500">Understood as: &ldquo;{t.answer.asked.replace(/^\(Data is already limited[^)]*\)\s*/, "")}&rdquo;</p>}
                 <p className="text-sm leading-relaxed text-[#172824]">{t.answer.summary || t.answer.answer}</p>
+                {t.answer.links && t.answer.links.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {t.answer.links.map((l, j) => (
+                      <Link key={l.href} href={l.href}
+                        className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] ${j === 0 ? "bg-[#18574e] text-white hover:bg-[#12473f]" : "border border-[#cfe1d8] bg-white text-[#18574e] hover:bg-[#eaf3ef]"}`}>
+                        {l.label} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                    ))}
+                  </div>
+                )}
                 {t.answer.chart && <ChatChart spec={t.answer.chart} />}
                 {t.answer.actions.length > 0 && (
                   <div className="rounded-lg bg-[#f7faf8] p-3">
