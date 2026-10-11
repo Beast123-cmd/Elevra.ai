@@ -47,7 +47,7 @@ export async function middleware(req: NextRequest) {
 
   if (path === "/" || path.startsWith("/login")) {
     if (userId && role) return redirectWithAuthCookies(HOME[role] ?? "/login");
-    return path === "/" ? redirectWithAuthCookies("/login") : res;
+    return res;
   }
   if (!area) return res;
   if (!userId || error) return redirectWithAuthCookies("/login");
