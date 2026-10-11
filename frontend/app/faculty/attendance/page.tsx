@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { fetchAllRows } from "@/components/admin/paginate";
 import { DEFAULT_POLICY, describe, plan, summarize, toCsv, type AttendanceRow, type Policy, type RecoveryStatus } from "@/components/shared/attendance";
-import { EmptyState, Kpi } from "@/components/shared/Kpi";
+import { EmptyState } from "@/components/shared/Kpi";
+import { Meter, ShareBar, type Tone } from "@/components/shared/viz";
 import { getIdentity } from "@/components/shared/session";
 import { useCachedQuery } from "@/components/shared/useCachedQuery";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ const TONE: Record<RecoveryStatus, string> = {
   Safe: "bg-risk-green-bg text-risk-green", Recoverable: "bg-risk-amber-bg text-risk-amber",
   "Needs condonation": "bg-risk-amber-bg text-risk-amber", "Cannot recover": "bg-risk-red-bg text-risk-red", "No data": "bg-muted text-muted-foreground",
 };
+const METER: Record<RecoveryStatus, Tone> = { Safe: "green", Recoverable: "highlight", "Needs condonation": "amber", "Cannot recover": "red", "No data": "none" };
 const FIELD = "w-20 rounded-md border border-input px-2 py-1 text-sm";
 const FILTERS: (RecoveryStatus | "Needs attention")[] = ["Needs attention", "Recoverable", "Needs condonation", "Cannot recover", "Safe", "No data"];
 
@@ -90,11 +92,21 @@ export default function AttendancePage() {
         {data.week == null && weekOverride === "" && <p className="mt-2 text-xs text-risk-amber">The current week is not available from the data; enter weeks completed.</p>}
       </Card>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5 print:hidden">
-        {(["Safe", "Recoverable", "Needs condonation", "Cannot recover", "No data"] as RecoveryStatus[]).map((s) => (
-          <Kpi key={s} label={s} value={counts[s].toLocaleString()} />
-        ))}
-      </div>
+      <section className="rounded-lg border border-border bg-card p-5 print:hidden">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-[15px] font-semibold">Where {planned.length.toLocaleString()} students stand at week {weeksDone}</h2>
+          <p className="text-[13px] text-muted-foreground">
+            <span className="tabular font-serif text-lg font-semibold text-risk-red">{(counts.Recoverable + counts["Needs condonation"] + counts["Cannot recover"]).toLocaleString()}</span> need a check-in about attendance
+          </p>
+        </div>
+        <ShareBar label="Students by attendance status" height={16} parts={[
+          { label: "Safe", value: counts.Safe, tone: "green" },
+          { label: "Recoverable", value: counts.Recoverable, tone: "highlight" },
+          { label: "Needs condonation", value: counts["Needs condonation"], tone: "amber" },
+          { label: "Cannot recover", value: counts["Cannot recover"], tone: "red" },
+          ...(counts["No data"] > 0 ? [{ label: "No data", value: counts["No data"], tone: "none" as const }] : []),
+        ]} />
+      </section>
 
       <Card className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-2 print:hidden">
@@ -117,8 +129,8 @@ export default function AttendancePage() {
         ) : (
           <div className="mt-3 overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="text-xs uppercase text-muted-foreground">
-                <tr><th className="py-1 pr-3">Student</th><th className="pr-3">Now</th><th className="pr-3">Status</th><th className="pr-3">Needs to attend</th><th>What it means</th></tr>
+              <thead className="text-xs text-muted-foreground">
+                <tr><th className="min-w-[170px] py-1 pr-3 font-medium">Student</th><th className="min-w-[150px] pr-3 font-medium">Attendance now <span className="font-normal">(line = {policy.threshold}%)</span></th><th className="pr-3">Status</th><th className="whitespace-nowrap pr-3 font-medium">Needs to attend</th><th className="font-medium">What it means</th></tr>
               </thead>
               <tbody>
                 {shown.slice(0, limit).map((p) => (
@@ -127,8 +139,15 @@ export default function AttendancePage() {
                       <Link className="text-primary hover:underline print:text-foreground" href={`/faculty/student/${p.student_id}`}>{p.name}</Link>
                       <span className="block text-xs text-muted-foreground">{p.student_id} · {p.department} · Year {p.year}</span>
                     </td>
-                    <td className="pr-3">{p.pct == null ? "–" : `${p.pct}%`}</td>
-                    <td className="pr-3"><span className={`rounded-full px-2 py-0.5 text-xs ${TONE[p.r.status]}`}>{p.r.status}</span></td>
+                    <td className="pr-3">
+                      {p.pct == null ? "–" : (
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 pt-1"><Meter value={p.pct} target={policy.threshold} tone={METER[p.r.status]} label={`${p.pct}% against ${policy.threshold}% required`} /></div>
+                          <span className="tabular w-11 text-right text-xs font-medium">{p.pct}%</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="pr-3"><span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-medium ${TONE[p.r.status]}`}>{p.r.status}</span></td>
                     <td className="pr-3">{p.r.status === "No data" ? "–" : `${p.r.needed} of ${p.r.remaining}`}</td>
                     <td className="text-xs text-muted-foreground">{describe(p.r, policy)}</td>
                   </tr>

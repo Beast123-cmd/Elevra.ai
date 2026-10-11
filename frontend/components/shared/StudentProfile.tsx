@@ -1,8 +1,9 @@
 "use client";
 import { ClipboardCheck, MessageSquareText } from "lucide-react";
-import { Fragment, useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { fmt } from "@/lib/format";
-import type { Cohort, Profile, Risk } from "@/lib/types";
+import type { Cohort, Pillar, Profile, Risk } from "@/lib/types";
+import { Meter, Ring, type Tone } from "./viz";
 import { HistoryChart, PillarRadar, Waterfall, WeeklyTimeline } from "./charts";
 import { BandTag, Panel, RiskTag } from "./ui-kit";
 
@@ -26,6 +27,8 @@ function RiskPanel({ title, risk }: { title: string; risk: Risk }) {
     </Panel>
   );
 }
+
+const BAND_TONE: Record<string, Tone> = { Thriving: "green", "On Track": "primary", "Needs Attention": "highlight", Critical: "red" };
 
 type Tab = "summary" | "timeline" | "record" | "support";
 
@@ -51,14 +54,14 @@ export function StudentProfile({ profile: s, cohortMeans, mode, brief, support, 
   const base = useId();
   useEffect(() => setTab("summary"), [s.student_id]);
 
-  const records: [string, string][] = [
-    ["Academic", `CGPA ${fmt(m.cgpa, 2)} · backlogs ${fmt(m.backlogs)} · internals ${fmt(m.internal_pct, 0, "%")}`],
-    ["Attendance", `${fmt(m.attendance_pct, 1, "%")} overall${m.min_subject_attendance == null ? "" : ` · lowest subject ${fmt(m.min_subject_attendance, 0, "%")}`}`],
-    ["LMS", `submission ${fmt((m.submit_rate ?? NaN) * 100, 0, "%")} · active weeks ${fmt((m.login_consistency ?? NaN) * 100, 0, "%")}`],
-    ["Engagement", `${fmt(m.events)} events · ${fmt(m.clubs)} clubs · ${fmt(m.hackathons)} hackathons · ${fmt(m.certifications)} certifications`],
-    ["Placement", m.aptitude === null && m.coding === null ? "Not yet assessed" : `aptitude ${fmt(m.aptitude)} · coding ${fmt(m.coding)} · mock interview ${fmt(m.mock, 1)}/5`],
-    ["Skills", `technical ${fmt(m.tech_skill)} · soft ${fmt(m.soft_skill)}`],
-    ["Feedback", m.satisfaction === null && m.faculty_rating === null ? "No survey response" : `satisfaction ${fmt(m.satisfaction, 1)}/5 · faculty ${fmt(m.faculty_rating, 1)}/5`],
+  const records: [string, string, Pillar][] = [
+    ["Academic", `CGPA ${fmt(m.cgpa, 2)} · backlogs ${fmt(m.backlogs)} · internals ${fmt(m.internal_pct, 0, "%")}`, "academic"],
+    ["Attendance", `${fmt(m.attendance_pct, 1, "%")} overall${m.min_subject_attendance == null ? "" : ` · lowest subject ${fmt(m.min_subject_attendance, 0, "%")}`}`, "attendance"],
+    ["LMS", `submission ${fmt((m.submit_rate ?? NaN) * 100, 0, "%")} · active weeks ${fmt((m.login_consistency ?? NaN) * 100, 0, "%")}`, "lms"],
+    ["Engagement", `${fmt(m.events)} events · ${fmt(m.clubs)} clubs · ${fmt(m.hackathons)} hackathons · ${fmt(m.certifications)} certifications`, "engagement"],
+    ["Placement", m.aptitude === null && m.coding === null ? "Not yet assessed" : `aptitude ${fmt(m.aptitude)} · coding ${fmt(m.coding)} · mock interview ${fmt(m.mock, 1)}/5`, "placement"],
+    ["Skills", `technical ${fmt(m.tech_skill)} · soft ${fmt(m.soft_skill)}`, "skills"],
+    ["Feedback", m.satisfaction === null && m.faculty_rating === null ? "No survey response" : `satisfaction ${fmt(m.satisfaction, 1)}/5 · faculty ${fmt(m.faculty_rating, 1)}/5`, "feedback"],
   ];
   const tabs: [Tab, string][] = [["summary", "Summary"], ["timeline", "Timeline"], ["record", "Unified record"], ...(support ? [["support", "Support"] as [Tab, string]] : [])];
 
@@ -81,11 +84,13 @@ export function StudentProfile({ profile: s, cohortMeans, mode, brief, support, 
               {s.declining && <span className="inline-flex items-center rounded bg-risk-red-bg px-1.5 py-0.5 text-xs font-medium text-risk-red">Score declining over two semesters</span>}
             </div>
           </div>
-          <div className="flex shrink-0 items-end gap-5 md:flex-col md:items-end md:gap-2">
-            <div className="md:text-right">
-              <p className="text-xs font-medium text-muted-foreground">Success score</p>
-              <p className="tabular font-serif text-[44px] font-semibold leading-none tracking-[-0.02em]">{score.toFixed(1)}<span className="ml-1 font-sans text-sm font-normal text-muted-foreground">/100</span></p>
-            </div>
+          <div className="flex shrink-0 items-center gap-4 md:flex-col md:items-end md:gap-2">
+            <Ring value={score} size={112} stroke={10} tone={BAND_TONE[s.band] ?? "primary"} label={`Success score ${score.toFixed(1)} of 100, ${s.band}`}>
+              <span>
+                <span className="tabular block font-serif text-[30px] font-semibold leading-none tracking-[-0.02em]">{score.toFixed(1)}</span>
+                <span className="mt-0.5 block text-[11px] text-muted-foreground">of 100</span>
+              </span>
+            </Ring>
             <div className="flex flex-col items-start gap-1 md:items-end">
               <BandTag band={s.band} />
               <p className="text-xs text-muted-foreground">Data confidence {s.confidence}%{s.missing.length > 0 && ` · missing ${s.missing.join(", ")}`}</p>
@@ -163,16 +168,22 @@ export function StudentProfile({ profile: s, cohortMeans, mode, brief, support, 
         )}
 
         {tab === "record" && (
-          <Panel title="Unified record" description="One row per student, joined from seven separate campus systems.">
+          <Panel title="Unified record" description="Seven campus systems joined into one row. Each bar is the pillar score out of 100; the tick marks the cohort average.">
             <dl className="divide-y divide-border text-sm">
-              {records.map(([k, v]) => (
-                <Fragment key={k}>
-                  <div className="grid gap-1 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-4">
-                    <dt className="font-medium text-muted-foreground">{k}</dt>
-                    <dd className="tabular">{v}</dd>
+              {records.map(([k, v, pillar]) => {
+                const val = s.pillars[pillar];
+                const mean = cohortMeans?.[pillar];
+                return (
+                  <div key={k} className="grid gap-1.5 py-3 first:pt-0 last:pb-0 sm:grid-cols-[9rem_minmax(160px,16rem)_1fr] sm:items-center sm:gap-4">
+                    <dt className="font-medium">{k}</dt>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 pt-1"><Meter value={val} target={mean ?? undefined} tone={val == null ? "none" : val >= (mean ?? 60) ? "primary" : "red"} label={val == null ? `${k}: no data` : `${k} pillar ${val.toFixed(0)} of 100${mean != null ? `, cohort ${mean.toFixed(0)}` : ""}`} /></div>
+                      <span className="tabular w-8 text-right text-xs font-medium">{val == null ? "–" : val.toFixed(0)}</span>
+                    </div>
+                    <dd className="tabular text-muted-foreground">{v}</dd>
                   </div>
-                </Fragment>
-              ))}
+                );
+              })}
             </dl>
           </Panel>
         )}

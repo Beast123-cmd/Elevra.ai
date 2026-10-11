@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { fetchAllRows } from "@/components/admin/paginate";
 import { coverage, mentorLoads, suggestRebalance, needsContact, SLA_DAYS, type CaseRow, type StudentRow } from "@/components/shared/cases";
-import { EmptyState, Kpi } from "@/components/shared/Kpi";
+import { EmptyState } from "@/components/shared/Kpi";
+import { Ring, ShareBar } from "@/components/shared/viz";
 import { invalidateCache } from "@/components/shared/queryCache";
 import { useCachedQuery } from "@/components/shared/useCachedQuery";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export default function WorkloadPage() {
   if (error) return <EmptyState>Could not load the workload: {error}</EmptyState>;
   if (loading || !data || !view) return <Skeleton className="h-96 w-full" />;
   const { cov, loads, moves, names, waiting } = view;
+  const maxRed = Math.max(1, ...loads.map((l) => l.red));
   const label = (id: string) => (names.get(id) ? `${names.get(id)} (${id})` : id);
   const done = () => { invalidateCache("faculty:"); invalidateCache("admin:"); reload(); };
 
@@ -97,12 +99,25 @@ export default function WorkloadPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi label="Red students" value={cov.red.toLocaleString()} />
-        <Kpi label={`Contacted in ${SLA_DAYS} days`} value={`${cov.pct}%`} hint={`${cov.contacted} of ${cov.red}`} />
-        <Kpi label="Not contacted yet" value={cov.never.toLocaleString()} hint={`${cov.stale} more are past the ${SLA_DAYS}-day mark`} />
-        <Kpi label="Overdue follow-ups" value={cov.overdueFollowUps.toLocaleString()} />
-      </div>
+      <section className="grid gap-5 rounded-lg border border-border bg-card p-5 md:grid-cols-[auto_1fr] md:items-center">
+        <Ring value={cov.pct} tone={cov.pct >= 80 ? "green" : cov.pct >= 40 ? "highlight" : "red"} size={136} stroke={12} label={`${cov.pct}% of Red students contacted within ${SLA_DAYS} days`}>
+          <span>
+            <span className="tabular block font-serif text-3xl font-semibold leading-none">{cov.pct}%</span>
+            <span className="mt-1 block text-[11px] text-muted-foreground">reached in {SLA_DAYS} days</span>
+          </span>
+        </Ring>
+        <div className="min-w-0 space-y-4">
+          <div>
+            <p className="font-serif text-xl font-semibold">{cov.contacted.toLocaleString()} of {cov.red.toLocaleString()} Red students have had a conversation this week</p>
+            <p className="mt-1 text-sm text-muted-foreground">Target: every Red student within {SLA_DAYS} days. {cov.overdueFollowUps > 0 ? `${cov.overdueFollowUps} follow-ups are overdue.` : "No follow-ups are overdue."}</p>
+          </div>
+          <ShareBar label="Red students by contact status" height={14} parts={[
+            { label: `Contacted in ${SLA_DAYS} days`, value: cov.contacted, tone: "green" },
+            { label: `Last contact over ${SLA_DAYS} days ago`, value: cov.stale, tone: "highlight" },
+            { label: "Never contacted", value: cov.never, tone: "red" },
+          ]} />
+        </div>
+      </section>
 
       <Card className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -117,17 +132,27 @@ export default function WorkloadPage() {
       </Card>
 
       <Card className="p-4">
-        <h2 className="text-sm font-semibold">Caseload by mentor</h2>
+        <h2 className="text-[15px] font-semibold">Caseload by mentor</h2>
+        <p className="text-[13px] text-muted-foreground">Each bar is a mentor&apos;s Red students: green have been contacted this week, brick are still waiting.</p>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase text-muted-foreground">
-              <tr><th className="py-1 pr-3">Mentor</th><th className="pr-3">Mentees</th><th className="pr-3">Red</th><th className="pr-3">Contacted</th><th className="pr-3">Waiting</th><th>Overdue</th></tr>
+            <thead className="text-xs text-muted-foreground">
+              <tr><th className="py-1 pr-3 font-medium">Mentor</th><th className="pr-3 font-medium">Mentees</th><th className="w-[38%] min-w-[180px] pr-3 font-medium">Red caseload</th><th className="pr-3 font-medium">Waiting</th><th className="font-medium">Overdue</th></tr>
             </thead>
             <tbody>
               {loads.map((l) => (
                 <tr key={l.mentor} className="border-t border-border">
-                  <td className="py-1.5 pr-3">{label(l.mentor)}</td>
-                  <td className="pr-3">{l.mentees}</td><td className="pr-3">{l.red}</td><td className="pr-3">{l.contacted}</td>
+                  <td className="py-2 pr-3">{label(l.mentor)}</td>
+                  <td className="tabular pr-3">{l.mentees}</td>
+                  <td className="pr-3">
+                    <div className="flex items-center gap-2" role="img" aria-label={`${l.red} Red, ${l.contacted} contacted`}>
+                      <div className="flex h-3 flex-1 overflow-hidden rounded-sm bg-muted">
+                        <span className="bg-risk-green" style={{ width: `${(l.contacted / maxRed) * 100}%` }} />
+                        <span className="bg-risk-red/80" style={{ width: `${(l.uncontacted / maxRed) * 100}%` }} />
+                      </div>
+                      <span className="tabular w-16 text-right text-xs text-muted-foreground">{l.contacted}/{l.red}</span>
+                    </div>
+                  </td>
                   <td className={`pr-3 ${l.uncontacted > 0 ? "font-medium text-risk-amber" : ""}`}>{l.uncontacted}</td>
                   <td className={l.overdue > 0 ? "font-medium text-risk-red" : ""}>{l.overdue}</td>
                 </tr>

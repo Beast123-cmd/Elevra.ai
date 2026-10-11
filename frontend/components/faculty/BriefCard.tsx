@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -44,13 +45,13 @@ export function BriefCard({ profile }: { profile: Profile }) {
       </div>
       {state.kind === "ready" && (
         <div className="space-y-2">
-          <p className="text-sm leading-relaxed">{state.text}</p>
+          <p className="max-w-4xl text-[15px] leading-relaxed">{state.text}</p>
           <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
             <span className={`rounded-full px-2 py-0.5 ${state.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>{label(state.source)}</span>
             {state.note && <span>{state.note}</span>}
-            <button className="ml-auto text-primary hover:underline" onClick={() => navigator.clipboard.writeText(state.text).then(() => toast.success("Copied"))}>
-              Copy
-            </button>
+            <Button size="sm" variant="outline" className="ml-auto h-9 gap-2" onClick={() => navigator.clipboard.writeText(state.text).then(() => toast.success("Brief copied"), () => toast.error("Could not copy"))}>
+              <Copy className="h-4 w-4" aria-hidden="true" />Copy brief
+            </Button>
           </div>
         </div>
       )}

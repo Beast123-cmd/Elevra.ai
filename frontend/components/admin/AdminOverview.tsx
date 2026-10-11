@@ -6,7 +6,8 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 import { coverage, SLA_DAYS, type CaseRow, type StudentRow } from "@/components/shared/cases";
 import { chartChrome, usePalette } from "@/components/shared/palette";
-import { Empty, PageHeader, Panel, Stat } from "@/components/shared/ui-kit";
+import { Empty, PageHeader, Panel } from "@/components/shared/ui-kit";
+import { Funnel, MiniRing, VisualStat } from "@/components/shared/viz";
 import { PILLARS, type Insight } from "@/lib/types";
 import { WeeklyBrief } from "./WeeklyBrief";
 import {
@@ -59,27 +60,21 @@ function RiskShare({ data }: { data: ReturnType<typeof riskBy> }) {
 function FollowThrough({ rows, cases }: { rows: OverviewRow[]; cases: CaseRow[] | null }) {
   const asStudents = rows.map((r) => ({ ...r, mentor_faculty_id: null, priority: 0 })) as unknown as StudentRow[];
   const c = coverage(asStudents, cases ?? []);
-  const steps = [
-    { label: "Students", value: rows.length.toLocaleString(), note: "in this selection" },
-    { label: "Need a check-in", value: c.red.toLocaleString(), note: `${rows.length ? Math.round((c.red / rows.length) * 100) : 0}% flagged Red on academics or placement` },
-    { label: `Contacted in ${SLA_DAYS} days`, value: cases === null ? "–" : c.contacted.toLocaleString(), note: cases === null ? "contact data unavailable" : `${c.pct}% of flagged students`, alert: cases !== null && c.pct < 50 },
-    { label: "Overdue follow-ups", value: cases === null ? "–" : c.overdueFollowUps.toLocaleString(), note: "planned check-ins past their date", alert: c.overdueFollowUps > 0 },
-  ];
+  const reached = cases === null ? 0 : c.contacted;
   return (
     <Panel
       title="From flag to follow-through"
-      description="Flagging a student only helps if someone reaches out. This is the loop the platform is built to close."
+      description="Flagging a student only helps if someone reaches out. Each bar is a share of all students in this selection."
       actions={<Link href="/admin/workload" className="inline-flex items-center gap-1 text-sm font-medium text-primary no-underline hover:underline">Open Response &amp; workload <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></Link>}
     >
-      <ol className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
-        {steps.map((s, i) => (
-          <li key={s.label} className="relative bg-card px-4 py-3.5">
-            <p className="flex items-center gap-2 text-[12px] font-medium text-muted-foreground"><span className="tabular font-mono text-[11px]">{String(i + 1).padStart(2, "0")}</span>{s.label}</p>
-            <p className={`tabular mt-1 font-serif text-[30px] font-semibold leading-none ${s.alert ? "text-risk-red" : "text-foreground"}`}>{s.value}</p>
-            <p className="mt-1.5 text-[12px] text-muted-foreground">{s.note}</p>
-          </li>
-        ))}
-      </ol>
+      <Funnel
+        steps={[
+          { label: "Students", value: rows.length, tone: "slate" },
+          { label: "Need a check-in", value: c.red, tone: "highlight", note: `${rows.length ? Math.round((c.red / rows.length) * 100) : 0}% flagged Red on academics or placement` },
+          { label: `Contacted in ${SLA_DAYS} days`, value: reached, tone: "primary", note: cases === null ? "Contact data unavailable right now." : `${c.pct}% of flagged students reached; ${c.never.toLocaleString()} never contacted` },
+          { label: "Overdue follow-ups", value: cases === null ? 0 : c.overdueFollowUps, tone: "red", note: "Planned check-ins past their date" },
+        ]}
+      />
     </Panel>
   );
 }
@@ -133,11 +128,15 @@ export function AdminOverview({ rows, insights = [], cases = null }: { rows: Ove
         <>
           <FollowThrough rows={view} cases={cases} />
 
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Stat label="Average success score" value={k.avgScore?.toFixed(1) ?? "–"} note="0–100, seven weighted pillars" />
-            <Stat label="Academic risk: Red" value={`${k.academicRedPct}%`} note="needs a check-in" tone="alert" />
-            <Stat label="Placement risk: Red" value={`${k.placementRedPct}%`} note="3rd and 4th years assessed" tone="alert" />
-            <Stat label="Placement-ready" value={k.placementReadyPct === null ? "–" : `${k.placementReadyPct}%`} note="readiness score 70 or more" tone="good" />
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <VisualStat label="Average success score" value={k.avgScore?.toFixed(1) ?? "–"} note="out of 100, seven weighted pillars"
+              visual={<MiniRing pct={k.avgScore ?? 0} tone="primary" label={`Average score ${k.avgScore} of 100`} />} />
+            <VisualStat label="Academic risk: Red" value={`${k.academicRedPct}%`} note="needs a check-in"
+              visual={<MiniRing pct={k.academicRedPct} tone="red" label={`${k.academicRedPct}% Red on academic risk`} />} />
+            <VisualStat label="Placement risk: Red" value={`${k.placementRedPct}%`} note="3rd and 4th years assessed"
+              visual={<MiniRing pct={k.placementRedPct} tone="red" label={`${k.placementRedPct}% Red on placement risk`} />} />
+            <VisualStat label="Placement-ready" value={k.placementReadyPct === null ? "–" : `${k.placementReadyPct}%`} note="readiness score 70 or more"
+              visual={<MiniRing pct={k.placementReadyPct ?? 0} tone="green" label={`${k.placementReadyPct}% placement-ready`} />} />
           </div>
 
           {insights.length > 0 && (
