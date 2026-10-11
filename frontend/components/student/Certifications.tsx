@@ -14,22 +14,22 @@ type Provider = Certification["provider"] | "All providers";
 type Topic = string;
 
 const PROVIDER_SURFACE: Record<Certification["provider"], string> = {
-  Coursera: "border-[#d5e5dc] bg-[#f5f9f6]",
-  Udemy: "border-[#ebd9cb] bg-[#fff8f2]",
-  NPTEL: "border-[#eadfbe] bg-[#fffaf0]",
+  Coursera: "border-border bg-muted",
+  Udemy: "border-risk-amber/30 bg-risk-amber-bg",
+  NPTEL: "border-risk-amber/30 bg-risk-amber-bg",
 };
 
 function CourseCard({ course, compact = false }: CourseResult & { compact?: boolean }) {
   return (
     <article className={`group rounded-xl border transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-900/[0.06] motion-reduce:transform-none motion-reduce:transition-none ${PROVIDER_SURFACE[course.provider]} ${compact ? "flex items-center gap-4 p-4" : "flex h-full flex-col p-4"}`}>
       <div className="min-w-0 flex-1">
-        <span className="mb-2 inline-flex rounded-full border border-current/15 bg-white/75 px-2.5 py-1 text-xs font-semibold text-[#286a62]">{course.provider}</span>
-        <h3 className="font-semibold leading-snug text-[#172824]">{course.title}</h3>
-        <p className={`mt-2 text-sm leading-5 text-slate-600 ${compact ? "line-clamp-1" : "line-clamp-2"}`}>{course.description}</p>
+        <span className="mb-2 inline-flex rounded-full border border-current/15 bg-white/75 px-2.5 py-1 text-xs font-semibold text-primary">{course.provider}</span>
+        <h3 className="font-semibold leading-snug text-foreground">{course.title}</h3>
+        <p className={`mt-2 text-sm leading-5 text-muted-foreground ${compact ? "line-clamp-1" : "line-clamp-2"}`}>{course.description}</p>
       </div>
       <a href={course.url} target="_blank" rel="noopener noreferrer"
         aria-label={`Explore ${course.title}`}
-        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-white/80 px-3 text-sm font-semibold text-[#18574e] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] ${compact ? "shrink-0" : "mt-5 w-fit"}`}>
+        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-card/80 px-3 text-sm font-semibold text-primary transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${compact ? "shrink-0" : "mt-5 w-fit"}`}>
         Explore <ExternalLink className="h-4 w-4" aria-hidden="true" />
       </a>
     </article>
@@ -38,13 +38,13 @@ function CourseCard({ course, compact = false }: CourseResult & { compact?: bool
 
 function ViewToggle({ value, onChange }: { value: ViewMode; onChange: (mode: ViewMode) => void }) {
   return (
-    <div role="group" aria-label="Course display" className="flex rounded-lg border border-[#dce7e1] bg-white p-1">
+    <div role="group" aria-label="Course display" className="flex rounded-lg border border-border bg-card p-1">
       <button type="button" onClick={() => onChange("grid")} aria-pressed={value === "grid"} aria-label="Show courses as cards"
-        className={`flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-colors ${value === "grid" ? "bg-[#eaf3ef] text-[#18574e]" : "text-slate-500 hover:bg-slate-50"}`}>
+        className={`flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-colors ${value === "grid" ? "bg-muted text-primary" : "text-muted-foreground hover:bg-muted/60"}`}>
         <LayoutGrid className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Cards</span>
       </button>
       <button type="button" onClick={() => onChange("list")} aria-pressed={value === "list"} aria-label="Show courses as a list"
-        className={`flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-colors ${value === "list" ? "bg-[#eaf3ef] text-[#18574e]" : "text-slate-500 hover:bg-slate-50"}`}>
+        className={`flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-colors ${value === "list" ? "bg-muted text-primary" : "text-muted-foreground hover:bg-muted/60"}`}>
         <ListIcon className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">List</span>
       </button>
     </div>
@@ -82,36 +82,36 @@ export function Certifications() {
 
         return (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold leading-tight tracking-tight text-[#172824]">Certifications</h2>
-            <section aria-label="Find a certification" className="rounded-xl border border-[#dce7e1] bg-[#f1f6f3] p-3 sm:p-4">
+            <h2 className="text-lg font-bold leading-tight tracking-tight text-foreground">Certifications</h2>
+            <section aria-label="Find a certification" className="rounded-xl border border-border bg-muted/60 p-3 sm:p-4">
               <form onSubmit={submitSearch} className="flex flex-col gap-2 sm:flex-row">
                 <label className="relative min-w-0 flex-1">
                   <span className="sr-only">Search courses</span>
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                   <input value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder="Search skills, courses, or providers"
-                    className="h-11 w-full rounded-lg border border-[#dce7e1] bg-white pl-9 pr-3 text-sm text-[#172824] outline-none transition focus:border-[#74a99b] focus:ring-2 focus:ring-[#286a62]/15" />
+                    className="h-11 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20" />
                 </label>
-                <button type="submit" className="h-11 rounded-lg bg-[#18574e] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#12473f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2">Search</button>
+                <button type="submit" className="h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Search</button>
               </form>
               <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
                 <label className="min-w-0 flex-1">
                   <span className="sr-only">Filter by provider</span>
-                  <select value={provider} onChange={(event) => setProvider(event.target.value as Provider)} className="h-10 w-full rounded-lg border border-[#dce7e1] bg-white px-3 text-sm text-slate-700 outline-none focus:border-[#74a99b] focus:ring-2 focus:ring-[#286a62]/15">
+                  <select value={provider} onChange={(event) => setProvider(event.target.value as Provider)} className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
                     <option>All providers</option>{providers.map((name) => <option key={name}>{name}</option>)}
                   </select>
                 </label>
                 <label className="min-w-0 flex-1">
                   <span className="sr-only">Filter by topic</span>
-                  <select value={topic} onChange={(event) => setTopic(event.target.value)} className="h-10 w-full rounded-lg border border-[#dce7e1] bg-white px-3 text-sm text-slate-700 outline-none focus:border-[#74a99b] focus:ring-2 focus:ring-[#286a62]/15">
+                  <select value={topic} onChange={(event) => setTopic(event.target.value)} className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/20">
                     <option>All topics</option>{topics.map((name) => <option key={name}>{name}</option>)}
                   </select>
                 </label>
-                {filtered && <button type="button" onClick={clearFilters} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg px-3 text-sm font-medium text-[#286a62] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]"><X className="h-4 w-4" aria-hidden="true" />Clear</button>}
+                {filtered && <button type="button" onClick={clearFilters} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg px-3 text-sm font-medium text-primary hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4" aria-hidden="true" />Clear</button>}
               </div>
             </section>
 
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p aria-live="polite" className="text-sm text-slate-600"><span className="font-semibold text-[#172824]">{results.length}</span> courses for {profile.department}</p>
+              <p aria-live="polite" className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{results.length}</span> courses for {profile.department}</p>
               <ViewToggle value={view} onChange={setView} />
             </div>
 
@@ -126,9 +126,9 @@ export function Certifications() {
                 ))}
               </ul>
             ) : (
-              <div className="rounded-xl border border-[#dce7e1] bg-white px-5 py-10 text-center">
-                <p className="font-medium text-[#172824]">No courses found</p>
-                {filtered && <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-[#286a62] underline underline-offset-2">Clear filters</button>}
+              <div className="rounded-xl border border-border bg-card px-5 py-10 text-center">
+                <p className="font-medium text-foreground">No courses found</p>
+                {filtered && <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-primary underline underline-offset-2">Clear filters</button>}
               </div>
             )}
           </div>
