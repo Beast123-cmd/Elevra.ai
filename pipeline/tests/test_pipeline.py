@@ -148,14 +148,15 @@ class WhatIfApiTests(unittest.TestCase):
         profile = {"score": 60.0, "metrics": metrics}
         database = self.FakeDatabase(scores=[{"student_id": "42178", "profile": profile}], analytics=[])
         student = Caller(user_id="u1", role="student", student_id="42178")
-        body = whatif_router.WhatIf(student_id="42178", overrides={"coding": 90})
+        client = self._client(student)
         with patch.object(whatif_router, "db", return_value=database):
-            result = whatif_router.whatif(body, student)
+            response = client.post("/whatif", json={"student_id": "42178", "overrides": {"coding": 90}})
+            self.assertEqual(response.status_code, 200, response.text)
+            result = response.json()
             self.assertGreater(result["score"], profile["score"])
             self.assertEqual(result["delta"], round(result["score"] - profile["score"], 1))
-            with self.assertRaises(whatif_router.HTTPException) as raised:
-                whatif_router.whatif(whatif_router.WhatIf(student_id="42179"), student)
-        self.assertEqual(raised.exception.status_code, 403)
+            forbidden = client.post("/whatif", json={"student_id": "42179"})
+        self.assertEqual(forbidden.status_code, 403)
 
     def test_http_routes_enforce_role_scope_and_payload_validation(self):
         student = self._client(Caller(user_id="u1", role="student", student_id="42178"))
