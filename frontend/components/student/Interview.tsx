@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { FileText, Upload } from "lucide-react";
+import { FileText, Mic, MicOff, Upload, Volume2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { fmt } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { speak, stopSpeaking, useSpeechInput } from "./voice";
 
 interface StartResponse { session_id: number; questions: string[]; ai: boolean }
 interface FinishResponse {
@@ -65,8 +66,25 @@ export function Interview() {
   const [result, setResult] = useState<FinishResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [readAloud, setReadAloud] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
 
-  const call = <T,>(path: string, body: unknown, fake: T): Promise<T> => (mock ? Promise.resolve(fake) : api<T>(path, body));
+  const mic = useSpeechInput((text) =>
+    setAnswers((prev) => prev.map((a, i) => (i === index ? (a.trim() ? `${a.trimEnd()} ${text}` : text) : a))));
+
+  async function readQuestion(text: string) {
+    const used = await speak(text, !mock);
+    setVoiceNote(used === "browser" ? "Using your browser's voice because the AI voice is unavailable." : used === "none" ? "Your browser can't read text aloud." : null);
+  }
+
+  // Read each new question aloud when the student asked for it; stop any speech when leaving the page.
+  useEffect(() => {
+    if (phase === "asking" && session && readAloud) void readQuestion(session.questions[index]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, session, index, readAloud]);
+  useEffect(() => () => stopSpeaking(), []);
+
+  const call =<T,>(path: string, body: unknown, fake: T): Promise<T> => (mock ? Promise.resolve(fake) : api<T>(path, body));
 
   async function start() {
     if (busy) return;
@@ -81,6 +99,7 @@ export function Interview() {
   async function next() {
     if (busy || !session) return;
     setBusy(true); setError(null);
+    mic.stop(); stopSpeaking();
     try {
       const text = answers[index].trim();
       if (text) await call("/interview/answer", { session_id: session.session_id, index, answer_text: text }, { ok: true });
@@ -155,6 +174,10 @@ export function Interview() {
                 </p>
               )}
             </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={readAloud} onChange={(e) => setReadAloud(e.target.checked)} className="h-4 w-4" />
+              Read each question aloud (voice interview)
+            </label>
             {errorBox}
             <Button onClick={start} disabled={busy || !ready}>{busy ? "Preparing your questions…" : "Start interview"}</Button>
           </CardContent>
@@ -183,6 +206,19 @@ export function Interview() {
             <CardTitle className="pt-3 text-lg leading-snug">{session.questions[index]}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={() => void readQuestion(session.questions[index])}>
+                <Volume2 /> Read aloud
+              </Button>
+              {mic.supported && (
+                <Button type="button" variant={mic.listening ? "default" : "outline"} size="sm" onClick={mic.listening ? mic.stop : mic.start}
+                  aria-pressed={mic.listening}>
+                  {mic.listening ? <><MicOff /> Stop listening</> : <><Mic /> Answer by voice</>}
+                </Button>
+              )}
+            </div>
+            {mic.listening && <p className="text-xs text-slate-500" aria-live="polite">Listening… your words will appear in the box below. You can edit them before moving on.</p>}
+            {voiceNote && <p className="text-xs text-slate-500">{voiceNote}</p>}
             <Textarea
               value={answers[index]} maxLength={MAX_ANSWER} rows={8} aria-label={`Your answer to question ${index + 1}`}
               onChange={(e) => setAnswers(answers.map((a, i) => (i === index ? e.target.value : a)))}
