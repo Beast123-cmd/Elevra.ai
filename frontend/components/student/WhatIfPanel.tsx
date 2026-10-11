@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { BAND_COLOR, TIER_STYLE, fmt } from "@/lib/format";
-import type { Profile, WhatIfResponse } from "@/lib/types";
+import { PILLARS, type Pillar, type Profile, type WhatIfResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { StudentProgress } from "./StudentPage";
+import { PILLAR_LABEL } from "./playbook";
 
 interface Control {
   key: "attendance_pct" | "internal_pct" | "submit_rate" | "coding" | "aptitude" | "mock";
@@ -32,7 +33,16 @@ const CONTROLS: Control[] = [
 const DEBOUNCE_MS = 300;
 
 type Values = Partial<Record<Control["key"], number>>;
-type Sim = { status: "idle" } | { status: "loading" } | { status: "offline" } | { status: "ready"; result: WhatIfResponse };
+type Sim = { status: "idle" } | { status: "loading"; previous?: WhatIfResponse } | { status: "offline" } | { status: "ready"; result: WhatIfResponse };
+
+const CONTROL_PILLARS: Record<Control["key"], Pillar> = {
+  attendance_pct: "attendance",
+  internal_pct: "academic",
+  submit_rate: "lms",
+  coding: "placement",
+  aptitude: "placement",
+  mock: "placement",
+};
 
 export function WhatIfPanel({ profile }: { profile: Profile }) {
   const mock = useSearchParams().get("mock") === "1";
@@ -55,7 +65,10 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
       return;
     }
     const id = ++latest.current;
-    setSim({ status: "loading" });
+    setSim((previous) => ({
+      status: "loading",
+      ...(previous.status === "ready" ? { previous: previous.result } : previous.status === "loading" && previous.previous ? { previous: previous.previous } : {}),
+    }));
     const timer = setTimeout(async () => {
       const overrides = Object.fromEntries(
         CONTROLS.filter((c) => changed[c.key] !== undefined).map((c) => [c.key, (changed[c.key] as number) / (c.scale ?? 1)]),
@@ -74,6 +87,11 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
 
   const formatControl = (c: Control, value: number) => fmt(value, c.step < 1 ? 1 : 0, c.unit ?? "");
   const changedCount = Object.keys(changed).length;
+  const displayedResult = sim.status === "ready" ? sim.result : sim.status === "loading" ? sim.previous : undefined;
+  const changedControls = CONTROLS.filter((control) => changed[control.key] !== undefined);
+  const impactPillars: Pillar[] = PILLARS.filter((pillar) =>
+    changedControls.some((control) => CONTROL_PILLARS[control.key] === pillar),
+  );
 
   return (
     <Card className="overflow-hidden rounded-xl border-[#d5e2db] bg-white shadow-sm shadow-slate-900/[0.025]">
@@ -113,7 +131,7 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
           </div>
         </section>
 
-        <section aria-live="polite" aria-atomic="true" className="min-w-0 self-start rounded-xl border border-[#dce7e1] bg-[#f6f9f7] p-4 sm:p-5">
+        <section className="min-w-0 self-start rounded-xl border border-[#dce7e1] bg-[#f6f9f7] p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#286a62]">Score comparison</p><h3 className="mt-1 text-sm font-semibold text-[#172824]">Your scenario</h3></div>{sim.status === "ready" && <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-medium text-slate-600 ring-1 ring-slate-200">Estimate</span>}</div>
           {sim.status === "idle" && (
             <div className="mt-5 space-y-4">
@@ -122,7 +140,51 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
               <p className="border-t border-[#dce7e1] pt-3 text-xs leading-5 text-slate-500">Move a value to compare a simulated score with your current score.</p>
             </div>
           )}
-          {sim.status === "loading" && <div className="mt-5" role="status"><p className="flex items-center gap-2 text-sm font-medium text-slate-700"><span className="student-loading-dot" aria-hidden="true" /> Updating your estimate</p><div className="student-progress-track mt-3" aria-hidden="true"><span /></div><p className="mt-3 text-xs text-slate-500">Your saved student data is not being changed.</p></div>}
+          {sim.status === "loading" && <div className="mt-5" role="status"><p className="flex items-center gap-2 text-sm font-medium text-slate-700"><span className="student-loading-dot" aria-hidden="true" /> Updating the estimate for your latest values</p><div className="student-progress-track mt-3" aria-hidden="true"><span /></div><p className="mt-3 text-xs text-slate-500">Your saved student data is not being changed.</p></div>}
+          {changedControls.length > 0 && (
+            <section aria-label="Scenario inputs compared with current records" className="mt-5 space-y-3 border-t border-[#dce7e1] pt-4">
+              <div className="flex flex-wrap items-end justify-between gap-2"><div><h4 className="text-xs font-semibold text-[#172824]">Values you’re exploring</h4><p className="mt-0.5 text-[10px] leading-4 text-slate-500">Bars compare each value with its own scale; they are not score predictions.</p></div><div className="flex gap-3 text-[10px] text-slate-500"><span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-slate-300" aria-hidden="true" />Current</span><span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-[#286a62]" aria-hidden="true" />Scenario</span></div></div>
+              <div className="space-y-3">
+                {changedControls.map((control) => {
+                  const baseline = current(control);
+                  const scenario = shown(control);
+                  const toWidth = (value: number) => `${Math.max(0, Math.min(100, ((value - control.min) / (control.max - control.min)) * 100))}%`;
+                  return (
+                    <div key={control.key}>
+                      <div className="mb-1 flex items-center justify-between gap-3 text-[11px]">
+                        <span className="font-medium text-slate-700">{control.label}</span>
+                        <span className="tabular-nums text-slate-600">{baseline === null ? "No current record" : formatControl(control, baseline)} <span className="px-1 text-slate-400">→</span> <strong className="text-[#15564e]">{formatControl(control, scenario)}</strong></span>
+                      </div>
+                      <div className="space-y-1.5">
+                        {baseline !== null && <div className="h-1.5 overflow-hidden rounded-full bg-[#e9efeb]"><div className="h-full rounded-full bg-slate-300 transition-[width] duration-300 ease-out motion-reduce:transition-none" style={{ width: toWidth(baseline) }} /></div>}
+                        <div className="h-2 overflow-hidden rounded-full bg-[#e9efeb]"><div className="h-full rounded-full bg-[#286a62] transition-[width] duration-300 ease-out motion-reduce:transition-none" style={{ width: toWidth(scenario) }} /></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {displayedResult && (
+                <div className="border-t border-[#dce7e1] pt-3">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2"><h4 className="text-xs font-semibold text-[#172824]">Score areas affected</h4>{sim.status === "loading" && <span className="text-[10px] font-medium text-amber-700">Showing previous estimate while updating</span>}</div>
+                  <div className="space-y-3">
+                    {impactPillars.map((pillar) => {
+                      const before = profile.pillars[pillar];
+                      const after = displayedResult.pillars[pillar];
+                      if (before === null || after === null) return <p key={pillar} className="text-[11px] text-slate-500">{PILLAR_LABEL[pillar]} cannot be compared because it is not assessed.</p>;
+                      const change = after - before;
+                      return (
+                        <div key={pillar}>
+                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px]"><span className="font-medium text-slate-700">{PILLAR_LABEL[pillar]}</span><span className={`font-semibold tabular-nums ${change > 0 ? "text-emerald-700" : change < 0 ? "text-rose-700" : "text-slate-500"}`}>{fmt(before, 0)} <span className="px-0.5 text-slate-400">→</span> {fmt(after, 0)}{change === 0 ? " · no change" : ` · ${change > 0 ? "+" : ""}${fmt(change, 1)} pts`}</span></div>
+                          <div className="relative h-2 overflow-hidden rounded-full bg-[#e9efeb]"><div className="absolute inset-y-0 left-0 rounded-full bg-slate-300/80" style={{ width: `${Math.max(0, Math.min(100, before))}%` }} /><div className="absolute inset-y-0 left-0 rounded-full bg-[#286a62] transition-[width] duration-700 ease-out motion-reduce:transition-none" style={{ width: `${Math.max(0, Math.min(100, after))}%` }} /></div>
+                          <div className="mt-1 flex justify-between text-[9px] text-slate-400"><span>Current</span><span>Scenario</span></div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
           {sim.status === "offline" && (
             <div className="mt-5 space-y-4" role="alert">
               <div className="flex items-end justify-between gap-3 rounded-lg border border-[#dce7e1] bg-white px-3.5 py-3">
@@ -135,12 +197,12 @@ export function WhatIfPanel({ profile }: { profile: Profile }) {
               </div>
             </div>
           )}
-          {sim.status === "ready" && (
+          {displayedResult && (
             <div className="mt-5 space-y-4">
-              <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2"><div><p className="text-[10px] text-slate-500">Current</p><p className="mt-1 text-2xl font-semibold tabular-nums text-slate-500">{fmt(profile.score, 1)}</p></div><span className="pb-1 text-slate-400" aria-hidden="true">→</span><div className="text-right"><p className="text-[10px] text-slate-500">Estimated</p><p className="mt-1 text-3xl font-semibold tracking-[-.04em] tabular-nums" style={{ color: BAND_COLOR[sim.result.band] }}>{fmt(sim.result.score, 1)}</p></div></div>
-              <div className="flex items-center justify-between gap-3"><span className="text-xs text-slate-500">Estimated change</span><span className={`rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums ${sim.result.delta >= 0 ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-800"}`}>{sim.result.delta >= 0 ? "+" : ""}{sim.result.delta.toFixed(1)}</span></div>
-              <StudentProgress value={sim.result.score} label="Estimated success score" />
-              <div className="flex flex-wrap gap-2 border-t border-[#dce7e1] pt-3 text-[10px]"><span className={`rounded-full px-2 py-1 ring-1 ${TIER_STYLE[sim.result.academic_risk.level]}`}>Academic · {sim.result.academic_risk.level}</span><span className={`rounded-full px-2 py-1 ring-1 ${TIER_STYLE[sim.result.placement_risk.level]}`}>Career · {sim.result.placement_risk.level}</span></div>
+              <div aria-live="polite" aria-atomic="true" className="grid grid-cols-[1fr_auto_1fr] items-end gap-2"><div><p className="text-[10px] text-slate-500">Current</p><p className="mt-1 text-2xl font-semibold tabular-nums text-slate-500">{fmt(profile.score, 1)}</p></div><span className="pb-1 text-slate-400" aria-hidden="true">→</span><div className="text-right"><p className="text-[10px] text-slate-500">{sim.status === "loading" ? "Previous estimate" : "Estimated"}</p><p className="mt-1 text-3xl font-semibold tracking-[-.04em] tabular-nums transition-colors duration-300" style={{ color: BAND_COLOR[displayedResult.band] }}>{fmt(displayedResult.score, 1)}</p></div></div>
+              <div className="flex items-center justify-between gap-3"><span className="text-xs text-slate-500">Estimated change</span><span className={`rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums ${displayedResult.delta >= 0 ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-800"}`}>{displayedResult.delta >= 0 ? "+" : ""}{displayedResult.delta.toFixed(1)}</span></div>
+              <StudentProgress value={displayedResult.score} label="Estimated success score" />
+              <div className="flex flex-wrap gap-2 border-t border-[#dce7e1] pt-3 text-[10px]"><span className={`rounded-full px-2 py-1 ring-1 ${TIER_STYLE[displayedResult.academic_risk.level]}`}>Academic · {displayedResult.academic_risk.level}</span><span className={`rounded-full px-2 py-1 ring-1 ${TIER_STYLE[displayedResult.placement_risk.level]}`}>Career · {displayedResult.placement_risk.level}</span></div>
               <p className="text-[10px] leading-4 text-slate-500">Estimate based on the values you changed. It is not a prediction or a saved result.</p>
             </div>
           )}
