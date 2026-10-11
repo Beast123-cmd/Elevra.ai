@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/lib/supabase/client";
+import { Brand } from "@/components/shared/Brand";
 
 const ROLES = [
   { value: "student", label: "Student" },
@@ -74,10 +75,7 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#f6f7f4] px-4 py-10 text-slate-950 sm:px-6">
-      <Link href="/" className="mb-6 flex items-center gap-2.5 text-slate-950 no-underline" aria-label="Elevra home">
-        <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-[#154e49] text-base font-semibold text-white">e</span>
-        <span className="text-[17px] font-bold tracking-[-.04em]">elevra<span className="font-medium text-slate-500">.ai</span></span>
-      </Link>
+      <Brand className="mb-6" />
 
       <section className="w-full max-w-[420px] rounded-xl border border-[#e0e6e1] bg-white p-5 shadow-[0_18px_50px_-38px_rgba(23,40,36,.4)] sm:p-8" aria-labelledby="login-heading">
         <div className="text-center">

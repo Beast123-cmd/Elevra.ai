@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Database, FileCheck2, Gauge, Layers3, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { Brand } from "@/components/shared/Brand";
 
 const SIGNALS = [
   { label: "Academics", detail: "CGPA, internal marks and backlogs" },
@@ -234,10 +235,7 @@ export default function Home() {
       <div ref={mainRef} className="landing-page">
       <header className="sticky top-0 z-30 border-b border-[#e3e8e2]/90 bg-[#f6f7f4]/95 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
-          <Link href="/" className="flex shrink-0 items-center gap-2.5 text-slate-950 no-underline" aria-label="Elevra home">
-            <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-[#154e49] text-base font-semibold text-white">e</span>
-            <span className="text-[17px] font-bold tracking-[-.04em]">elevra<span className="font-medium text-slate-500">.ai</span></span>
-          </Link>
+          <Brand />
           <nav aria-label="Page sections" className="hidden items-center gap-7 sm:flex">
             <a href="#journey" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">How it works</a>
             <a href="#mvp" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">MVP features</a>
