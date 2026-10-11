@@ -171,13 +171,13 @@ export function Improve() {
           <div className="space-y-4 sm:space-y-5">
             {primary ? (
               <StudentReveal>
-                <section aria-label="Your suggested next step" className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,.7fr)]">
-                  <div>
-                    <p className="mb-2 text-xs leading-5 text-slate-500">Based on your records, we picked one area to focus on first.</p>
+                <div className="space-y-2">
+                  <p className="text-xs leading-5 text-slate-500">Based on your records, we picked one area to focus on first.</p>
+                  <section aria-label="Your suggested next step" className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,.7fr)]">
                     <PrimaryFocus pillar={primary.pillar} value={primary.value} />
-                  </div>
-                  <ScoreSummary profile={profile} />
-                </section>
+                    <ScoreSummary profile={profile} />
+                  </section>
+                </div>
               </StudentReveal>
             ) : (
               <Card className="rounded-xl border-[#dce7e1] bg-white">
