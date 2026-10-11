@@ -56,7 +56,6 @@ export default function EvidencePage() {
   if (loading || !data || !view) return <Skeleton className="h-96 w-full" />;
   const { dept, mentors, support, slowSupport } = view;
   const num = (v: string, fallback: number) => (Number.isFinite(Number(v)) && v !== "" ? Math.min(100, Math.max(0, Number(v))) : fallback);
-  const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <div className="space-y-6">
