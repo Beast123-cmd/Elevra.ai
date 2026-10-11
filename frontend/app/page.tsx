@@ -248,7 +248,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1240px] items-start gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pt-12 lg:grid-cols-[.86fr_1.14fr] lg:gap-12 lg:pb-24 lg:pt-14">
+      <div className="mx-auto grid max-w-[1240px] items-start gap-8 px-5 pb-14 pt-8 sm:px-8 sm:pt-12 lg:grid-cols-[.86fr_1.14fr] lg:gap-12 lg:pb-32 lg:pt-14">
         <section className="flex min-h-[310px] min-w-0 flex-col justify-center pb-3 sm:min-h-[360px] lg:col-start-1 lg:row-start-1 lg:min-h-[430px] lg:pb-0" aria-labelledby="hero-heading">
           <p data-reveal className="mb-4 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.16em] text-[#286a62] sm:text-[11px]"><span className="h-px w-7 bg-[#286a62]" aria-hidden="true" />Campus success, made visible</p>
           <h1 data-reveal data-reveal-delay="1" id="hero-heading" className="max-w-[12ch] text-[clamp(2.35rem,6.2vw,4.2rem)] font-semibold leading-[1.02] tracking-[-.055em] text-[#172824]">See student needs clearly. Act sooner.</h1>
@@ -259,7 +259,7 @@ export default function Home() {
           </div>
         </section>
 
-        <aside className="sticky top-[72px] z-20 min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-5 lg:top-[88px]" aria-label="Interactive product illustration">
+        <aside className="z-20 min-w-0 lg:sticky lg:top-[88px] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-5 lg:self-start" aria-label="Interactive product illustration">
           <FlowIllustration step={activeStep} signal={activeSignal} onSignalChange={setActiveSignal} />
           <div className="mt-3 flex items-center justify-between gap-3 px-1 text-[10px] text-slate-500"><span>Illustrative product flow</span><span className="hidden sm:inline">Scroll the story to explore</span></div>
         </aside>
@@ -267,7 +267,7 @@ export default function Home() {
         <section id="journey" className="scroll-mt-24 min-w-0 lg:col-start-1 lg:row-start-2" aria-label="How Elevra works">
           <div data-reveal className="mb-5 flex items-center gap-3 border-b border-[#dfe6df] pb-3"><span className="text-[10px] font-semibold uppercase tracking-[.13em] text-[#286a62]">The product flow</span><span className="h-px flex-1 bg-[#dfe6df]" /><span className="text-[10px] tabular-nums text-slate-500">0{activeStep} / 03</span></div>
           {STORY.map((item) => (
-            <article key={item.id} data-journey-step={item.id} className="journey-panel flex min-h-[270px] flex-col justify-center border-t py-8 sm:min-h-[310px] sm:py-10 lg:min-h-[410px] lg:border-t-0 lg:py-12">
+            <article key={item.id} data-journey-step={item.id} className="journey-panel flex min-h-[270px] flex-col justify-center border-t py-8 sm:min-h-[310px] sm:py-10 lg:min-h-[clamp(500px,72svh,760px)] lg:border-t-0 lg:py-12">
               <div data-reveal className="flex items-center gap-3"><span className={`grid h-9 w-9 place-items-center rounded-full border text-xs font-semibold tabular-nums transition-colors ${activeStep === item.id ? "border-[#b8cec3] bg-[#eaf2ed] text-[#1c564c]" : "border-[#dfe6df] text-slate-500"}`}>{String(item.id).padStart(2, "0")}</span><p className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#286a62]">{item.eyebrow}</p></div>
               <h2 data-reveal data-reveal-delay="1" className="mt-5 max-w-[18ch] text-[clamp(1.65rem,3.2vw,2.45rem)] font-semibold leading-[1.08] tracking-[-.045em] text-[#172824]">{item.title}</h2>
               <p data-reveal data-reveal-delay="2" className="mt-4 max-w-[520px] text-sm leading-6 text-slate-600 sm:text-[15px] sm:leading-7">{item.body}</p>
