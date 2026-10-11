@@ -46,22 +46,23 @@ const STEPS: Record<ShellRole, TourStep[]> = {
 };
 
 const STORAGE_KEY = "elevra-guided-walkthrough";
-interface SavedTour { role: ShellRole; index: number }
+const SEEN_KEY = "elevra-guided-walkthrough-seen";
+interface SavedTour { userId: string; role: ShellRole; index: number }
 interface Position { top: number; left: number; width: number; height: number; radius: number }
 
-function readSavedTour(): SavedTour | null {
+function readSavedTour(userId: string): SavedTour | null {
   try {
     const value = sessionStorage.getItem(STORAGE_KEY);
     if (!value) return null;
     const parsed = JSON.parse(value) as SavedTour;
-    return parsed && (parsed.role === "student" || parsed.role === "faculty" || parsed.role === "admin") && Number.isInteger(parsed.index)
+    return parsed && parsed.userId === userId && (parsed.role === "student" || parsed.role === "faculty" || parsed.role === "admin") && Number.isInteger(parsed.index)
       ? parsed
       : null;
   } catch { return null; }
 }
 
 /** A route-aware tour anchored to real dashboard controls. */
-export function GuidedWalkthrough({ role, ready }: { role: ShellRole; ready: boolean }) {
+export function GuidedWalkthrough({ role, ready, userId }: { role: ShellRole; ready: boolean; userId: string }) {
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const [index, setIndex] = useState<number | null>(null);
@@ -70,40 +71,52 @@ export function GuidedWalkthrough({ role, ready }: { role: ShellRole; ready: boo
   const launcherRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const initializedForUser = useRef("");
   const steps = STEPS[role];
   const active = index !== null;
   const step = active ? steps[index] : null;
 
-  const close = useCallback(() => {
+  const stop = useCallback((completed: boolean) => {
     setIndex(null);
     setPosition(null);
     anchorRef.current = null;
-    try { sessionStorage.removeItem(STORAGE_KEY); } catch { /* session storage may be unavailable */ }
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+      if (completed && userId) localStorage.setItem(`${SEEN_KEY}:${userId}`, "1");
+    } catch { /* storage may be unavailable */ }
     window.requestAnimationFrame(() => launcherRef.current?.focus());
-  }, []);
+  }, [userId]);
 
   const save = useCallback((nextRole: ShellRole, nextIndex: number) => {
-    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ role: nextRole, index: nextIndex } satisfies SavedTour)); } catch { /* route navigation still works */ }
-  }, []);
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ userId, role: nextRole, index: nextIndex } satisfies SavedTour)); } catch { /* route navigation still works */ }
+  }, [userId]);
 
   const goTo = useCallback((nextIndex: number) => {
     if (nextIndex < 0) return;
-    if (nextIndex >= steps.length) { close(); return; }
+    if (nextIndex >= steps.length) { stop(true); return; }
     save(role, nextIndex);
     setIndex(nextIndex);
     setPosition(null);
     const next = steps[nextIndex];
     if (pathname !== next.href) router.push(next.href);
-  }, [close, pathname, role, router, save, steps]);
+  }, [pathname, role, router, save, steps, stop]);
 
   useEffect(() => {
-    if (!ready || index !== null) return;
-    const saved = readSavedTour();
-    if (saved?.role === role && saved.index >= 0 && saved.index < steps.length) setIndex(saved.index);
-    else if (saved) {
-      try { sessionStorage.removeItem(STORAGE_KEY); } catch { /* ignored */ }
+    if (!ready || !userId || index !== null || initializedForUser.current === userId) return;
+    initializedForUser.current = userId;
+    const saved = readSavedTour(userId);
+    if (saved?.role === role && saved.index >= 0 && saved.index < steps.length) {
+      setIndex(saved.index);
+      return;
     }
-  }, [index, ready, role, steps.length]);
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+      if (!localStorage.getItem(`${SEEN_KEY}:${userId}`)) {
+        save(role, 0);
+        setIndex(0);
+      }
+    } catch { /* storage may be unavailable; leave the manual launcher available */ }
+  }, [index, ready, role, save, steps.length, userId]);
 
   useEffect(() => {
     if (!active || !step) return;
@@ -147,7 +160,7 @@ export function GuidedWalkthrough({ role, ready }: { role: ShellRole; ready: boo
     if (!anchorRef.current) {
       observer = new MutationObserver(find);
       observer.observe(document.body, { childList: true, subtree: true });
-      timeout = window.setTimeout(() => { observer?.disconnect(); if (!cancelled && !anchorRef.current) close(); }, 12000);
+      timeout = window.setTimeout(() => { observer?.disconnect(); if (!cancelled && !anchorRef.current) stop(false); }, 12000);
     }
     window.addEventListener("scroll", onScroll, { capture: true, passive: true });
     window.addEventListener("resize", onScroll);
@@ -161,12 +174,12 @@ export function GuidedWalkthrough({ role, ready }: { role: ShellRole; ready: boo
       window.removeEventListener("resize", onScroll);
       anchorRef.current = null;
     };
-  }, [active, close, pathname, router, step]);
+  }, [active, pathname, router, step, stop]);
 
   useEffect(() => {
     if (!active) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
+      if (event.key === "Escape") stop(true);
       else if (event.key === "ArrowRight") goTo((index ?? 0) + 1);
       else if (event.key === "ArrowLeft") goTo((index ?? 0) - 1);
       else if (event.key === "Tab") {
@@ -178,7 +191,7 @@ export function GuidedWalkthrough({ role, ready }: { role: ShellRole; ready: boo
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active, close, goTo, index]);
+  }, [active, goTo, index, stop]);
 
   const hasPosition = position !== null;
   useEffect(() => {
@@ -219,12 +232,13 @@ export function GuidedWalkthrough({ role, ready }: { role: ShellRole; ready: boo
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Step {(index ?? 0) + 1} of {steps.length}</p>
                 <h2 className="mt-1 text-base font-semibold">{step.title}</h2>
               </div>
-              <button type="button" onClick={close} aria-label="Close walkthrough" className="-mr-1 -mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <button type="button" onClick={() => stop(true)} aria-label="Skip walkthrough" title="Skip walkthrough" className="-mr-1 -mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
             <p className="mt-2 text-sm leading-5 text-muted-foreground">{step.description}</p>
             <div className="mt-4 flex items-center justify-between gap-3">
+              <button type="button" onClick={() => stop(true)} className="h-9 rounded-lg px-2 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">Skip walkthrough</button>
               <button type="button" onClick={back} disabled={index === 0} className="h-9 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40">Back</button>
               <button ref={nextButtonRef} type="button" onClick={next} className="h-9 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 {index === steps.length - 1 ? "Finish" : "Next"}
