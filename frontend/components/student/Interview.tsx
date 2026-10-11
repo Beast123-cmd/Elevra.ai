@@ -11,6 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { playClip, preloadClips, speak, stopSpeaking, useLiveTranscription } from "./voice";
+import { CoachReport } from "./coach/CoachReport";
+import type { CoachFeedback, PracticeTask } from "./coach/types";
+import { createClient } from "@/lib/supabase/client";
 
 // Played the moment an answer is sent (voice on), so the interviewer responds instantly while the next question is written.
 const ACKS = ["Okay.", "Got it.", "Alright.", "I see.", "Thanks for that."];
@@ -18,14 +21,15 @@ import { StudentReveal } from "./StudentReveal";
 
 type Stage = "intro" | "resume" | "technical" | "behavioural" | "wrapup";
 interface Turn { role: "interviewer" | "candidate"; text: string }
-interface TurnResponse { session_id?: number; message: string; stage: Stage; question_number: number; done: boolean; elapsed_sec: number; ai: boolean }
-interface Feedback {
-  criteria: Record<"communication" | "technical_depth" | "problem_solving" | "project_knowledge", number> | null;
-  strengths: string[]; gaps: string[]; next_steps: string[]; minutes?: number; questions?: number;
+interface TurnResponse {
+  session_id?: number; message: string; stage: Stage; question_number: number; done: boolean; elapsed_sec: number; ai: boolean;
+  mode?: "full" | "focus"; focus?: string[];
 }
+type Feedback = CoachFeedback;
 interface FinishResponse {
   score_5: number; feedback: Feedback; ai: boolean; mock_interview_avg: number;
   old_success_score: number; new_success_score: number; old_placement: number | null; new_placement: number | null; transcript: Turn[];
+  tasks?: PracticeTask[];
 }
 
 const MIN_RESUME = 20;
@@ -86,6 +90,17 @@ export function Interview() {
   const [pdf, setPdf] = useState<{ name: string; base64: string } | null>(null);
   const [voiceOn, setVoiceOn] = useState(false);
   const [autoListen, setAutoListen] = useState(false);
+  const [mode, setMode] = useState<"full" | "focus">("full");
+  const [weakAreas, setWeakAreas] = useState<string[]>([]);       // student's unresolved focus areas, for the mode choice
+  const [practiceFocus, setPracticeFocus] = useState<string[]>([]); // areas being retested in this session
+
+  // Weak areas from earlier interviews (empty for a first interview, or before the coaching tables exist).
+  useEffect(() => {
+    if (mock) return;
+    createClient().from("interview_focus_areas").select("label,times_seen").neq("status", "resolved")
+      .order("times_seen", { ascending: false }).limit(3)
+      .then(({ data }) => setWeakAreas((data ?? []).map((f) => f.label as string)));
+  }, [mock]);
 
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -147,9 +162,10 @@ export function Interview() {
     if (busy) return;
     setBusy("starting"); setError(null);
     try {
-      const body = pdf ? { resume_pdf_base64: pdf.base64 } : { resume_text: resume.trim() };
+      const body = { ...(pdf ? { resume_pdf_base64: pdf.base64 } : { resume_text: resume.trim() }), mode };
       const r = mock ? mockTurn() : await api<TurnResponse>("/interview/start", body);
       setSessionId(r.session_id ?? null); setTurns([]); setStartedAt(Date.now() - r.elapsed_sec * 1000); setNow(Date.now());
+      setPracticeFocus(r.mode === "focus" ? r.focus ?? [] : []);
       setPhase("room");
       if (voiceOn && !mock) preloadClips(ACKS);
       interviewerSays(r);
@@ -195,7 +211,7 @@ export function Interview() {
   function reset() {
     stopSpeaking(); mic.dispose(); mockStep.current = 0;
     setPhase("intro"); setSessionId(null); setTurns([]); setResult(null); setDone(false); updateDraft(""); setError(null);
-    setStage("intro"); setQuestionNo(0); setAiOffline(false); setVoiceNote(null);
+    setStage("intro"); setQuestionNo(0); setAiOffline(false); setVoiceNote(null); setPracticeFocus([]);
   }
 
   const banner = mock && <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">Showing a scripted sample (?mock=1). Nothing is saved.</p>;
@@ -220,6 +236,7 @@ export function Interview() {
               <CardTitle className="text-lg font-bold leading-tight tracking-tight text-[#172824]">Start a practice interview</CardTitle>
               <CardDescription className="mt-1.5 text-sm leading-5 text-slate-600">Add your resume to get questions about your experience and projects.</CardDescription>
             </div>
+            <Link href="/student/interview/progress" className="w-fit text-xs font-semibold text-[#286a62] underline underline-offset-2 hover:text-[#18574e]">My interviews and progress</Link>
           </CardHeader>
           <CardContent className="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
             <div className="flex items-start gap-2 rounded-lg bg-[#f7faf8] px-3 py-2.5 text-xs leading-5 text-slate-600">
@@ -257,6 +274,18 @@ export function Interview() {
               {!pdf && len > 0 && len < MIN_RESUME && <p className="mt-1.5 text-xs text-slate-500">Add {MIN_RESUME - len} more characters to continue.</p>}
             </div>
             </section>
+            {weakAreas.length > 0 && (
+              <fieldset className="space-y-2">
+                <legend className="mb-1.5 text-sm font-semibold text-[#172824]">Type of interview</legend>
+                {([["full", "Full interview", "Introduction, your resume, technical and behavioural questions."],
+                  ["focus", "Practise my weak areas", `Elevra retests what you found hard last time: ${weakAreas.join(", ")}.`]] as const).map(([value, title, desc]) => (
+                  <label key={value} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-4 py-3 text-sm transition-colors ${mode === value ? "border-[#78a99a] bg-[#f1f7f3]" : "border-[#dce7e1] bg-white hover:bg-[#f8fbf9]"}`}>
+                    <input type="radio" name="interview-mode" value={value} checked={mode === value} onChange={() => setMode(value)} className="mt-0.5 h-4 w-4 accent-[#286a62]" />
+                    <span><span className="font-medium text-[#172824]">{title}</span><span className="mt-0.5 block text-xs text-slate-500">{desc}</span></span>
+                  </label>
+                ))}
+              </fieldset>
+            )}
             <details className="group rounded-xl border border-[#dce7e1] bg-[#fbfcfb] px-4 py-3">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-[#33483f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] [&::-webkit-details-marker]:hidden">
                 <span><span className="block">Voice settings <span className="font-normal text-slate-500">(optional)</span></span><span className="mt-0.5 block text-xs font-normal text-slate-500">You can complete the interview by typing.</span></span>
@@ -297,6 +326,11 @@ export function Interview() {
     return (
       <div className="space-y-4">
         {banner}
+        {practiceFocus.length > 0 && (
+          <p className="rounded-md bg-[#f1f6f3] px-3 py-2 text-sm text-[#18574e]">
+            Focused practice: Elevra will come back to {practiceFocus.join(", ")}.
+          </p>
+        )}
         {aiOffline && (
           <p className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-700">
             The AI interviewer is offline, so you&apos;re getting standard questions for your department. Your answers still count.
@@ -456,6 +490,7 @@ export function Interview() {
           {list("What to work on", fb.gaps, "No gaps flagged.")}
           {list("Next steps", fb.next_steps, "Keep practising.")}
         </div>
+        <CoachReport feedback={fb} tasks={result.tasks ?? []} />
         {result.transcript.length > 0 && (
           <details className="rounded-lg border bg-white p-4 text-sm">
             <summary className="cursor-pointer font-medium">Review the full conversation</summary>
