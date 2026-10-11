@@ -39,7 +39,7 @@ export function WeeklyBrief({ rows }: { rows: OverviewRow[] }) {
       </div>
       {state.kind === "ready" && (
         <>
-          <p className="text-sm leading-relaxed">{state.text}</p>
+          <p className="max-w-4xl text-[15px] leading-relaxed">{state.text}</p>
           <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
             <span className={`rounded-full px-2 py-0.5 ${state.source === "ai" ? "bg-primary/10 text-primary" : "bg-muted"}`}>
               {state.source === "ai" ? "AI-written · every figure checked against the data" : "Standard summary"}

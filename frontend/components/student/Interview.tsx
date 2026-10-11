@@ -367,8 +367,8 @@ export function Interview() {
     setStage("intro"); setQuestionNo(0); setAiOffline(false); setVoiceNote(null); setPracticeFocus([]);
   }
 
-  const banner = mock && <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">Showing a scripted sample (?mock=1). Nothing is saved.</p>;
-  const errorBox = error && <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>;
+  const banner = mock && <p className="mb-4 rounded-md bg-risk-amber-bg px-3 py-2 text-sm text-risk-amber">Showing a scripted sample (?mock=1). Nothing is saved.</p>;
+  const errorBox = error && <p role="alert" className="rounded-md bg-risk-red-bg px-3 py-2 text-sm text-risk-red">{error}</p>;
 
   // ---------- 1. Start ----------
   if (phase === "intro") {
@@ -378,43 +378,43 @@ export function Interview() {
     return (
       <div className="space-y-3">
         {banner}
-        {focusNotice && <p role="status" className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{focusNotice}</p>}
+        {focusNotice && <p role="status" className="rounded-lg bg-risk-green-bg px-4 py-3 text-sm text-emerald-900">{focusNotice}</p>}
         <StudentReveal key="interview-intro">
-        <Card className="overflow-hidden rounded-2xl border-[#d5e2db] bg-white shadow-sm shadow-slate-900/[0.03]">
-          <CardHeader className="space-y-2 border-b border-[#dce7e1] bg-[#f1f6f3] px-4 py-3.5 sm:px-6 sm:py-4">
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-[#48665d]">
-              <span className="rounded-full border border-[#d2e2d9] bg-white/80 px-2 py-0.5">{TARGET}</span>
-              <span className="rounded-full border border-[#d2e2d9] bg-white/80 px-2 py-0.5">Resume-based</span>
-              <span className="rounded-full border border-[#d2e2d9] bg-white/80 px-2 py-0.5">Voice · typing available</span>
+        <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
+          <CardHeader className="space-y-2 border-b border-border bg-muted/60 px-4 py-3.5 sm:px-6 sm:py-4">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-primary">
+              <span className="rounded-full border border-border bg-card/80 px-2 py-0.5">{TARGET}</span>
+              <span className="rounded-full border border-border bg-card/80 px-2 py-0.5">Resume-based</span>
+              <span className="rounded-full border border-border bg-card/80 px-2 py-0.5">Voice · typing available</span>
             </div>
             <div>
-              <CardTitle className="text-lg font-bold leading-tight tracking-tight text-[#172824]">Start a practice interview</CardTitle>
-              <CardDescription className="mt-1 text-sm leading-5 text-slate-600">Add a resume to get questions about your experience and projects.</CardDescription>
+              <CardTitle className="text-lg font-bold leading-tight tracking-tight text-foreground">Start a practice interview</CardTitle>
+              <CardDescription className="mt-1 text-sm leading-5 text-muted-foreground">Add a resume to get questions about your experience and projects.</CardDescription>
             </div>
-            <Link href="/student/interview/progress" className="w-fit text-xs font-semibold text-[#286a62] underline underline-offset-2 hover:text-[#18574e]">My interviews and progress</Link>
+            <Link href="/student/interview/progress" className="w-fit text-xs font-semibold text-primary underline underline-offset-2 hover:text-primary">My interviews and progress</Link>
           </CardHeader>
           <CardContent className="space-y-3 px-4 py-4 sm:px-6 sm:py-5">
-            <div className="flex items-center gap-2 rounded-lg bg-[#f7faf8] px-3 py-2 text-xs leading-4 text-slate-600">
-              <ShieldCheck className="h-4 w-4 shrink-0 text-[#39776a]" aria-hidden="true" />
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2 text-xs leading-4 text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
               <p>Your resume is used to create questions. Only a short summary is saved; the uploaded file is not.</p>
             </div>
             <section aria-labelledby="resume-heading" className="grid gap-3 sm:grid-cols-2 sm:items-start">
               <div className="space-y-2">
                 <div>
-                  <h2 id="resume-heading" className="text-sm font-semibold text-[#172824]">Your resume</h2>
-                  <p className="mt-0.5 text-xs text-slate-500">Upload a PDF (up to 5 MB).</p>
+                  <h2 id="resume-heading" className="text-sm font-semibold text-foreground">Your resume</h2>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Upload a PDF (up to 5 MB).</p>
                 </div>
                 <div>
               {pdf ? (
-                <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-2 rounded-xl border border-[#cfe1d8] bg-[#f4f8f5] px-3 py-2">
-                  <span className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white text-[#286a62]"><FileText className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-[#172824]">{pdf.name}</span><span className="text-xs text-slate-500">PDF ready to use</span></span></span>
-                  <button type="button" onClick={() => setPdf(null)} className="rounded-md px-2 py-1 text-xs font-semibold text-slate-600 underline underline-offset-2 hover:text-[#18574e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">Remove</button>
+                <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted px-3 py-2">
+                  <span className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-card text-primary"><FileText className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-foreground">{pdf.name}</span><span className="text-xs text-muted-foreground">PDF ready to use</span></span></span>
+                  <button type="button" onClick={() => setPdf(null)} className="rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground underline underline-offset-2 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Remove</button>
                 </div>
               ) : (
-                <label className="group flex min-h-[64px] cursor-pointer items-center gap-2.5 rounded-xl border border-dashed border-[#b9d3c8] bg-[#f8fbf9] px-3 py-2 transition-colors hover:border-[#78a99a] hover:bg-[#f1f7f3] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#286a62]/30">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#eaf3ef] text-[#286a62] transition-colors group-hover:bg-white"><Upload className="h-4 w-4" aria-hidden="true" /></span>
-                  <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-[#172824]">Choose a PDF resume</span><span className="mt-0.5 block text-xs text-slate-500">Up to 5 MB</span></span>
-                  <span className="rounded-lg border border-[#d5e2db] bg-white px-3 py-2 text-xs font-semibold text-[#18574e]">Browse</span>
+                <label className="group flex min-h-[64px] cursor-pointer items-center gap-2.5 rounded-xl border border-dashed border-border bg-muted px-3 py-2 transition-colors hover:border-primary hover:bg-muted focus-within:outline-none focus-within:ring-2 focus-within:ring-ring">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-muted text-primary transition-colors group-hover:bg-white"><Upload className="h-4 w-4" aria-hidden="true" /></span>
+                  <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-foreground">Choose a PDF resume</span><span className="mt-0.5 block text-xs text-muted-foreground">Up to 5 MB</span></span>
+                  <span className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-primary">Browse</span>
                   <input type="file" accept="application/pdf,.pdf" className="sr-only"
                     onChange={(e) => { void choosePdf(e.target.files?.[0]); e.target.value = ""; }} />
                 </label>
@@ -423,48 +423,48 @@ export function Interview() {
               </div>
               <div className={pdf ? "pointer-events-none space-y-2 opacity-50" : "space-y-2"} aria-disabled={pdf !== null}>
                 <div className="flex items-center justify-between gap-2">
-                  <label htmlFor="interview-resume-text" className="text-sm font-semibold text-[#172824]">{pdf ? "PDF selected" : "Or paste resume text"}</label>
-                  {!pdf && <span className="text-[11px] tabular-nums text-slate-400">{len.toLocaleString()} / {MAX_RESUME.toLocaleString()}</span>}
+                  <label htmlFor="interview-resume-text" className="text-sm font-semibold text-foreground">{pdf ? "PDF selected" : "Or paste resume text"}</label>
+                  {!pdf && <span className="text-[11px] tabular-nums text-muted-foreground">{len.toLocaleString()} / {MAX_RESUME.toLocaleString()}</span>}
                 </div>
                 <Textarea id="interview-resume-text" value={resume} onChange={(e) => setResume(e.target.value)} maxLength={MAX_RESUME} rows={3} disabled={pdf !== null}
-                  placeholder="Education, projects, skills, internships…" aria-label="Resume text" className="min-h-24 resize-y border-[#dce7e1] bg-white text-sm text-[#172824] shadow-none placeholder:text-slate-400 focus-visible:ring-[#286a62]/30 disabled:bg-slate-50" />
-                {!pdf && len > 0 && len < MIN_RESUME && <p className="text-xs text-slate-500">Add {MIN_RESUME - len} more characters to continue.</p>}
+                  placeholder="Education, projects, skills, internships…" aria-label="Resume text" className="min-h-24 resize-y border-border bg-card text-sm text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-ring disabled:bg-slate-50" />
+                {!pdf && len > 0 && len < MIN_RESUME && <p className="text-xs text-muted-foreground">Add {MIN_RESUME - len} more characters to continue.</p>}
               </div>
             </section>
             {weakAreas.length > 0 && (
               <fieldset className="space-y-2">
-                <legend className="mb-1.5 text-sm font-semibold text-[#172824]">Type of interview</legend>
+                <legend className="mb-1.5 text-sm font-semibold text-foreground">Type of interview</legend>
                 {([["full", "Full interview", "Introduction, your resume, technical and behavioural questions."],
                   ["focus", "Practise my weak areas", `Elevra retests what you found hard last time: ${weakAreas.join(", ")}.`]] as const).map(([value, title, desc]) => (
-                  <label key={value} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-4 py-3 text-sm transition-colors ${mode === value ? "border-[#78a99a] bg-[#f1f7f3]" : "border-[#dce7e1] bg-white hover:bg-[#f8fbf9]"}`}>
-                    <input type="radio" name="interview-mode" value={value} checked={mode === value} onChange={() => setMode(value)} className="mt-0.5 h-4 w-4 accent-[#286a62]" />
-                    <span><span className="font-medium text-[#172824]">{title}</span><span className="mt-0.5 block text-xs text-slate-500">{desc}</span></span>
+                  <label key={value} className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-4 py-3 text-sm transition-colors ${mode === value ? "border-primary bg-muted" : "border-border bg-card hover:bg-muted"}`}>
+                    <input type="radio" name="interview-mode" value={value} checked={mode === value} onChange={() => setMode(value)} className="mt-0.5 h-4 w-4 accent-primary" />
+                    <span><span className="font-medium text-foreground">{title}</span><span className="mt-0.5 block text-xs text-muted-foreground">{desc}</span></span>
                   </label>
                 ))}
               </fieldset>
             )}
-            <details className="group rounded-xl border border-[#dce7e1] bg-[#fbfcfb] px-3 py-2">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-[#33483f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] [&::-webkit-details-marker]:hidden">
-                <span><span className="block">Voice settings <span className="font-normal text-slate-500">(optional)</span></span><span className="mt-0.5 block text-xs font-normal text-slate-500">You can complete the interview by typing.</span></span>
-                <ChevronDown className="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" aria-hidden="true" />
+            <details className="group rounded-xl border border-border bg-muted px-3 py-2">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                <span><span className="block">Voice settings <span className="font-normal text-muted-foreground">(optional)</span></span><span className="mt-0.5 block text-xs font-normal text-muted-foreground">You can complete the interview by typing.</span></span>
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
               </summary>
-              <fieldset className="mt-2 space-y-2 border-t border-[#e2ebe6] pt-2 text-sm">
+              <fieldset className="mt-2 space-y-2 border-t border-border pt-2 text-sm">
                 <legend className="sr-only">Voice settings</legend>
                 <label className="flex items-start gap-2 leading-5">
-                  <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#286a62]" />
+                  <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
                   Speak the interviewer&apos;s questions aloud
                 </label>
                 <label className="flex items-start gap-2 leading-5">
-                  <input type="checkbox" checked={autoListen} onChange={(e) => setAutoListen(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#286a62]" />
+                  <input type="checkbox" checked={autoListen} onChange={(e) => setAutoListen(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
                   Start listening automatically after each question (Chrome or Edge)
                 </label>
               </fieldset>
             </details>
             {errorBox}
-            {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-[#286a62]"><span className="student-loading-dot" aria-hidden="true" /> Reading your resume and preparing the interview…</p>}
-            <div className="flex flex-col gap-2 border-t border-[#edf1ee] pt-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs leading-5 text-slate-500">{ready ? "Your practice session is ready to begin." : "Add a PDF or at least 20 characters of resume text to continue."}</p>
-              <Button onClick={start} disabled={busy !== null || !ready} className="min-h-10 w-full gap-2 rounded-lg bg-[#18574e] px-5 font-semibold text-white shadow-none hover:bg-[#12473f] disabled:bg-[#e5ece8] disabled:text-slate-500 sm:w-auto">
+            {busy && <p role="status" aria-live="polite" className="flex items-center gap-2 text-xs font-medium text-primary"><span className="student-loading-dot" aria-hidden="true" /> Reading your resume and preparing the interview…</p>}
+            <div className="flex flex-col gap-2 border-t border-border pt-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-5 text-muted-foreground">{ready ? "Your practice session is ready to begin." : "Add a PDF or at least 20 characters of resume text to continue."}</p>
+              <Button onClick={start} disabled={busy !== null || !ready} className="min-h-10 w-full gap-2 rounded-lg bg-primary px-5 font-semibold text-primary-foreground shadow-none hover:bg-primary/90 disabled:bg-muted disabled:text-slate-500 sm:w-auto">
                 {busy === "starting" ? "Preparing…" : <>Start interview <ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
               </Button>
             </div>
@@ -480,66 +480,66 @@ export function Interview() {
     const elapsed = Math.max(0, (now - startedAt) / 1000);
     const stageIndex = STAGES.findIndex((s) => s.key === stage);
     return (
-      <div className="fixed inset-0 z-[100] h-[100dvh] overflow-y-auto bg-[#f2f6f3] px-3 py-3 text-[#25332e] sm:px-6 sm:py-5">
+      <div className="fixed inset-0 z-[100] h-[100dvh] overflow-y-auto bg-muted px-3 py-3 text-foreground sm:px-6 sm:py-5">
         <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#cfe1d8] bg-white px-4 py-2.5">
-          <span className="text-sm font-semibold">Elevra practice interview <span className="ml-2 font-normal text-slate-500">{clock(elapsed)} · {STAGES[stageIndex]?.label}</span></span>
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-2.5">
+          <span className="text-sm font-semibold">Elevra practice interview <span className="ml-2 font-normal text-muted-foreground">{clock(elapsed)} · {STAGES[stageIndex]?.label}</span></span>
           <div className="flex items-center gap-2">
             {!isFullscreen && <Button type="button" size="sm" variant="outline" onClick={reenterFullscreen}><Expand className="mr-1 h-4 w-4" /> Return to full screen</Button>}
             <Button type="button" size="sm" variant="outline" onClick={submitEarly} disabled={busy !== null}>Submit interview</Button>
           </div>
         </div>
-        {focusNotice && <p role="status" className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-900">{focusNotice}</p>}
+        {focusNotice && <p role="status" className="rounded-lg bg-risk-amber-bg px-4 py-2 text-sm text-amber-900">{focusNotice}</p>}
         {banner}
         {practiceFocus.length > 0 && (
-          <p className="rounded-md bg-[#f1f6f3] px-3 py-2 text-sm text-[#18574e]">
+          <p className="rounded-md bg-muted/60 px-3 py-2 text-sm text-primary">
             Focused practice: Elevra will come back to {practiceFocus.join(", ")}.
           </p>
         )}
         {aiOffline && (
-          <p className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-700">
+          <p className="rounded-md bg-muted px-3 py-2 text-sm text-foreground">
             The AI interviewer is offline, so you&apos;re getting standard questions for your department. Your answers still count.
           </p>
         )}
         <StudentReveal key={`interview-room-${sessionId}`}>
         <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <Card className="h-fit rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
+          <Card className="h-fit rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
             <CardContent className="space-y-5 p-5">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className={`flex h-20 w-20 items-center justify-center rounded-full bg-[#15564e] text-2xl font-semibold text-white transition ${speaking ? "ring-4 ring-teal-300 ring-offset-2 animate-pulse" : ""}`} aria-hidden>
+                <div className={`flex h-20 w-20 items-center justify-center rounded-full bg-primary text-2xl font-semibold text-primary-foreground transition ${speaking ? "ring-4 ring-ring ring-offset-2 animate-pulse" : ""}`} aria-hidden>
                   E
                 </div>
                 <p className="font-medium">Elevra</p>
-                <p className="h-4 text-xs text-slate-500" aria-live="polite">
+                <p className="h-4 text-xs text-muted-foreground" aria-live="polite">
                   {speaking ? "Speaking…" : busy === "thinking" ? "Thinking…" : mic.listening ? "Listening to you…" : done ? "Interview complete" : "Your turn"}
                 </p>
               </div>
               <div className="text-center">
                 <p className="text-3xl font-semibold tabular-nums">{clock(elapsed)}</p>
-                <p className="text-xs text-slate-500">Target {TARGET} · Question {questionNo}</p>
+                <p className="text-xs text-muted-foreground">Target {TARGET} · Question {questionNo}</p>
               </div>
               <ol className="space-y-1.5 text-sm" aria-label="Interview stages">
                 {STAGES.map((s, i) => (
-                  <li key={s.key} className={`flex items-center gap-2 ${i === stageIndex ? "font-medium text-slate-900" : i < stageIndex ? "text-slate-500" : "text-slate-400"}`}>
-                    <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${i < stageIndex || (done && i === stageIndex) ? "bg-emerald-600 text-white" : i === stageIndex ? "bg-[#15564e] text-white" : "bg-slate-200"}`}>
+                  <li key={s.key} className={`flex items-center gap-2 ${i === stageIndex ? "font-medium text-foreground" : i < stageIndex ? "text-muted-foreground" : "text-muted-foreground"}`}>
+                    <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${i < stageIndex || (done && i === stageIndex) ? "bg-emerald-600 text-primary-foreground" : i === stageIndex ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
                       {i < stageIndex || (done && i === stageIndex) ? <Check className="h-3 w-3" /> : i + 1}
                     </span>
                     {s.label}
                   </li>
                 ))}
               </ol>
-              {voiceNote && <p className="text-xs text-slate-500">{voiceNote}</p>}
+              {voiceNote && <p className="text-xs text-muted-foreground">{voiceNote}</p>}
             </CardContent>
           </Card>
 
-          <Card className="flex min-h-[520px] flex-col rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
+          <Card className="flex min-h-[520px] flex-col rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
             <div ref={scroller} className="min-h-[220px] flex-1 space-y-3 overflow-y-auto p-4 sm:p-5" style={{ maxHeight: "calc(100dvh - 19rem)" }} aria-live="polite">
               {turns.map((t, i) => (
                 <div key={i} className={`flex ${t.role === "candidate" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${t.role === "candidate" ? "bg-[#15564e] text-white" : "bg-[#f0f4f1] text-slate-900"}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${t.role === "candidate" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
                     {t.role === "interviewer" && (
                       <button type="button" onClick={() => { setSpeaking(true); void speak(t.text, !mock, () => setSpeaking(false)); }}
-                        className="float-right ml-2 text-slate-400 hover:text-slate-700" aria-label="Play this question again">
+                        className="float-right ml-2 text-muted-foreground hover:text-foreground" aria-label="Play this question again">
                         <Volume2 className="h-4 w-4" />
                       </button>
                     )}
@@ -547,14 +547,14 @@ export function Interview() {
                   </div>
                 </div>
               ))}
-              {busy === "thinking" && <div className="w-fit rounded-2xl bg-slate-100 px-4 py-2.5 text-sm text-slate-500">Elevra is thinking…</div>}
+              {busy === "thinking" && <div className="w-fit rounded-2xl bg-muted px-4 py-2.5 text-sm text-muted-foreground">Elevra is thinking…</div>}
             </div>
 
             <div className="space-y-2 border-t p-4">
               {errorBox}
               {done ? (
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm text-slate-600">The interviewer has wrapped up. Ready to see how you did?</p>
+                  <p className="text-sm text-muted-foreground">The interviewer has wrapped up. Ready to see how you did?</p>
                   <Button onClick={finish} disabled={busy !== null}>{busy === "marking" ? "Marking your interview…" : "Get my feedback"}</Button>
                 </div>
               ) : (
@@ -565,7 +565,7 @@ export function Interview() {
                     onChange={(e) => updateDraft(e.target.value)} readOnly={mic.listening} maxLength={MAX_ANSWER} rows={4}
                     onKeyDown={(e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); void send(); } }}
                     placeholder={mic.listening ? "Listening… speak naturally. Your answer sends after a short pause." : "Type an answer, or choose Speak to answer by voice."}
-                    aria-label="Your answer" disabled={busy !== null} className={mic.listening ? "bg-[#edf5f1]" : ""} />
+                    aria-label="Your answer" disabled={busy !== null} className={mic.listening ? "bg-muted" : ""} />
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       {mic.supported && (
@@ -574,7 +574,7 @@ export function Interview() {
                           {mic.listening ? <><MicOff /> Pause</> : <><Mic /> Speak</>}
                         </Button>
                       )}
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-muted-foreground">
                         {mic.listening ? "Listening · answer sends after a pause" : autoListen ? "Voice conversation ready" : "Ctrl+Enter to send"}
                       </span>
                     </div>
@@ -582,7 +582,7 @@ export function Interview() {
                       <Send /> Send now
                     </Button>
                   </div>
-                  {mic.error && <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-xs leading-5 text-red-800">{mic.error}</p>}
+                  {mic.error && <p role="alert" className="rounded-md bg-risk-red-bg px-3 py-2 text-xs leading-5 text-risk-red">{mic.error}</p>}
                 </>
               )}
             </div>
@@ -591,10 +591,10 @@ export function Interview() {
         </StudentReveal>
         </div>
         {!isFullscreen && (
-          <div className="fixed inset-0 z-[120] grid place-items-center bg-[#17231f]/90 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="fullscreen-required-title">
-            <div className="w-full max-w-md rounded-2xl border border-[#cfe1d8] bg-[#f7faf8] p-6 text-center shadow-xl">
-              <h2 id="fullscreen-required-title" className="text-lg font-semibold text-[#172824]">Full screen is required</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Your interview is still active. Return to full screen to continue.</p>
+          <div className="fixed inset-0 z-[120] grid place-items-center bg-primary p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="fullscreen-required-title">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-muted/50 p-6 text-center shadow-xl">
+              <h2 id="fullscreen-required-title" className="text-lg font-semibold text-foreground">Full screen is required</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Your interview is still active. Return to full screen to continue.</p>
               <Button type="button" className="mt-5" onClick={reenterFullscreen}><Expand className="mr-2 h-4 w-4" /> Return to interview</Button>
             </div>
           </div>
@@ -609,10 +609,10 @@ export function Interview() {
     const delta = result.new_success_score - result.old_success_score;
     const fb = result.feedback;
     const list = (title: string, items: string[], empty: string) => (
-      <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
+      <Card className="rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
         <CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader>
         <CardContent>
-          {items.length === 0 ? <p className="text-sm text-slate-500">{empty}</p>
+          {items.length === 0 ? <p className="text-sm text-muted-foreground">{empty}</p>
             : <ul className="list-inside list-disc space-y-1.5 text-sm">{items.map((s) => <li key={s}>{s}</li>)}</ul>}
         </CardContent>
       </Card>
@@ -621,38 +621,38 @@ export function Interview() {
       <div className="space-y-6">
         {banner}
         {!result.ai && (
-          <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <p className="rounded-md bg-risk-amber-bg px-3 py-2 text-sm text-risk-amber">
             AI marking was offline, so this score only reflects how complete your answers were. Try again later for full feedback.
           </p>
         )}
         <StudentReveal key="interview-result">
-        <Card className="rounded-xl border-[#dce7e1] bg-white shadow-sm shadow-slate-900/[0.03]">
+        <Card className="rounded-xl border-border bg-card shadow-sm shadow-slate-900/[0.03]">
           <CardContent className="grid gap-6 p-6 md:grid-cols-3">
             <div>
-              <p className="text-sm text-slate-500">Interview score</p>
-              <p className="text-5xl font-bold tabular-nums">{fmt(result.score_5, 1)}<span className="text-2xl text-slate-400"> / 5</span></p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="text-sm text-muted-foreground">Interview score</p>
+              <p className="text-5xl font-bold tabular-nums">{fmt(result.score_5, 1)}<span className="text-2xl text-muted-foreground"> / 5</span></p>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {fb.questions ?? "—"} questions · {fb.minutes !== undefined ? `${fmt(fb.minutes, 0)} min` : "—"}
               </p>
             </div>
             <div className="space-y-2">
               {fb.criteria ? CRITERIA.map((c) => (
                 <div key={c.key}>
-                  <div className="flex justify-between text-sm"><span>{c.label}</span><span className="tabular-nums text-slate-500">{fmt(fb.criteria![c.key], 1)} / 5</span></div>
+                  <div className="flex justify-between text-sm"><span>{c.label}</span><span className="tabular-nums text-muted-foreground">{fmt(fb.criteria![c.key], 1)} / 5</span></div>
                   <Progress value={(fb.criteria![c.key] / 5) * 100} className="h-2" />
                 </div>
-              )) : <p className="text-sm text-slate-500">Detailed marks are unavailable for this interview.</p>}
+              )) : <p className="text-sm text-muted-foreground">Detailed marks are unavailable for this interview.</p>}
             </div>
             <div className="md:text-right">
-              <p className="text-sm text-slate-500">Success Score</p>
+              <p className="text-sm text-muted-foreground">Success Score</p>
               <p className="text-3xl font-semibold tabular-nums">
                 {fmt(result.old_success_score, 1)} → {fmt(result.new_success_score, 1)}
-                <span className={`ml-2 text-lg ${delta >= 0 ? "text-emerald-700" : "text-red-700"}`}>({delta >= 0 ? "+" : ""}{delta.toFixed(1)})</span>
+                <span className={`ml-2 text-lg ${delta >= 0 ? "text-risk-green" : "text-risk-red"}`}>({delta >= 0 ? "+" : ""}{delta.toFixed(1)})</span>
               </p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Placement readiness: {result.old_placement === null ? "not yet assessed" : fmt(result.old_placement, 0)} → {fmt(result.new_placement, 0)}
               </p>
-              <p className="text-xs text-slate-400">Mock interview average now {fmt(result.mock_interview_avg, 1)} / 5</p>
+              <p className="text-xs text-muted-foreground">Mock interview average now {fmt(result.mock_interview_avg, 1)} / 5</p>
             </div>
           </CardContent>
         </Card>
@@ -664,7 +664,7 @@ export function Interview() {
         </div>
         <CoachReport feedback={fb} tasks={result.tasks ?? []} />
         {result.transcript.length > 0 && (
-          <details className="rounded-lg border bg-white p-4 text-sm">
+          <details className="rounded-lg border bg-card p-4 text-sm">
             <summary className="cursor-pointer font-medium">Review the full conversation</summary>
             <div className="mt-3 space-y-2">
               {result.transcript.map((t, i) => (
