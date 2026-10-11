@@ -9,7 +9,7 @@ import { ChatChart, type ChartSpec } from "@/components/insights/assistant/ChatC
 import { deleteConversation as removeConversation, type Conversation } from "@/components/insights/assistant/conversations";
 
 interface HackathonCard { title: string; organiser: string | null; url: string; mode: string | null; location: string | null; deadline: string | null; summary: string | null; source: string }
-interface CourseCard { title: string; description: string; provider: string; url: string; tag: string }
+interface CourseCard { title: string; description: string; provider: string; url: string; tag: string; level?: string; reason?: string }
 interface PageLink { label: string; href: string }
 interface Reply { reply: string; chart: ChartSpec | null; cards: HackathonCard[] | null; courses?: CourseCard[] | null; links?: PageLink[] | null; follow_ups: string[]; ai: boolean; conversation_id?: number | null }
 interface SavedMessage { role: "user" | "assistant"; content: string; payload: Partial<Reply> }
@@ -195,8 +195,9 @@ export function StudentAssistant() {
                         {mentioned(m.reply.courses, m.text).map((c) => (
                           <li key={c.title} className="rounded-lg border border-border bg-card p-2.5">
                             <p className="text-sm font-medium text-foreground">{c.title}</p>
-                            <p className="text-xs text-muted-foreground">{c.provider} · {c.tag}</p>
+                            <p className="text-xs text-muted-foreground">{c.provider} · {c.tag}{c.level ? ` · ${c.level}` : ""}</p>
                             <p className="mt-1 text-xs text-muted-foreground">{c.description}</p>
+                            {c.reason && <p className="mt-1 text-xs text-primary"><span className="font-semibold">Why: </span>{c.reason}</p>}
                             <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-primary underline underline-offset-2">
                               Explore on {c.provider} <ExternalLink className="h-3 w-3" aria-hidden="true" />
                             </a>

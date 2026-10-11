@@ -94,7 +94,9 @@ pip install -r backend/requirements.txt
 #    The random seed is fixed, so everyone gets the same data. Add --no-db to write local files only.
 python pipeline/run.py --regenerate
 
-# 4. API (PYTHONPATH must include pipeline/, because the what-if endpoint imports the scoring engine)
+# 4. API. On Windows just run  .\run-api.ps1 from the repository root (it creates the environment, installs
+#    dependencies and starts the server on port 8000). Elsewhere:
+#    (PYTHONPATH must include pipeline/, because the what-if endpoint imports the scoring engine)
 cd backend && PYTHONPATH=../pipeline:. uvicorn main:app --port 8000      # http://localhost:8000/health
 
 # 5. web app
@@ -102,6 +104,10 @@ cd frontend && npm install && npm run dev                               # http:/
 ```
 
 Tests: `cd frontend && npm test` · `cd backend && python -m unittest discover -s tests -t .` · `pytest pipeline/tests`.
+
+### Deploying
+
+Step-by-step for Vercel (web) and a Hostinger VPS (API), with ready-made service and nginx files in `deploy/`: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). After deploying, run `python deploy/smoke_test.py WEB_URL API_URL`; every line must say PASS.
 
 ### Environment variables (names only)
 

@@ -5,6 +5,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 import urllib.error
@@ -198,10 +199,26 @@ def _upsert_user_rows(users: list[dict], database_url: str) -> None:
         path.unlink(missing_ok=True)
 
 
+def _psycopg(database_url: str, arguments: list[str]) -> subprocess.CompletedProcess:
+    """Stand-in for the two psql calls this script makes (-c <query> and -f <file>) on machines without psql."""
+    import psycopg  # already a backend dependency
+    try:
+        with psycopg.connect(database_url, autocommit=True, connect_timeout=15) as conn:
+            if "-f" in arguments:
+                conn.execute(Path(arguments[arguments.index("-f") + 1]).read_text(encoding="utf-8"))
+                return subprocess.CompletedProcess(arguments, 0, "", "")
+            row = conn.execute(arguments[arguments.index("-c") + 1]).fetchone()
+            return subprocess.CompletedProcess(arguments, 0, "" if row is None else str(row[0]) + chr(10), "")
+    except Exception as exc:
+        return subprocess.CompletedProcess(arguments, 1, "", str(exc))
+
+
 def _psql(database_url: str, arguments: list[str], timeout: int = 30) -> subprocess.CompletedProcess:
     parsed = urllib.parse.urlparse(database_url)
     if parsed.scheme not in {"postgres", "postgresql"} or not parsed.hostname or not parsed.username:
         raise RuntimeError("SUPABASE_DB_URL must be a valid PostgreSQL connection URL")
+    if shutil.which("psql") is None:
+        return _psycopg(database_url, arguments)
     password = urllib.parse.unquote(parsed.password or "")
     if not password:
         raise RuntimeError("SUPABASE_DB_URL is missing its database password")

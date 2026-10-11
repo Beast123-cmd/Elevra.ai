@@ -74,6 +74,8 @@ export interface Certification {
   skills: Pillar[];
   departments: string[]; // empty = all departments
   tag: string;
+  trains?: string[];     // fine-grained skills the course builds (names as in the skills table, e.g. "DSA", "Public speaking")
+  level?: "Beginner" | "Intermediate" | "Advanced";
   keywords?: string[];   // extra words people search by (e.g. "ai", "ml", "dsa"); used by search and by the Ask Elevra assistant
 }
 

@@ -18,7 +18,11 @@
       "data science",
       "ai",
       "ml"
-    ]
+    ],
+    "trains": [
+      "Python"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Data Structures and Algorithms",
@@ -41,7 +45,12 @@
       "interview",
       "placement",
       "algorithms"
-    ]
+    ],
+    "trains": [
+      "DSA",
+      "Problem solving"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "Complete Aptitude and Reasoning",
@@ -52,7 +61,11 @@
       "placement"
     ],
     "departments": [],
-    "tag": "Aptitude"
+    "tag": "Aptitude",
+    "trains": [
+      "Logical reasoning"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Machine Learning Specialization",
@@ -76,7 +89,11 @@
       "data science",
       "andrew ng",
       "artificial intelligence"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "SQL for Data Analysis",
@@ -98,7 +115,11 @@
       "database",
       "data science",
       "analytics"
-    ]
+    ],
+    "trains": [
+      "Databases"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Web Development Bootcamp",
@@ -112,7 +133,11 @@
       "Comp",
       "IT"
     ],
-    "tag": "Web"
+    "tag": "Web",
+    "trains": [
+      "Web development"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Digital Electronics",
@@ -126,7 +151,12 @@
     "departments": [
       "ENTC"
     ],
-    "tag": "Core subject"
+    "tag": "Core subject",
+    "trains": [
+      "Embedded systems",
+      "VLSI"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Embedded Systems Design",
@@ -139,7 +169,11 @@
     "departments": [
       "ENTC"
     ],
-    "tag": "Embedded"
+    "tag": "Embedded",
+    "trains": [
+      "Embedded systems"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "Communication Skills for Interviews",
@@ -151,7 +185,12 @@
       "feedback"
     ],
     "departments": [],
-    "tag": "Soft skills"
+    "tag": "Soft skills",
+    "trains": [
+      "Communication",
+      "Public speaking"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Resume and LinkedIn Profile Building",
@@ -163,7 +202,11 @@
       "engagement"
     ],
     "departments": [],
-    "tag": "Career"
+    "tag": "Career",
+    "trains": [
+      "Communication"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Effective Time and Study Management",
@@ -176,7 +219,11 @@
       "lms"
     ],
     "departments": [],
-    "tag": "Study skills"
+    "tag": "Study skills",
+    "trains": [
+      "Time management"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Engineering Mathematics",
@@ -187,7 +234,12 @@
       "academic"
     ],
     "departments": [],
-    "tag": "Core subject"
+    "tag": "Core subject",
+    "trains": [
+      "Logical reasoning",
+      "Statistics"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "Teamwork and Leadership",
@@ -199,7 +251,12 @@
       "feedback"
     ],
     "departments": [],
-    "tag": "Soft skills"
+    "tag": "Soft skills",
+    "trains": [
+      "Teamwork",
+      "Leadership"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Cloud Fundamentals (AWS or Azure)",
@@ -215,7 +272,11 @@
       "IT",
       "AI&DS"
     ],
-    "tag": "Cloud"
+    "tag": "Cloud",
+    "trains": [
+      "Cloud"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "AI For Everyone",
@@ -233,7 +294,11 @@
       "beginner",
       "intro",
       "machine learning"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Mathematics for Machine Learning",
@@ -257,7 +322,12 @@
       "linear algebra",
       "statistics",
       "foundations"
-    ]
+    ],
+    "trains": [
+      "Machine learning",
+      "Statistics"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "Deep Learning Specialization",
@@ -280,7 +350,11 @@
       "deep learning",
       "neural networks",
       "advanced"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Advanced"
   },
   {
     "title": "Generative AI with Large Language Models",
@@ -304,7 +378,11 @@
       "generative ai",
       "chatgpt",
       "prompt"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Advanced"
   },
   {
     "title": "IBM Data Science Professional Certificate",
@@ -328,7 +406,13 @@
       "ml",
       "analytics",
       "certificate"
-    ]
+    ],
+    "trains": [
+      "Python",
+      "Databases",
+      "Statistics"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Google Data Analytics Certificate",
@@ -347,7 +431,12 @@
       "sql",
       "analysis",
       "certificate"
-    ]
+    ],
+    "trains": [
+      "Statistics",
+      "Databases"
+    ],
+    "level": "Beginner"
   },
   {
     "title": "Python for Data Science and Machine Learning Bootcamp",
@@ -372,7 +461,12 @@
       "pandas",
       "scikit-learn",
       "bootcamp"
-    ]
+    ],
+    "trains": [
+      "Python",
+      "Machine learning"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "Machine Learning A-Z",
@@ -395,7 +489,11 @@
       "machine learning",
       "practical",
       "projects"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "Statistics for Data Science",
@@ -418,7 +516,11 @@
       "data science",
       "ai",
       "ml"
-    ]
+    ],
+    "trains": [
+      "Statistics"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "NPTEL: Introduction to Machine Learning",
@@ -442,7 +544,11 @@
       "iit",
       "nptel",
       "university"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "NPTEL: Deep Learning",
@@ -466,7 +572,11 @@
       "iit",
       "nptel",
       "neural networks"
-    ]
+    ],
+    "trains": [
+      "Machine learning"
+    ],
+    "level": "Advanced"
   },
   {
     "title": "NPTEL: Data Science for Engineers",
@@ -487,7 +597,12 @@
       "iit",
       "nptel",
       "engineers"
-    ]
+    ],
+    "trains": [
+      "Python",
+      "Statistics"
+    ],
+    "level": "Intermediate"
   },
   {
     "title": "NPTEL: Probability and Statistics",
@@ -508,6 +623,258 @@
       "ml",
       "iit",
       "nptel"
-    ]
+    ],
+    "trains": [
+      "Statistics"
+    ],
+    "level": "Intermediate"
+  },
+  {
+    "title": "Dynamic Programming and Competitive Coding",
+    "description": "Move beyond basic DSA: DP, graphs, and contest-style problem solving.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=dynamic%20programming%20competitive%20programming",
+    "skills": [
+      "placement",
+      "skills"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "Coding",
+    "keywords": [
+      "dsa",
+      "dp",
+      "graphs",
+      "competitive",
+      "leetcode",
+      "coding"
+    ],
+    "trains": [
+      "DSA",
+      "Problem solving"
+    ],
+    "level": "Advanced"
+  },
+  {
+    "title": "Introduction to Public Speaking",
+    "description": "Plan, structure and deliver talks and presentations with confidence.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=introduction%20to%20public%20speaking",
+    "skills": [
+      "placement",
+      "engagement"
+    ],
+    "departments": [],
+    "tag": "Soft skills",
+    "keywords": [
+      "public speaking",
+      "presentation",
+      "stage",
+      "confidence",
+      "speaking"
+    ],
+    "trains": [
+      "Public speaking",
+      "Communication"
+    ],
+    "level": "Beginner"
+  },
+  {
+    "title": "Business English Communication Skills",
+    "description": "Build clear spoken and written English for interviews and the workplace.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=business%20english%20communication%20skills",
+    "skills": [
+      "placement",
+      "feedback"
+    ],
+    "departments": [],
+    "tag": "Soft skills",
+    "keywords": [
+      "english",
+      "language",
+      "grammar",
+      "fluency",
+      "writing",
+      "spoken"
+    ],
+    "trains": [
+      "English language",
+      "Communication"
+    ],
+    "level": "Beginner"
+  },
+  {
+    "title": "Leadership and Influence",
+    "description": "Lead small teams, run meetings and influence without authority.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=leadership%20and%20influence",
+    "skills": [
+      "engagement",
+      "feedback"
+    ],
+    "departments": [],
+    "tag": "Soft skills",
+    "keywords": [
+      "leadership",
+      "lead",
+      "team lead",
+      "management"
+    ],
+    "trains": [
+      "Leadership",
+      "Teamwork"
+    ],
+    "level": "Intermediate"
+  },
+  {
+    "title": "Computer Networking Fundamentals",
+    "description": "How the internet works: TCP/IP, DNS, routing and network troubleshooting.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=computer%20networking%20fundamentals",
+    "skills": [
+      "skills"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "ENTC"
+    ],
+    "tag": "Networking",
+    "keywords": [
+      "networking",
+      "network",
+      "tcp",
+      "ip",
+      "dns",
+      "ccna"
+    ],
+    "trains": [
+      "Networking"
+    ],
+    "level": "Beginner"
+  },
+  {
+    "title": "NPTEL: VLSI Design",
+    "description": "Digital VLSI design flow, CMOS circuits and layout.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses?searchText=VLSI%20design",
+    "skills": [
+      "skills",
+      "academic"
+    ],
+    "departments": [
+      "ENTC"
+    ],
+    "tag": "VLSI",
+    "keywords": [
+      "vlsi",
+      "cmos",
+      "chip",
+      "verilog",
+      "hardware"
+    ],
+    "trains": [
+      "VLSI"
+    ],
+    "level": "Intermediate"
+  },
+  {
+    "title": "NPTEL: Joy of Computing Using Python",
+    "description": "Learn to program and solve problems in Python from scratch.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses?searchText=joy%20of%20computing%20using%20python",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [],
+    "tag": "Python",
+    "keywords": [
+      "python",
+      "programming",
+      "beginner",
+      "nptel"
+    ],
+    "trains": [
+      "Python",
+      "Problem solving"
+    ],
+    "level": "Beginner"
+  },
+  {
+    "title": "Learning How to Learn",
+    "description": "Evidence-based study techniques, focus and beating procrastination.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=learning%20how%20to%20learn",
+    "skills": [
+      "academic",
+      "lms"
+    ],
+    "departments": [],
+    "tag": "Study skills",
+    "keywords": [
+      "study",
+      "focus",
+      "procrastination",
+      "productivity",
+      "habits"
+    ],
+    "trains": [
+      "Time management"
+    ],
+    "level": "Beginner"
+  },
+  {
+    "title": "Advanced Web Development with React",
+    "description": "Build production web apps with React, APIs and deployment.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=react%20complete%20guide",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT"
+    ],
+    "tag": "Web",
+    "keywords": [
+      "react",
+      "frontend",
+      "javascript",
+      "web",
+      "full stack"
+    ],
+    "trains": [
+      "Web development"
+    ],
+    "level": "Advanced"
+  },
+  {
+    "title": "Reasoning and Aptitude for Campus Placements",
+    "description": "Logical reasoning, puzzles and data interpretation practice for placement tests.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=logical%20reasoning%20placement",
+    "skills": [
+      "placement"
+    ],
+    "departments": [],
+    "tag": "Aptitude",
+    "keywords": [
+      "reasoning",
+      "logic",
+      "puzzles",
+      "aptitude",
+      "placement"
+    ],
+    "trains": [
+      "Logical reasoning",
+      "Problem solving"
+    ],
+    "level": "Intermediate"
   }
 ]
