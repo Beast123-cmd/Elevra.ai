@@ -70,7 +70,7 @@ export function Certifications() {
         const results = departmentItems
           .filter(({ course }) => provider === "All providers" || course.provider === provider)
           .filter(({ course }) => topic === "All topics" || course.tag === topic)
-          .filter(({ course }) => matchesEveryWord(query, `${course.title} ${course.description} ${course.provider} ${course.tag} ${course.skills.map((skill) => PILLAR_LABEL[skill]).join(" ")}`))
+          .filter(({ course }) => matchesEveryWord(query, `${course.title} ${course.description} ${course.provider} ${course.tag} ${(course.keywords ?? []).join(" ")} ${course.skills.map((skill) => PILLAR_LABEL[skill]).join(" ")}`))
           .sort((a, b) => Number(b.relevant) - Number(a.relevant) || a.course.title.localeCompare(b.course.title));
         const filtered = Boolean(query || provider !== "All providers" || topic !== "All topics");
         const submitSearch = (event: FormEvent<HTMLFormElement>) => {

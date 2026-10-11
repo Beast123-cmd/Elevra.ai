@@ -1,4 +1,5 @@
 import type { Pillar } from "@/lib/types";
+import coursesJson from "./courses.json";
 
 export const PILLAR_LABEL: Record<Pillar, string> = {
   academic: "Academics", attendance: "Attendance", lms: "Online learning (LMS)", placement: "Placement readiness",
@@ -73,27 +74,9 @@ export interface Certification {
   skills: Pillar[];
   departments: string[]; // empty = all departments
   tag: string;
+  keywords?: string[];   // extra words people search by (e.g. "ai", "ml", "dsa"); used by search and by the Ask Elevra assistant
 }
 
-// Links are to each provider's search page for the topic, so they never go stale.
-const q = (base: string, term: string) => `${base}${encodeURIComponent(term)}`;
-const COURSERA = "https://www.coursera.org/search?query=";
-const UDEMY = "https://www.udemy.com/courses/search/?q=";
-const NPTEL = "https://nptel.ac.in/courses";
-
-export const CERTIFICATIONS: Certification[] = [
-  { title: "Programming for Everybody: Python", description: "Learn Python basics through short exercises and hands-on examples.", provider: "Coursera", url: q(COURSERA, "python for everybody"), skills: ["skills", "placement"], departments: [], tag: "Python" },
-  { title: "Data Structures and Algorithms", description: "Practise core data structures, algorithms, and problem solving.", provider: "Coursera", url: q(COURSERA, "data structures and algorithms"), skills: ["placement", "skills"], departments: ["Comp", "IT", "AI&DS"], tag: "Coding" },
-  { title: "Complete Aptitude and Reasoning", description: "Build speed in quantitative aptitude, logic, and placement tests.", provider: "Udemy", url: q(UDEMY, "aptitude reasoning placement"), skills: ["placement"], departments: [], tag: "Aptitude" },
-  { title: "Machine Learning Specialization", description: "Learn machine learning foundations, model evaluation, and applications.", provider: "Coursera", url: q(COURSERA, "machine learning specialization"), skills: ["skills"], departments: ["Comp", "IT", "AI&DS"], tag: "AI / ML" },
-  { title: "SQL for Data Analysis", description: "Query datasets and turn results into clear analysis.", provider: "Udemy", url: q(UDEMY, "sql data analysis"), skills: ["skills", "placement"], departments: ["Comp", "IT", "AI&DS"], tag: "Databases" },
-  { title: "Web Development Bootcamp", description: "Build responsive websites with practical web development tools.", provider: "Udemy", url: q(UDEMY, "web development bootcamp"), skills: ["skills"], departments: ["Comp", "IT"], tag: "Web" },
-  { title: "Digital Electronics", description: "Study logic design, circuits, and digital systems.", provider: "NPTEL", url: NPTEL, skills: ["academic", "skills"], departments: ["ENTC"], tag: "Core subject" },
-  { title: "Embedded Systems Design", description: "Explore microcontrollers, embedded software, and system design.", provider: "NPTEL", url: NPTEL, skills: ["skills"], departments: ["ENTC"], tag: "Embedded" },
-  { title: "Communication Skills for Interviews", description: "Practise clear, structured answers for interview conversations.", provider: "Coursera", url: q(COURSERA, "communication skills interview"), skills: ["placement", "feedback"], departments: [], tag: "Soft skills" },
-  { title: "Resume and LinkedIn Profile Building", description: "Present your projects, experience, and skills to recruiters.", provider: "Udemy", url: q(UDEMY, "resume linkedin profile"), skills: ["placement", "engagement"], departments: [], tag: "Career" },
-  { title: "Effective Time and Study Management", description: "Use practical strategies for focused learning and recall.", provider: "Coursera", url: q(COURSERA, "learning how to learn"), skills: ["academic", "attendance", "lms"], departments: [], tag: "Study skills" },
-  { title: "Engineering Mathematics", description: "Review core engineering mathematics with guided lessons.", provider: "NPTEL", url: NPTEL, skills: ["academic"], departments: [], tag: "Core subject" },
-  { title: "Teamwork and Leadership", description: "Develop collaboration, communication, and leadership skills.", provider: "Coursera", url: q(COURSERA, "teamwork leadership"), skills: ["engagement", "feedback"], departments: [], tag: "Soft skills" },
-  { title: "Cloud Fundamentals (AWS or Azure)", description: "Understand cloud concepts, architecture, and core services.", provider: "Coursera", url: q(COURSERA, "cloud computing fundamentals"), skills: ["skills", "placement"], departments: ["Comp", "IT", "AI&DS"], tag: "Cloud" },
-];
+// The catalog lives in courses.json so the Certifications page and the Ask Elevra assistant (backend/routers/assistant.py)
+// read the same list. Links go to each provider's search page for the course, so they never go stale.
+export const CERTIFICATIONS = coursesJson as Certification[];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft, ExternalLink, History, MessageCircle, Plus, Send, Trash2, X } from "lucide-react";
 import { api } from "@/lib/api";
@@ -8,17 +9,24 @@ import { ChatChart, type ChartSpec } from "@/components/insights/assistant/ChatC
 import { deleteConversation as removeConversation, type Conversation } from "@/components/insights/assistant/conversations";
 
 interface HackathonCard { title: string; organiser: string | null; url: string; mode: string | null; location: string | null; deadline: string | null; summary: string | null; source: string }
-interface Reply { reply: string; chart: ChartSpec | null; cards: HackathonCard[] | null; follow_ups: string[]; ai: boolean; conversation_id?: number | null }
+interface CourseCard { title: string; description: string; provider: string; url: string; tag: string }
+interface Reply { reply: string; chart: ChartSpec | null; cards: HackathonCard[] | null; courses?: CourseCard[] | null; follow_ups: string[]; ai: boolean; conversation_id?: number | null }
 interface SavedMessage { role: "user" | "assistant"; content: string; payload: Partial<Reply> }
 interface Message { role: "user" | "assistant"; text: string; reply?: Reply; error?: boolean }
 
-const STARTERS = ["Why is my score where it is?", "What should I focus on this week?", "What if my attendance was 85%?", "Any hackathons for me?"];
+const STARTERS = ["Why is my score where it is?", "What should I focus on this week?", "What if my attendance was 85%?", "Suggest a course for me", "Any hackathons for me?"];
 
 const closes = (iso: string | null) => {
   if (!iso) return null;
   const days = Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
   return days <= 0 ? "Closes today" : days === 1 ? "Closes tomorrow" : `Closes in ${days} days`;
 };
+
+/** The courses the reply actually talks about (by title); if it names none, the first few the search returned. */
+function mentioned(courses: CourseCard[], reply: string): CourseCard[] {
+  const named = courses.filter((c) => reply.toLowerCase().includes(c.title.toLowerCase()));
+  return (named.length ? named : courses).slice(0, 3);
+}
 
 /** Renders **bold** and line breaks from the model's short replies, without injecting HTML. */
 function RichText({ text }: { text: string }) {
@@ -81,7 +89,7 @@ export function StudentAssistant() {
       const c = await api<{ id: number; messages: SavedMessage[] }>(`/assistant/conversations/${id}`);
       setConversationId(c.id);
       setMessages(c.messages.map((m) => m.role === "user" ? { role: "user", text: m.content }
-        : { role: "assistant", text: m.content, reply: { reply: m.content, chart: m.payload.chart ?? null, cards: m.payload.cards ?? null, follow_ups: m.payload.follow_ups ?? [], ai: m.payload.ai ?? true } }));
+        : { role: "assistant", text: m.content, reply: { reply: m.content, chart: m.payload.chart ?? null, cards: m.payload.cards ?? null, courses: m.payload.courses ?? null, follow_ups: m.payload.follow_ups ?? [], ai: m.payload.ai ?? true } }));
     } catch {
       setMessages([{ role: "assistant", error: true, text: "Couldn't open that conversation. Please try again." }]);
     } finally { setBusy(false); }
@@ -170,6 +178,25 @@ export function StudentAssistant() {
                 <div className={`max-w-[90%] space-y-2 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${m.role === "user" ? "bg-[#18574e] text-white" : m.error ? "bg-amber-50 text-amber-900" : "bg-[#f1f6f3] text-[#172824]"}`}>
                   {m.role === "assistant" && !m.error ? <RichText text={m.text} /> : <p>{m.text}</p>}
                   {m.reply?.chart && <ChatChart spec={m.reply.chart} />}
+                  {m.reply?.courses && m.reply.courses.length > 0 && (
+                    <div className="space-y-2">
+                      <ul className="space-y-2">
+                        {mentioned(m.reply.courses, m.text).map((c) => (
+                          <li key={c.title} className="rounded-lg border border-[#e2ebe6] bg-white p-2.5">
+                            <p className="text-sm font-medium text-[#172824]">{c.title}</p>
+                            <p className="text-xs text-slate-500">{c.provider} · {c.tag}</p>
+                            <p className="mt-1 text-xs text-slate-600">{c.description}</p>
+                            <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#286a62] underline underline-offset-2">
+                              Explore on {c.provider} <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                      <Link href="/student/certifications" onClick={() => setOpen(false)} className="inline-block text-xs font-semibold text-[#286a62] underline underline-offset-2">
+                        See all courses in Certifications
+                      </Link>
+                    </div>
+                  )}
                   {m.reply?.cards && m.reply.cards.length > 0 && (
                     <ul className="space-y-2">
                       {m.reply.cards.map((h) => (

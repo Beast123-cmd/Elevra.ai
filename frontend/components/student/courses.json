@@ -1,0 +1,513 @@
+[
+  {
+    "title": "Programming for Everybody: Python",
+    "description": "Learn Python basics through short exercises and hands-on examples.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=python%20for%20everybody",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [],
+    "tag": "Python",
+    "keywords": [
+      "python",
+      "programming",
+      "coding",
+      "beginner",
+      "data science",
+      "ai",
+      "ml"
+    ]
+  },
+  {
+    "title": "Data Structures and Algorithms",
+    "description": "Practise core data structures, algorithms, and problem solving.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=data%20structures%20and%20algorithms",
+    "skills": [
+      "placement",
+      "skills"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "Coding",
+    "keywords": [
+      "dsa",
+      "coding",
+      "interview",
+      "placement",
+      "algorithms"
+    ]
+  },
+  {
+    "title": "Complete Aptitude and Reasoning",
+    "description": "Build speed in quantitative aptitude, logic, and placement tests.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=aptitude%20reasoning%20placement",
+    "skills": [
+      "placement"
+    ],
+    "departments": [],
+    "tag": "Aptitude"
+  },
+  {
+    "title": "Machine Learning Specialization",
+    "description": "Learn machine learning foundations, model evaluation, and applications.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=machine%20learning%20specialization",
+    "skills": [
+      "skills"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "machine learning",
+      "deep learning",
+      "data science",
+      "andrew ng",
+      "artificial intelligence"
+    ]
+  },
+  {
+    "title": "SQL for Data Analysis",
+    "description": "Query datasets and turn results into clear analysis.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=sql%20data%20analysis",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "Databases",
+    "keywords": [
+      "sql",
+      "database",
+      "data science",
+      "analytics"
+    ]
+  },
+  {
+    "title": "Web Development Bootcamp",
+    "description": "Build responsive websites with practical web development tools.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=web%20development%20bootcamp",
+    "skills": [
+      "skills"
+    ],
+    "departments": [
+      "Comp",
+      "IT"
+    ],
+    "tag": "Web"
+  },
+  {
+    "title": "Digital Electronics",
+    "description": "Study logic design, circuits, and digital systems.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "academic",
+      "skills"
+    ],
+    "departments": [
+      "ENTC"
+    ],
+    "tag": "Core subject"
+  },
+  {
+    "title": "Embedded Systems Design",
+    "description": "Explore microcontrollers, embedded software, and system design.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "skills"
+    ],
+    "departments": [
+      "ENTC"
+    ],
+    "tag": "Embedded"
+  },
+  {
+    "title": "Communication Skills for Interviews",
+    "description": "Practise clear, structured answers for interview conversations.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=communication%20skills%20interview",
+    "skills": [
+      "placement",
+      "feedback"
+    ],
+    "departments": [],
+    "tag": "Soft skills"
+  },
+  {
+    "title": "Resume and LinkedIn Profile Building",
+    "description": "Present your projects, experience, and skills to recruiters.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=resume%20linkedin%20profile",
+    "skills": [
+      "placement",
+      "engagement"
+    ],
+    "departments": [],
+    "tag": "Career"
+  },
+  {
+    "title": "Effective Time and Study Management",
+    "description": "Use practical strategies for focused learning and recall.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=learning%20how%20to%20learn",
+    "skills": [
+      "academic",
+      "attendance",
+      "lms"
+    ],
+    "departments": [],
+    "tag": "Study skills"
+  },
+  {
+    "title": "Engineering Mathematics",
+    "description": "Review core engineering mathematics with guided lessons.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "academic"
+    ],
+    "departments": [],
+    "tag": "Core subject"
+  },
+  {
+    "title": "Teamwork and Leadership",
+    "description": "Develop collaboration, communication, and leadership skills.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=teamwork%20leadership",
+    "skills": [
+      "engagement",
+      "feedback"
+    ],
+    "departments": [],
+    "tag": "Soft skills"
+  },
+  {
+    "title": "Cloud Fundamentals (AWS or Azure)",
+    "description": "Understand cloud concepts, architecture, and core services.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=cloud%20computing%20fundamentals",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "Cloud"
+  },
+  {
+    "title": "AI For Everyone",
+    "description": "A non-technical introduction to what AI can and can't do, and how teams use it. A gentle first step.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=AI%20for%20everyone",
+    "skills": [
+      "skills"
+    ],
+    "departments": [],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "artificial intelligence",
+      "beginner",
+      "intro",
+      "machine learning"
+    ]
+  },
+  {
+    "title": "Mathematics for Machine Learning",
+    "description": "Linear algebra, calculus and statistics for ML, taught with the ideas ML actually uses.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=mathematics%20for%20machine%20learning",
+    "skills": [
+      "skills",
+      "academic"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "maths",
+      "linear algebra",
+      "statistics",
+      "foundations"
+    ]
+  },
+  {
+    "title": "Deep Learning Specialization",
+    "description": "Neural networks, CNNs, sequence models and how to train them, in five practical courses.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=deep%20learning%20specialization",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "deep learning",
+      "neural networks",
+      "advanced"
+    ]
+  },
+  {
+    "title": "Generative AI with Large Language Models",
+    "description": "How LLMs work and how to build with them: prompting, fine-tuning and deployment basics.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=generative%20AI%20with%20large%20language%20models",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "genai",
+      "llm",
+      "generative ai",
+      "chatgpt",
+      "prompt"
+    ]
+  },
+  {
+    "title": "IBM Data Science Professional Certificate",
+    "description": "Python, SQL, data analysis and machine learning with hands-on projects for a portfolio.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=IBM%20data%20science%20professional%20certificate",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "Data science",
+    "keywords": [
+      "data science",
+      "python",
+      "ai",
+      "ml",
+      "analytics",
+      "certificate"
+    ]
+  },
+  {
+    "title": "Google Data Analytics Certificate",
+    "description": "Analyse data and present findings with spreadsheets, SQL and R: a job-ready foundation.",
+    "provider": "Coursera",
+    "url": "https://www.coursera.org/search?query=Google%20data%20analytics%20certificate",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [],
+    "tag": "Data science",
+    "keywords": [
+      "data analytics",
+      "data science",
+      "sql",
+      "analysis",
+      "certificate"
+    ]
+  },
+  {
+    "title": "Python for Data Science and Machine Learning Bootcamp",
+    "description": "NumPy, pandas, visualisation and scikit-learn, from first principles to working models.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=python%20for%20data%20science%20and%20machine%20learning%20bootcamp",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "python",
+      "data science",
+      "pandas",
+      "scikit-learn",
+      "bootcamp"
+    ]
+  },
+  {
+    "title": "Machine Learning A-Z",
+    "description": "Hands-on regression, classification, clustering and more, with code you can reuse in projects.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=machine%20learning%20A-Z",
+    "skills": [
+      "skills",
+      "placement"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "machine learning",
+      "practical",
+      "projects"
+    ]
+  },
+  {
+    "title": "Statistics for Data Science",
+    "description": "Probability, hypothesis testing and regression: the statistics every data role asks about.",
+    "provider": "Udemy",
+    "url": "https://www.udemy.com/courses/search/?q=statistics%20for%20data%20science",
+    "skills": [
+      "skills",
+      "academic"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "Data science",
+    "keywords": [
+      "statistics",
+      "probability",
+      "data science",
+      "ai",
+      "ml"
+    ]
+  },
+  {
+    "title": "NPTEL: Introduction to Machine Learning",
+    "description": "A university-level ML course from IIT Madras. Find it in the NPTEL course list and enrol for free.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "skills",
+      "academic"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "machine learning",
+      "iit",
+      "nptel",
+      "university"
+    ]
+  },
+  {
+    "title": "NPTEL: Deep Learning",
+    "description": "IIT-level deep learning for students comfortable with ML basics. Search the title on NPTEL and enrol for free.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "skills",
+      "academic"
+    ],
+    "departments": [
+      "Comp",
+      "IT",
+      "AI&DS"
+    ],
+    "tag": "AI / ML",
+    "keywords": [
+      "ai",
+      "ml",
+      "deep learning",
+      "iit",
+      "nptel",
+      "neural networks"
+    ]
+  },
+  {
+    "title": "NPTEL: Data Science for Engineers",
+    "description": "Data science foundations with Python and R for engineering students. Free to enrol, with an optional certificate exam.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "skills",
+      "academic"
+    ],
+    "departments": [],
+    "tag": "Data science",
+    "keywords": [
+      "data science",
+      "python",
+      "ai",
+      "ml",
+      "iit",
+      "nptel",
+      "engineers"
+    ]
+  },
+  {
+    "title": "NPTEL: Probability and Statistics",
+    "description": "Core probability and statistics for engineers: a strong base for ML. Search the title on NPTEL.",
+    "provider": "NPTEL",
+    "url": "https://nptel.ac.in/courses",
+    "skills": [
+      "academic",
+      "skills"
+    ],
+    "departments": [],
+    "tag": "Data science",
+    "keywords": [
+      "statistics",
+      "probability",
+      "maths",
+      "ai",
+      "ml",
+      "iit",
+      "nptel"
+    ]
+  }
+]
