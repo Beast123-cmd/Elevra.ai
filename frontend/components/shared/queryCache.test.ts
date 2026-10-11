@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
-import { clearQueryCache, FRESH_MS, MAX_AGE_MS, readCache, setCacheOwner, writeCache } from "./queryCache.ts";
+import { clearQueryCache, FRESH_MS, invalidateCache, MAX_AGE_MS, readCache, setCacheOwner, writeCache } from "./queryCache.ts";
 
 beforeEach(() => {
   clearQueryCache();
@@ -57,4 +57,15 @@ test("signing out (owner becomes null) empties the cache", () => {
   writeCache("k", "v", 1000);
   setCacheOwner(null);
   assert.equal(readCache("k", 1000), null);
+});
+
+test("invalidating by prefix forgets only the matching entries", () => {
+  writeCache("faculty:queue", 1, 1000);
+  writeCache("faculty:other", 2, 1000);
+  writeCache("admin:overview", 3, 1000);
+  invalidateCache("faculty:");
+  assert.equal(readCache("faculty:queue", 1000), null);
+  assert.equal(readCache("faculty:other", 1000), null);
+  assert.equal(readCache("admin:overview", 1000)?.value, 3);
+  invalidateCache("nothing");
 });

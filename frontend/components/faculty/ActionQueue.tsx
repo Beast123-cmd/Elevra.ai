@@ -1,14 +1,16 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { BandBadge, RiskBadge } from "@/components/shared/badges";
+import { contactState, isRed, type CaseRow, type ContactState } from "@/components/shared/cases";
 import { EmptyState } from "@/components/shared/Kpi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { filterQueue, readContacted, toCsv, topReasons, writeContacted, type QueueFilters, type QueueRow } from "./queue";
+import { filterQueue, toCsv, topReasons, type QueueFilters, type QueueRow } from "./queue";
 
 const FIELD = "mt-1 block h-9 w-full rounded-md border border-slate-300 bg-white px-2 text-sm";
 const SHOW_MAX = 200;
+const RISK_OPTIONS: QueueFilters["risk"][] = ["Any", "Needs contact", "Academic Red", "Placement Red", "Early warning"];
 
 function download(name: string, text: string) {
   const a = document.createElement("a");
@@ -18,27 +20,25 @@ function download(name: string, text: string) {
   URL.revokeObjectURL(a.href);
 }
 
-export function ActionQueue({ rows, showMentorFilter }: { rows: QueueRow[]; showMentorFilter: boolean }) {
+function LastContact({ state, red }: { state: ContactState; red: boolean }) {
+  if (state.kind === "never") return <span className={red ? "font-medium text-red-700" : "text-slate-400"}>{red ? "Not contacted" : "—"}</span>;
+  const label = state.daysAgo === 0 ? "Today" : state.daysAgo === 1 ? "Yesterday" : `${state.daysAgo} days ago`;
+  return <span className={state.kind === "stale" && red ? "font-medium text-amber-700" : "text-slate-700"}>{label}</span>;
+}
+
+export function ActionQueue({ rows, cases, showMentorFilter }: { rows: QueueRow[]; cases: CaseRow[]; showMentorFilter: boolean }) {
   const [f, setF] = useState<QueueFilters>({ q: "", year: "All", risk: "Any", segment: "All", mentor: "All", hideContacted: false });
-  const [ticks, setTicks] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    const s = readContacted(window.localStorage);
-    setTicks(Object.fromEntries(Array.from(s).map((id) => [id, true])));
-  }, []);
-
-  const contacted = useMemo(() => new Set(Object.keys(ticks).filter((k) => ticks[k])), [ticks]);
+  const states = useMemo(() => {
+    const now = new Date();
+    return new Map(rows.map((r) => [r.student_id, contactState(r.student_id, cases, now)]));
+  }, [rows, cases]);
+  const contacted = useMemo(() => new Set(rows.filter((r) => states.get(r.student_id)?.kind === "ok").map((r) => r.student_id)), [rows, states]);
   const shown = useMemo(() => filterQueue(rows, f, contacted), [rows, f, contacted]);
   const uniq = (xs: (string | null)[]) => Array.from(new Set(xs.filter((x): x is string => !!x))).sort();
   const years = uniq(rows.map((r) => String(r.year)));
   const segments = uniq(rows.map((r) => r.segment));
   const mentors = uniq(rows.map((r) => r.mentor_faculty_id));
-
-  function toggle(id: string, on: boolean) {
-    const next = { ...ticks, [id]: on };
-    setTicks(next);
-    writeContacted(window.localStorage, next);
-  }
 
   const select = (key: "year" | "segment" | "mentor", label: string, values: string[]) => (
     <label className="text-xs text-slate-500">
@@ -55,9 +55,9 @@ export function ActionQueue({ rows, showMentorFilter }: { rows: QueueRow[]; show
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Action Queue</h1>
+        <h2 className="text-xl font-bold">All mentees</h2>
         <p className="text-sm text-slate-500">
-          Ranked by priority: who to contact this week, why, and what to do. Flags are prompts for a conversation, not judgements.
+          Ranked by priority: who to contact, why, and what to do. Flags are prompts for a conversation, not judgements.
         </p>
       </div>
 
@@ -69,9 +69,9 @@ export function ActionQueue({ rows, showMentorFilter }: { rows: QueueRow[]; show
           </label>
           {select("year", "Year", years)}
           <label className="text-xs text-slate-500">
-            Risk
+            Show
             <select className={FIELD} value={f.risk} onChange={(e) => setF({ ...f, risk: e.target.value as QueueFilters["risk"] })}>
-              {["Any", "Academic Red", "Placement Red", "Early warning"].map((v) => (
+              {RISK_OPTIONS.map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>
@@ -82,7 +82,7 @@ export function ActionQueue({ rows, showMentorFilter }: { rows: QueueRow[]; show
         <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={f.hideContacted} onChange={(e) => setF({ ...f, hideContacted: e.target.checked })} />
-            Hide contacted
+            Hide students contacted in the last 7 days
           </label>
           <span className="text-slate-500">{shown.length} students</span>
           <Button className="ml-auto" size="sm" disabled={shown.length === 0} onClick={() => download("action-queue.csv", toCsv(shown))}>
@@ -101,12 +101,12 @@ export function ActionQueue({ rows, showMentorFilter }: { rows: QueueRow[]; show
             <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500">
               <tr>
                 <th className="p-3">#</th><th className="p-3">Student</th><th className="p-3">Score</th><th className="p-3">Risk</th>
-                <th className="p-3">Why</th><th className="p-3">Suggested action</th><th className="p-3">Contacted</th>
+                <th className="p-3">Why</th><th className="p-3">Suggested action</th><th className="p-3">Last contact</th>
               </tr>
             </thead>
             <tbody>
               {shown.slice(0, SHOW_MAX).map((s, i) => (
-                <tr key={s.student_id} className={`border-t align-top ${contacted.has(s.student_id) ? "opacity-50" : ""}`}>
+                <tr key={s.student_id} className="border-t align-top">
                   <td className="p-3 text-slate-400">{i + 1}</td>
                   <td className="p-3">
                     <Link className="font-medium text-blue-700 hover:underline" href={`/faculty/student/${s.student_id}`}>{s.name}</Link>
@@ -128,10 +128,7 @@ export function ActionQueue({ rows, showMentorFilter }: { rows: QueueRow[]; show
                     ))}
                   </td>
                   <td className="p-3 text-xs">{s.actions?.[0] ?? "Routine monthly check-in"}</td>
-                  <td className="p-3">
-                    <input type="checkbox" aria-label={`Mark ${s.name} contacted`} checked={contacted.has(s.student_id)}
-                      onChange={(e) => toggle(s.student_id, e.target.checked)} />
-                  </td>
+                  <td className="p-3 text-xs"><LastContact state={states.get(s.student_id) ?? { kind: "never" }} red={isRed(s)} /></td>
                 </tr>
               ))}
             </tbody>
