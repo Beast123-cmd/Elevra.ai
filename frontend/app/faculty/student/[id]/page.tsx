@@ -37,8 +37,8 @@ export default function StudentDetailPage() {
   const { data: state, error, loading } = useCachedQuery(`student360:${id}`, () => loadStudent(id));
 
   const back = (
-    <Link href="/faculty" className="text-sm text-primary hover:underline">
-      ← Back to the action queue
+    <Link href="/faculty" className="inline-flex items-center gap-1 text-sm text-muted-foreground no-underline hover:text-foreground">
+      ← Action Queue
     </Link>
   );
 
@@ -55,11 +55,11 @@ export default function StudentDetailPage() {
         profile={profile}
         cohortMeans={means}
         mode="faculty"
-        actions={
+        brief={<BriefCard profile={profile} />}
+        support={
           <div className="space-y-4">
-            <BriefCard profile={profile} />
-            <MessageDrafts profile={profile} />
             <InterventionPanel studentId={profile.student_id} scoreBefore={profile.score} facultyId={facultyId} />
+            <MessageDrafts profile={profile} />
           </div>
         }
       />

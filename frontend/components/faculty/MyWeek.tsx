@@ -58,7 +58,7 @@ export function MyWeek({ rows, cases, onChanged }: { rows: QueueRow[]; cases: Ca
   return (
     <section className="space-y-3" aria-label="My week">
       <div className="flex flex-wrap items-end gap-x-6 gap-y-1">
-        <h2 className="text-xl font-bold">My week</h2>
+        <h2 className="font-serif text-xl font-semibold">My week</h2>
         <p className="text-sm text-muted-foreground">
           {cov.red === 0
             ? "None of your mentees is flagged Red right now."
