@@ -30,6 +30,7 @@ export default function InterventionsPage() {
   const eff = useMemo(() => effectiveness(rows ?? []), [rows]);
   const live = useMemo(() => (rows ?? []).filter((r) => !r.is_seeded).sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 15), [rows]);
   const open = (rows ?? []).filter((r) => r.status !== "done").length;
+  const synthetic = (rows ?? []).filter((r) => r.is_seeded).length;
 
   if (error) return <EmptyState>Could not load interventions: {error}</EmptyState>;
   if (rows === null) return <Skeleton className="h-96 w-full" />;
@@ -52,6 +53,7 @@ export default function InterventionsPage() {
 
       <Card className="p-4">
         <h2 className="text-sm font-semibold">Average score change by intervention type</h2>
+        {synthetic > 0 && <p className="text-xs text-amber-700">Includes {synthetic} synthetic historical examples for demonstration; their score changes are simulated.</p>}
         {eff.rows.length === 0 ? (
           <EmptyState>No measured outcomes yet. Log interventions from a student&apos;s page; their effect appears after the next score refresh.</EmptyState>
         ) : (
