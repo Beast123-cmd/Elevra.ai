@@ -7,6 +7,7 @@ import { signOutAndLeave } from "@/components/shared/session";
 const LINKS = [
   ["/admin", "Overview"],
   ["/admin/users", "Users"],
+  ["/admin/workload", "Response & workload"],
   ["/admin/interventions", "Interventions"],
   ["/admin/notifications", "Notifications"],
   ["/admin/chat", "Ask your data"],
