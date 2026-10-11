@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Award, Bell, BookOpen, House, LogOut, Mic2 } from "lucide-react";
+import { Award, Bell, BookOpen, House, LogOut, Mic2, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { BrandMark } from "@/components/shared/Brand";
@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/student", label: "Home", icon: House },
   { href: "/student/improve", label: "My plan", icon: BookOpen },
   { href: "/student/certifications", label: "Certifications", icon: Award },
+  { href: "/student/hackathons", label: "Hackathons", icon: Trophy },
   { href: "/student/interview", label: "Mock interview", icon: Mic2 },
   { href: "/student/notifications", label: "Inbox", icon: Bell },
 ];
