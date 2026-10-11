@@ -9,6 +9,7 @@ import random
 import sys
 from collections import defaultdict
 from pathlib import Path
+from typing import Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -380,13 +381,20 @@ def _build_insights(profiles: list[dict], cohort_score: float, historical: list[
     ]
 
 
-def run(n: int = DEFAULT_STUDENT_COUNT, regenerate: bool = False) -> dict:
+def run(n: int = DEFAULT_STUDENT_COUNT, regenerate: bool = False,
+        progress: Callable[[str], None] | None = None) -> dict:
+    report = progress or (lambda _message: None)
+    report(f"Generating source data for {n:,} students" + (" (regenerating CSV files)" if regenerate else ""))
     raw = generate_all(RAW_DIR, n=n)
+    report("Cleaning and integrating source records")
     clean, issues, stats = clean_all(raw)
+    report("Training candidate models and building student scores and analytics")
     payload = _build_payload(clean, issues, stats, n)
+    report("Writing local seed payload")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     target = OUT_DIR / "seed.json"
     target.write_text(json.dumps(payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")), encoding="utf-8")
+    report(f"Local payload ready: {target.relative_to(ROOT)} ({target.stat().st_size / (1024 * 1024):.1f} MB)")
     return payload
 
 
@@ -402,11 +410,13 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
-    payload = run(n=args.n, regenerate=args.regenerate)
+    report = lambda message: print(f"[pipeline] {message}", flush=True)
+    payload = run(n=args.n, regenerate=args.regenerate, progress=report)
     print(json.dumps(payload["summary"], sort_keys=True))
     if not args.no_db:
+        report("Loading records into Supabase")
         from seed import seed_database
-        seed_database(payload)
+        seed_database(payload, progress=report)
 
 
 if __name__ == "__main__":

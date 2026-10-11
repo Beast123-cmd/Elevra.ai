@@ -39,6 +39,9 @@ MAX_PDF_BYTES = 5 * 1024 * 1024
 TURN_MODEL = os.getenv("INTERVIEW_TURN_MODEL", "gemini-3.1-flash-lite")
 TURN_TIMEOUT_S = 6.0
 _turn_pool = ThreadPoolExecutor(max_workers=8, thread_name_prefix="interview-turn")
+# PDF readers commonly tolerate a short preamble before the header. Limit the scan
+# so arbitrary non-PDF content is never treated as a resume.
+PDF_HEADER_SEARCH_BYTES = 1024
 Stage = Literal["intro", "resume", "technical", "behavioural", "wrapup"]
 STAGES: tuple[Stage, ...] = ("intro", "resume", "technical", "behavioural", "wrapup")
 
@@ -90,10 +93,16 @@ class StartBody(BaseModel):
         try:
             data = base64.b64decode(self.resume_pdf_base64, validate=True)
         except (binascii.Error, ValueError):
-            raise HTTPException(422, "The resume file couldn't be read") from None
-        if not data.startswith(b"%PDF-") or len(data) > MAX_PDF_BYTES:
-            raise HTTPException(422, "The resume must be a PDF of at most 5 MB")
-        return data
+            raise HTTPException(422, "The resume file could not be decoded. Please upload the original PDF file.") from None
+        if len(data) > MAX_PDF_BYTES:
+            raise HTTPException(422, "The resume PDF must be 5 MB or smaller.")
+
+        # A PDF header may legally follow a short byte-order mark or producer preamble.
+        # Strip only that bounded preamble before sending bytes to the PDF text extractor.
+        header_offset = data.find(b"%PDF-", 0, PDF_HEADER_SEARCH_BYTES)
+        if header_offset < 0:
+            raise HTTPException(422, "This file does not contain a valid PDF header. Please export it as a PDF and try again.")
+        return data[header_offset:]
 
 
 class ReplyBody(BaseModel):
@@ -102,6 +111,10 @@ class ReplyBody(BaseModel):
 
 
 class FinishBody(BaseModel):
+    session_id: int
+
+
+class EarlySubmitBody(BaseModel):
     session_id: int
 
 
@@ -524,6 +537,8 @@ def start(body: StartBody, caller: Caller = Depends(require_role("student"))):
 @router.post("/reply")
 def reply(body: ReplyBody, caller: Caller = Depends(require_role("student"))):
     s = _own_session(body.session_id, caller)
+    if s["transcript"].get("status") == "submitted_early":
+        raise HTTPException(409, "This interview was submitted early. Feedback is unavailable.")
     if s["score"] is not None:
         raise HTTPException(409, "This interview is already finished")
     state = s["transcript"]
@@ -538,9 +553,22 @@ def reply(body: ReplyBody, caller: Caller = Depends(require_role("student"))):
             "question_number": _questions_asked(state["turns"]), "elapsed_sec": round(minutes * 60), "ai": used_ai}
 
 
+@router.post("/submit-early")
+def submit_early(body: EarlySubmitBody, caller: Caller = Depends(require_role("student"))):
+    s = _own_session(body.session_id, caller)
+    if s["score"] is not None:
+        raise HTTPException(409, "This interview is already complete and has feedback")
+    state = s["transcript"]
+    state["status"] = "submitted_early"
+    db().table("mock_interviews").update({"transcript": state}).eq("id", body.session_id).execute()
+    return {"status": "submitted_early", "feedback_available": False}
+
+
 @router.post("/finish")
 def finish(body: FinishBody, caller: Caller = Depends(require_role("student"))):
     s = _own_session(body.session_id, caller)
+    if s["transcript"].get("status") == "submitted_early":
+        raise HTTPException(409, "This interview was submitted early. Feedback is unavailable.")
     if s["score"] is not None:
         raise HTTPException(409, "This interview is already finished")
     turns = s["transcript"]["turns"]
