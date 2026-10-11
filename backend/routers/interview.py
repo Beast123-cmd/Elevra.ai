@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field, model_validator
 from common import settings
 from common.auth import Caller, require_role
 from common.db import db
+from common.llm import generate_json
 from scoring.engine import PILLARS, WEIGHTS, evaluate
 
 T = TypeVar("T", bound=BaseModel)
@@ -124,18 +125,24 @@ class _Marking(BaseModel):
 
 # ---------- Gemini ----------
 
-def _gemini_json(prompt: str, schema: type[T], pdf: bytes | None = None, temperature: float = 0.5) -> T:
+def _gemini_json(prompt: str, schema: type[T], pdf: bytes | None = None, temperature: float = 0.5,
+                 max_tokens: int = 700) -> T:
     """Ask Gemini for JSON only and validate it. Raises on any failure so callers can fall back."""
+    if pdf is None:
+        return schema.model_validate(generate_json(prompt, max_tokens=max_tokens, temperature=temperature, timeout_s=20.0))
+    # The shared helper only accepts text, so a PDF resume calls Gemini directly with the same settings
+    # (no thinking, capped output, timeout).
     if not settings.GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY not set")
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    contents = [types.Part.from_bytes(data=pdf, mime_type="application/pdf"), prompt] if pdf else prompt
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)  # keep a reference: a discarded client closes mid-request
     resp = client.models.generate_content(
-        model=settings.GEMINI_MODEL, contents=contents,
-        config=types.GenerateContentConfig(response_mime_type="application/json", temperature=temperature),
+        model=settings.GEMINI_MODEL, contents=[types.Part.from_bytes(data=pdf, mime_type="application/pdf"), prompt],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json", temperature=temperature, max_output_tokens=max_tokens,
+            thinking_config=types.ThinkingConfig(thinking_budget=0), http_options=types.HttpOptions(timeout=30_000)),
     )
     return schema.model_validate(json.loads(resp.text))
 
@@ -150,7 +157,7 @@ def summarise_resume(text: str | None, pdf: bytes | None) -> tuple[str, str, boo
         + ("The resume is the attached PDF." if pdf else f"<resume>\n{text}\n</resume>")
     )
     try:
-        r = _gemini_json(prompt, _Resume, pdf, temperature=0.2)
+        r = _gemini_json(prompt, _Resume, pdf, temperature=0.2, max_tokens=900)
         return r.name.strip(), r.summary.strip(), True
     except Exception as e:  # noqa: BLE001 - any AI failure must fall back
         log.warning("resume summary fell back: %s", e)
@@ -207,7 +214,7 @@ def next_turn(state: dict, department: str, minutes: float) -> tuple[dict, bool]
         f"<conversation>\n{_transcript_text(turns)}\n</conversation>"
     )
     try:
-        t = _gemini_json(prompt, _Turn)
+        t = _gemini_json(prompt, _Turn, max_tokens=400)
         end = (t.end and (can_end or must_end)) or must_end
         return {"message": t.message.strip(), "stage": t.stage, "end": end}, True
     except Exception as e:  # noqa: BLE001
@@ -234,7 +241,7 @@ def mark_interview(turns: list[dict]) -> tuple[float, dict, bool]:
         f"<conversation>\n{_transcript_text(turns)}\n</conversation>"
     )
     try:
-        m = _gemini_json(prompt, _Marking, temperature=0.2)
+        m = _gemini_json(prompt, _Marking, temperature=0.2, max_tokens=1000)
         return round(m.score, 1), {"criteria": m.criteria.model_dump(), "strengths": m.strengths[:3],
                                     "gaps": m.gaps[:3], "next_steps": m.next_steps[:3]}, True
     except Exception as e:  # noqa: BLE001
@@ -266,12 +273,12 @@ def rescore(student_id: str, new_mock_avg: float, mock_count: int) -> dict:
     if not rows:
         raise HTTPException(404, "No score found for this student")
     profile = rows[0]["profile"]
-    model = db().table("analytics").select("payload").eq("key", "model").limit(1).execute().data
-    cohort = db().table("analytics").select("payload").eq("key", "cohort").limit(1).execute().data
-    means = (cohort[0]["payload"].get("pillar_means") if cohort else None) or {}
+    analytics = db().table("analytics").select("key,payload").in_("key", ["model", "cohort"]).execute().data or []
+    cards = {row["key"]: row["payload"] for row in analytics}
+    means = cards.get("cohort", {}).get("pillar_means") or {}
 
     metrics = {**profile["metrics"], "mock": new_mock_avg}
-    r = evaluate(metrics, card=model[0]["payload"] if model else None)
+    r = evaluate(metrics, card=cards.get("model"))
     contributions = contributions_vs_cohort(r["pillars"], means)
 
     new_profile = {**profile, "metrics": metrics, "pillars": r["pillars"], "score": r["score"], "band": r["band"],
