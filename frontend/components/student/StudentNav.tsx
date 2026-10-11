@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Award, Bell, BookOpen, House, LogOut, Menu, Mic2, PanelLeftClose, PanelLeftOpen, Trophy, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Award, Bell, BookOpen, House, Menu, Mic2, PanelLeftClose, PanelLeftOpen, Trophy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
 import { BrandMark } from "@/components/shared/Brand";
 
 const LINKS = [
@@ -29,24 +27,6 @@ export function StudentNav({
   onToggleMobile: () => void;
 }) {
   const path = usePathname();
-  const router = useRouter();
-  const [signingOut, setSigningOut] = useState(false);
-  const [signOutError, setSignOutError] = useState(false);
-
-  async function signOut() {
-    if (signingOut) return;
-    setSigningOut(true);
-    setSignOutError(false);
-    try {
-      const { error } = await createClient().auth.signOut();
-      if (error) throw error;
-      router.replace("/login");
-      router.refresh();
-    } catch {
-      setSigningOut(false);
-      setSignOutError(true);
-    }
-  }
 
   return (
     <aside className={`sticky top-0 z-30 flex min-w-0 flex-col border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-sm md:sticky md:h-screen md:border-b-0 md:border-r md:bg-white md:py-5 md:backdrop-blur-none ${collapsed ? "md:px-2" : "md:px-3.5"}`}>
@@ -83,17 +63,6 @@ export function StudentNav({
           );
         })}
       </nav>
-      <div className={`mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 md:mt-auto md:pt-4 ${collapsed ? "md:justify-center md:px-0" : "md:px-2.5"}`}>
-        <div className={`hidden md:block ${collapsed ? "md:hidden" : ""}`}>
-          <p className="text-[10px] font-medium text-slate-700">Your student space</p>
-          <p className="mt-0.5 text-[9px] text-slate-500">Your records and next steps</p>
-        </div>
-        {signOutError && <span role="alert" className="text-xs text-red-700">Couldn&apos;t sign out. Try again.</span>}
-        <Button variant="ghost" size={collapsed ? "icon" : "sm"} className={`min-h-11 text-slate-600 ${collapsed ? "mx-auto md:mx-0" : "ml-auto"}`} onClick={signOut} disabled={signingOut} aria-label={signingOut ? "Signing out" : "Sign out"} title={collapsed ? "Sign out" : undefined}>
-          <LogOut className="h-4 w-4" aria-hidden="true" />
-          <span className={collapsed ? "md:hidden" : ""}>{signingOut ? "Signing out…" : "Sign out"}</span>
-        </Button>
-      </div>
     </aside>
   );
 }

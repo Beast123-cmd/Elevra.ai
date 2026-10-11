@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ProfileGate } from "../ProfileGate";
 import { StudentReveal } from "../StudentReveal";
 import { HACKATHONS, type Hackathon, type HackathonKind } from "./data";
+import { matchesEveryWord } from "../catalogSearch";
 
 type Scope = "branch" | "all";
 type ViewMode = "grid" | "list";
@@ -38,6 +39,7 @@ function EventCard({ event, compact = false }: { event: Hackathon; compact?: boo
   return (
     <article className={`group rounded-xl border transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-900/[0.06] motion-reduce:transform-none motion-reduce:transition-none ${EVENT_SURFACE[event.kind]} ${compact ? "flex items-center gap-4 p-4" : "flex h-full flex-col p-4"}`}>
       <div className="min-w-0 flex-1">
+        <span className="mb-2 inline-flex rounded-full border border-current/15 bg-white/75 px-2.5 py-1 text-xs font-semibold text-[#286a62]">{event.organiser}</span>
         <h3 className="font-semibold leading-snug text-[#172824]">{event.name}</h3>
         <p className={`mt-2 text-sm leading-5 text-slate-600 ${compact ? "line-clamp-1" : "line-clamp-2"}`}>{event.about}</p>
       </div>
@@ -78,7 +80,7 @@ function EventCatalog({ profile }: { profile: Profile }) {
     .filter((event) => scope === "all" || suits(event, profile.department))
     .filter((event) => kind === "All types" || event.kind === kind)
     .filter((event) => format === "Any format" || event.format === format)
-    .filter((event) => !query || `${event.name} ${event.organiser} ${event.kind} ${event.format} ${event.focus.join(" ")} ${event.about}`.toLowerCase().includes(query))
+    .filter((event) => matchesEveryWord(query, `${event.name} ${event.organiser} ${event.kind} ${event.format} ${event.focus.join(" ")} ${event.about}`))
     .sort((a, b) => Number(suits(b, profile.department)) - Number(suits(a, profile.department)) || a.name.localeCompare(b.name));
   const filtered = Boolean(query || scope === "all" || kind !== "All types" || format !== "Any format");
   const submitSearch = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setQuery(searchText.trim().toLowerCase()); };
@@ -140,9 +142,8 @@ function EventCatalog({ profile }: { profile: Profile }) {
         </ul>
       ) : (
         <div className="rounded-xl border border-[#dce7e1] bg-white px-5 py-10 text-center">
-          <p className="font-medium text-[#172824]">No events match those filters</p>
-          <p className="mt-1 text-sm text-slate-500">Try another search or include events outside your branch.</p>
-          <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-[#286a62] underline underline-offset-2">Clear filters</button>
+          <p className="font-medium text-[#172824]">No events found</p>
+          {filtered && <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-[#286a62] underline underline-offset-2">Clear filters</button>}
         </div>
       )}
       <p className="text-xs leading-5 text-slate-500">Check official sites for current dates. Share proof of participation with your faculty mentor to add it to your record.</p>
@@ -155,6 +156,7 @@ export function Hackathons() {
     <ProfileGate>
       {(profile) => (
         <div className="space-y-4">
+          <h2 className="text-lg font-bold leading-tight tracking-tight text-[#172824]">Hackathons</h2>
           <YourRecord profile={profile} />
           <EventCatalog profile={profile} />
         </div>

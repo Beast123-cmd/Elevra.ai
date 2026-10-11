@@ -21,16 +21,19 @@ export function StudentPage({
 
 export function StudentLoading({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="space-y-4" aria-busy="true" aria-live="polite">
-      <div className="rounded-lg border border-[#dce7e1] bg-white px-4 py-3">
-        <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
-          <span className="student-loading-dot" aria-hidden="true" /> Connecting your records to your progress view
+    <div className="grid gap-3 sm:grid-cols-2" role="status" aria-label="Loading student data" aria-busy="true">
+      {Array.from({ length: rows }, (_, index) => (
+        <div key={index} aria-hidden="true" className="rounded-xl border border-[#dce7e1] bg-white p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-4">
+            <Skeleton className="h-4 w-2/5 bg-[#e8efeb]" />
+            <Skeleton className="h-7 w-14 rounded-full bg-[#edf2ef]" />
+          </div>
+          <Skeleton className="mt-5 h-7 w-3/5 bg-[#e8efeb]" />
+          <Skeleton className="mt-3 h-3 w-full bg-[#edf2ef]" />
+          <Skeleton className="mt-2 h-3 w-4/5 bg-[#edf2ef]" />
+          <Skeleton className="mt-5 h-9 w-24 rounded-lg bg-[#e8efeb]" />
         </div>
-        <div className="student-progress-track mt-3" aria-hidden="true"><span /></div>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {Array.from({ length: rows }, (_, i) => <Skeleton key={i} className={`rounded-xl border border-slate-200 bg-white ${i === 0 ? "h-36" : "h-28"}`} />)}
-      </div>
+      ))}
     </div>
   );
 }

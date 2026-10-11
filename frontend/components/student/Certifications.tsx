@@ -6,6 +6,7 @@ import { ProfileGate } from "./ProfileGate";
 import { StudentReveal } from "./StudentReveal";
 import { CERTIFICATIONS, PILLAR_LABEL, type Certification } from "./playbook";
 import { weakestPillars } from "./weakest";
+import { matchesEveryWord } from "./catalogSearch";
 
 type ViewMode = "grid" | "list";
 type CourseResult = { course: Certification; relevant: boolean };
@@ -22,6 +23,7 @@ function CourseCard({ course, compact = false }: CourseResult & { compact?: bool
   return (
     <article className={`group rounded-xl border transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-900/[0.06] motion-reduce:transform-none motion-reduce:transition-none ${PROVIDER_SURFACE[course.provider]} ${compact ? "flex items-center gap-4 p-4" : "flex h-full flex-col p-4"}`}>
       <div className="min-w-0 flex-1">
+        <span className="mb-2 inline-flex rounded-full border border-current/15 bg-white/75 px-2.5 py-1 text-xs font-semibold text-[#286a62]">{course.provider}</span>
         <h3 className="font-semibold leading-snug text-[#172824]">{course.title}</h3>
         <p className={`mt-2 text-sm leading-5 text-slate-600 ${compact ? "line-clamp-1" : "line-clamp-2"}`}>{course.description}</p>
       </div>
@@ -68,7 +70,7 @@ export function Certifications() {
         const results = departmentItems
           .filter(({ course }) => provider === "All providers" || course.provider === provider)
           .filter(({ course }) => topic === "All topics" || course.tag === topic)
-          .filter(({ course }) => !query || `${course.title} ${course.description} ${course.provider} ${course.tag} ${course.skills.map((skill) => PILLAR_LABEL[skill]).join(" ")}`.toLowerCase().includes(query))
+          .filter(({ course }) => matchesEveryWord(query, `${course.title} ${course.description} ${course.provider} ${course.tag} ${course.skills.map((skill) => PILLAR_LABEL[skill]).join(" ")}`))
           .sort((a, b) => Number(b.relevant) - Number(a.relevant) || a.course.title.localeCompare(b.course.title));
         const filtered = Boolean(query || provider !== "All providers" || topic !== "All topics");
         const submitSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -80,6 +82,7 @@ export function Certifications() {
 
         return (
           <div className="space-y-4">
+            <h2 className="text-lg font-bold leading-tight tracking-tight text-[#172824]">Certifications</h2>
             <section aria-label="Find a certification" className="rounded-xl border border-[#dce7e1] bg-[#f1f6f3] p-3 sm:p-4">
               <form onSubmit={submitSearch} className="flex flex-col gap-2 sm:flex-row">
                 <label className="relative min-w-0 flex-1">
@@ -124,9 +127,8 @@ export function Certifications() {
               </ul>
             ) : (
               <div className="rounded-xl border border-[#dce7e1] bg-white px-5 py-10 text-center">
-                <p className="font-medium text-[#172824]">No courses match those filters</p>
-                <p className="mt-1 text-sm text-slate-500">Try another search or clear the filters.</p>
-                <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-[#286a62] underline underline-offset-2">Clear filters</button>
+                <p className="font-medium text-[#172824]">No courses found</p>
+                {filtered && <button type="button" onClick={clearFilters} className="mt-3 text-sm font-semibold text-[#286a62] underline underline-offset-2">Clear filters</button>}
               </div>
             )}
           </div>
