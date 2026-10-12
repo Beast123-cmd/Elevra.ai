@@ -6,7 +6,7 @@ export type ShellRole = "admin" | "faculty" | "student";
 
 export type IconName =
   | "overview" | "workload" | "interventions" | "notifications" | "queue" | "attendance" | "segments"
-  | "dataHealth" | "method" | "evidence" | "chat" | "users" | "demo" | "home" | "plan" | "certifications"
+  | "dataHealth" | "method" | "evidence" | "users" | "demo" | "home" | "plan" | "certifications"
   | "hackathons" | "events" | "interview" | "inbox";
 
 export interface NavItem { href: string; label: string; icon: IconName; exact?: boolean }
@@ -40,7 +40,6 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
     {
       label: "Tools",
       items: [
-        { href: "/admin/chat", label: "Ask your data", icon: "chat" },
         { href: "/admin/users", label: "Users", icon: "users" },
       ],
     },
