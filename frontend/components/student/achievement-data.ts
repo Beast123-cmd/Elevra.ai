@@ -95,8 +95,10 @@ export function getBadges(data: StudentAchievements): BadgeProgress[] {
     { name: "Year-Round Learner", description: "Show up on 365 different days.", progress: data.loginDays, target: 365, icon: "streak" },
     { name: "Test Finisher", description: "Complete 25 timed tests.", progress: data.testCount, target: 25, icon: "trophy" },
     { name: "Assessment Veteran", description: "Complete 100 timed tests.", progress: data.testCount, target: 100, icon: "trophy" },
+    { name: "Test Centurion", description: "Complete 365 timed tests through steady practice.", progress: data.testCount, target: 365, icon: "trophy" },
     { name: "Problem Solver", description: "Answer 500 timed test questions.", progress: data.challengeCount, target: 500, icon: "sparkles" },
     { name: "Problem Marathoner", description: "Answer 2,500 timed test questions.", progress: data.challengeCount, target: 2500, icon: "sparkles" },
+    { name: "Question Grandmaster", description: "Answer 10,000 timed test questions.", progress: data.challengeCount, target: 10000, icon: "sparkles" },
     { name: "Campus Contributor", description: "Join 25 verified campus events or clubs.", progress: campusActivities, target: 25, icon: "certificate" },
   ];
 }
