@@ -174,4 +174,4 @@ data/raw/   the seven messy source files plus faculty
 - Intervention "effects" are associations in synthetic history, not causal estimates.
 - A risk flag is a prompt for a conversation with a student, not a judgement.
 
-Team: Aayush Angal (data, scoring, database), Mahesh Loya (admin and faculty), Utkarsh Waghmare (student side).
+
