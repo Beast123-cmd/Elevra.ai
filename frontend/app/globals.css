@@ -31,6 +31,25 @@ body {
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
+@keyframes coin-reward-float {
+  0% { opacity: 0; translate: 0 -10px; scale: .88; }
+  16% { opacity: 1; translate: 0 0; scale: 1; }
+  74% { opacity: 1; translate: 0 -2px; scale: 1; }
+  100% { opacity: 0; translate: 0 -26px; scale: .96; }
+}
+
+@keyframes coin-reward-spin {
+  0% { transform: perspective(240px) rotateY(0deg); }
+  100% { transform: perspective(240px) rotateY(720deg); }
+}
+
+.coin-reward-float { animation: coin-reward-float 1500ms cubic-bezier(.22,.61,.36,1) both; }
+.coin-reward-spin { animation: coin-reward-spin 900ms cubic-bezier(.22,.61,.36,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .coin-reward-float, .coin-reward-spin { animation-duration: .01ms; }
+}
+
 .login-transition {
   animation: login-page-enter 520ms cubic-bezier(.22, .61, .36, 1) both;
 }

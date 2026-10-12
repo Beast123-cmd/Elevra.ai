@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ArrowRight, Check, CircleHelp, Flame, LoaderCircle, RefreshCw, Sparkles, Target, Trophy } from "lucide-react";
 import { api } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
 import { StudentReveal } from "./StudentReveal";
+import { showCoinReward } from "./CoinRewardCelebration";
 
 type Category = "aptitude" | "coding" | "mcq";
 type Difficulty = "easy" | "medium" | "hard";
@@ -36,14 +36,8 @@ export function DailyChallenges() {
     let active = true;
     async function load() {
       try {
-        const reward = await api<{ awarded: boolean; coins: number; streak_days: number }>("/daily-challenges/check-in", {});
-        if (reward.awarded) {
-          toast.success(`+${reward.coins} Elevra coins`, {
-            description: reward.streak_days % 7 === 0
-              ? `${reward.streak_days}-day login streak — includes a 25 coin bonus.`
-              : "Daily login reward added to your wallet.",
-          });
-        }
+        const reward = await api<{ awarded: boolean; coins: number }>("/daily-challenges/check-in", {});
+        if (reward.awarded) showCoinReward(reward.coins);
         const daily = await api<DailyState>("/daily-challenges");
         if (active) setState({ status: "ready", daily });
       } catch (error) {
@@ -74,6 +68,7 @@ export function DailyChallenges() {
       const answerResult = await api<AnswerResult>("/daily-challenges/answer", {
         category, difficulty, question_id: question.question_id, answer: selected,
       });
+      if (answerResult.coins > 0) showCoinReward(answerResult.coins);
       setResult(answerResult);
       const daily = await api<DailyState>("/daily-challenges");
       setState({ status: "ready", daily });

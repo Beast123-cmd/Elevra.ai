@@ -9,6 +9,7 @@ import { buildAchievements, getBadges, type StudentAchievements } from "./achiev
 import { Card, CardContent } from "@/components/ui/card";
 import { StudentReveal } from "./StudentReveal";
 import { toast } from "sonner";
+import { showCoinReward } from "./CoinRewardCelebration";
 
 type LoadState = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; data: StudentAchievements };
 
@@ -38,7 +39,8 @@ function useAchievements() {
         const interviews = (interviewResult.data ?? []).map((item) => ({ score: Number(item.score), created_at: item.created_at }));
         let dailyPoints = 0, loginStreak = 0;
         try {
-          await api("/daily-challenges/check-in", {});
+          const loginReward = await api<{ awarded: boolean; coins: number }>("/daily-challenges/check-in", {});
+          if (loginReward.awarded) showCoinReward(loginReward.coins);
           const daily = await api<{ earned_coins: number; login: { streak_days: number } | null; challenge_count: number }>("/daily-challenges");
           dailyPoints = daily.earned_coins;
           loginStreak = daily.login?.streak_days ?? 0;
