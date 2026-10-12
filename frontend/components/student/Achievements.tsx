@@ -41,10 +41,10 @@ function useAchievements() {
         try {
           const loginReward = await api<{ awarded: boolean; coins: number }>("/daily-challenges/check-in", {});
           if (loginReward.awarded) showCoinReward(loginReward.coins);
-          const daily = await api<{ earned_coins: number; login: { streak_days: number } | null; challenge_count: number }>("/daily-challenges");
+          const daily = await api<{ earned_coins: number; best_login_streak: number; login_days: number; completed_test_count: number; challenge_count: number }>("/daily-challenges");
           dailyPoints = daily.earned_coins;
-          loginStreak = daily.login?.streak_days ?? 0;
-          const achievements = buildAchievements(activities, interviews, dailyPoints, loginStreak, daily.challenge_count);
+          loginStreak = daily.best_login_streak ?? 0;
+          const achievements = buildAchievements(activities, interviews, dailyPoints, loginStreak, daily.challenge_count, daily.login_days, daily.completed_test_count);
           if (active) {
             celebrateNewMilestones(achievements, studentId);
             setState({ status: "ready", data: achievements });
@@ -162,10 +162,10 @@ export function Achievements({ compact = false }: { compact?: boolean }) {
     </CardContent></Card>;
   }
   return <main className="mx-auto w-full max-w-[1120px] px-4 py-7 sm:px-6 sm:py-9 lg:px-10">
-    <StudentReveal><header className="mb-6 border-l-2 border-primary pl-4"><p className="text-[11px] font-semibold uppercase tracking-[.12em] text-primary">Your milestones</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Achievements</h1><p className="mt-1 text-sm text-muted-foreground">Celebrate the skills and experiences you build along the way.</p></header></StudentReveal>
+    <StudentReveal><header className="mb-6 border-l-2 border-primary pl-4"><p className="text-[11px] font-semibold uppercase tracking-[.12em] text-primary">Your long game</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Achievements</h1><p className="mt-1 text-sm text-muted-foreground">Build a record over months and years through consistent practice and verified campus experience.</p></header></StudentReveal>
     {state.status === "loading" && <Card className="rounded-xl border-border"><CardContent className="flex items-center gap-2 p-5 text-sm text-muted-foreground"><LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />Loading your achievements…</CardContent></Card>}
     {state.status === "error" && <Card role="alert" className="rounded-xl border-border"><CardContent className="p-5"><h2 className="font-semibold text-foreground">Couldn&apos;t load achievements</h2><p className="mt-1 text-sm text-muted-foreground">{state.message}</p><button type="button" onClick={retry} className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium text-foreground hover:bg-muted"><RefreshCw className="h-4 w-4" aria-hidden="true" />Try again</button></CardContent></Card>}
     {state.status === "ready" && <AchievementContent data={state.data} />}
-    {state.status === "ready" && state.data.activities.length === 0 && state.data.interviews.length === 0 && <p className="mt-4 text-sm text-muted-foreground">Your first badge is waiting. Complete a mock interview or ask your mentor to verify a campus activity.</p>}
+    {state.status === "ready" && state.data.activities.length === 0 && state.data.interviews.length === 0 && <p className="mt-4 text-sm text-muted-foreground">Keep showing up, finishing timed tests, and building verified campus experience to make progress toward your first badge.</p>}
   </main>;
 }

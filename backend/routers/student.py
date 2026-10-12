@@ -221,6 +221,7 @@ def daily_challenges_state(caller: Caller = Depends(require_role("student"))):
     login = client.table("student_daily_logins").select("streak_days,coins").eq("student_id", caller.student_id).eq("activity_date", today).limit(1).execute().data
     attempts = client.table("student_daily_challenge_attempts").select("category,difficulty,correct,coins,created_at").eq("student_id", caller.student_id).eq("activity_date", today).execute().data or []
     all_logins = _student_points("student_daily_logins", "coins", caller.student_id)
+    login_history = _student_points("student_daily_logins", "activity_date,streak_days", caller.student_id)
     all_attempts = _student_points("student_daily_challenge_attempts", "coins,correct", caller.student_id)
     all_tests = [row for row in _student_points("student_assessment_sessions", "coins,correct_count,total_questions,status", caller.student_id) if row.get("status") == "completed"]
     all_interviews = _student_points("mock_interviews", "feedback", caller.student_id)
@@ -233,6 +234,9 @@ def daily_challenges_state(caller: Caller = Depends(require_role("student"))):
     coin_balance = earned_coins - spent_coins
     return {"activity_date": today, "login": login[0] if login else None, "attempts": attempts, "coin_balance": coin_balance,
             "earned_coins": earned_coins,
+            "login_days": len(login_history),
+            "best_login_streak": max((int(row.get("streak_days") or 0) for row in login_history), default=0),
+            "completed_test_count": len(all_tests),
             "challenge_count": len(all_attempts) + test_question_count,
             "correct_challenge_count": sum(1 for row in all_attempts if row.get("correct")) + test_correct_count}
 
