@@ -40,7 +40,6 @@ const STEPS: Record<ShellRole, TourStep[]> = {
     { href: "/insights/data-health", target: "shared-data-cleaning", title: "Audit data cleaning", description: "Inspect source coverage and the cleaning log to see how records were resolved, corrected or excluded." },
     { href: "/insights/method", target: "admin-method-weights", title: "Try score weights", description: "Adjust the area weights to preview how the cohort would shift, then use the re-score action to apply the same scoring engine." },
     { href: "/admin/evidence", target: "admin-evidence-download", title: "Prepare evidence", description: "Download the learner and mentor lists used in the evidence summary, or print the page for review." },
-    { href: "/admin/chat", target: "admin-chat-question", title: "Ask your data", description: "Write a plain-language question or choose a suggestion. Elevra returns a read-only answer and shows the query it ran." },
     { href: "/admin/users", target: "admin-create-user", title: "Manage accounts", description: "Create a student, faculty or admin account. The form links the account to a student or faculty record when needed." },
   ],
 };

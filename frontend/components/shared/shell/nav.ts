@@ -40,7 +40,6 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
     {
       label: "Tools",
       items: [
-        { href: "/admin/chat", label: "Ask your data", icon: "chat" },
         { href: "/admin/users", label: "Users", icon: "users" },
       ],
     },

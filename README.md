@@ -19,7 +19,7 @@ All accounts are synthetic. Password for every account: `Demo@2026`. The login p
 
 | Role | Email | What to look at |
 |---|---|---|
-| Admin | `admin@demo.edu` | Overview, Users, Response & workload, Interventions, Evidence, Ask your data, Data Health, Segments, Method & Trust |
+| Admin | `admin@demo.edu` | Overview, Users, Response & workload, Interventions, Evidence, Data Health, Segments, Method & Trust, plus the floating Ask Elevra chat |
 | Faculty | `faculty1@demo.edu` | Action Queue with "My week", Attendance planner, Student 360, message drafts |
 | Student (at risk) | `student.red@demo.edu` | Own score and drivers, what-if simulator, improvement path, mock interview |
 | Student (strong) | `student.star@demo.edu` | The same views for a student with a strong profile |

@@ -240,6 +240,7 @@ export default function Home() {
             <a href="#journey" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">How it works</a>
             <a href="#mvp" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">MVP features</a>
             <a href="#impact" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">Impact</a>
+            <Link href="/about" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">About us</Link>
           </nav>
           <Link href="/login" className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md bg-[#154e49] px-3.5 text-xs font-semibold text-white no-underline transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#103e3a] hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2 sm:h-11 sm:px-4 sm:text-sm">
             Sign in <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -314,7 +315,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer data-reveal className="mx-auto flex max-w-[1240px] flex-col gap-2 border-t border-[#e0e6e1] px-5 py-5 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>Elevra.ai · Student success intelligence</span><span>Scores are guidance signals, shown with their drivers and available data.</span></footer>
+      <footer data-reveal className="mx-auto flex max-w-[1240px] flex-col gap-2 border-t border-[#e0e6e1] px-5 py-5 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>Elevra.ai · Student success intelligence · <Link href="/about" className="underline decoration-slate-300 underline-offset-4 hover:text-[#154e49]">About us</Link></span><span>Scores are guidance signals, shown with their drivers and available data.</span></footer>
       </div>
     </main>
   );
