@@ -79,15 +79,14 @@ const MEDALS = {
 function BadgeMedallion({ icon, unlocked }: { icon: keyof typeof MEDALS; unlocked: boolean }) {
   const Icon = ICONS[icon];
   const colors = MEDALS[icon];
-  return <span className={`group relative z-0 mt-1 grid h-[76px] w-[76px] shrink-0 place-items-center rounded-full p-[5px] transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none ${unlocked ? "" : "bg-muted"}`}
-    style={unlocked ? { background: `linear-gradient(145deg, ${colors.rim}, #fff8dc 43%, ${colors.rim})`, boxShadow: `0 3px 10px ${colors.rim}45` } : undefined}>
-    {unlocked && <><span aria-hidden="true" className="absolute -bottom-1 left-[18px] z-0 h-6 w-4 rotate-[18deg] rounded-b-sm" style={{ background: colors.rim }} /><span aria-hidden="true" className="absolute -bottom-1 right-[18px] z-0 h-6 w-4 -rotate-[18deg] rounded-b-sm" style={{ background: colors.rim }} /></>}
-    <span className={`relative z-10 grid h-full w-full place-items-center rounded-full border-[3px] ${unlocked ? "" : "border-border bg-background text-muted-foreground"}`}
-      style={unlocked ? { borderColor: "#fff8dc", background: `radial-gradient(circle at 34% 27%, #ffffff 0%, ${colors.face} 48%, ${colors.rim} 145% )`, color: colors.ink } : undefined}>
-      {unlocked && <span aria-hidden="true" className="absolute inset-[3px] rounded-full border" style={{ borderColor: `${colors.rim}90` }} />}
-      <Icon className="relative h-8 w-8 drop-shadow-sm" strokeWidth={2.4} aria-hidden="true" />
-      {unlocked && <span aria-hidden="true" className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_5px_white]" />}
-    </span>
+  return <span className={`group relative grid h-[100px] w-[92px] shrink-0 place-items-center transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transition-none ${unlocked ? "" : "grayscale opacity-65"}`}>
+    <svg viewBox="0 0 100 112" className="absolute inset-0 h-full w-full drop-shadow-sm" aria-hidden="true">
+      <polygon points="50,2 96,28 96,82 50,109 4,82 4,28" fill={unlocked ? colors.rim : "hsl(var(--border))"} />
+      <polygon points="50,9 89,31 89,77 50,100 11,77 11,31" fill={unlocked ? colors.face : "hsl(var(--background))"} stroke={unlocked ? "#fff7df" : "hsl(var(--border))"} strokeWidth="3" />
+      <polygon points="50,16 82,34 82,73 50,92 18,73 18,34" fill={unlocked ? colors.rim : "hsl(var(--muted))"} opacity={unlocked ? 0.16 : 0.5} />
+    </svg>
+    <Icon className="relative h-10 w-10 drop-shadow-sm" strokeWidth={2.3} style={{ color: unlocked ? colors.ink : undefined }} aria-hidden="true" />
+    {unlocked && <span className="absolute -right-0.5 top-2 grid h-6 w-6 place-items-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm"><BadgeCheck className="h-4 w-4" aria-hidden="true" /></span>}
   </span>;
 }
 
@@ -133,19 +132,17 @@ function AchievementContent({ data }: { data: StudentAchievements }) {
         </CardContent>
       </Card></StudentReveal>
       <StudentReveal delayMs={70}><div className="mt-6 flex flex-wrap items-end justify-between gap-2"><div><h2 className="text-lg font-semibold text-foreground">Your badge collection</h2><p className="mt-1 text-sm text-muted-foreground">{earned} of {badges.length} earned · keep going to unlock the rest.</p></div></div></StudentReveal>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-4 xl:grid-cols-5">
         {badges.map((badge, index) => {
           const unlocked = badge.progress >= badge.target;
-          return <StudentReveal key={badge.name} delayMs={Math.min(index, 4) * 70} className="h-full"><Card className={`group h-full rounded-xl border-border shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none ${unlocked ? "bg-primary/5" : "bg-card"}`}>
-            <CardContent className="flex min-h-[150px] gap-4 p-4">
-              <BadgeMedallion icon={badge.icon} unlocked={unlocked} />
-              <div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-2"><h3 className="font-semibold text-foreground">{badge.name}</h3>{unlocked && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-label="Earned" />}</div>
-                <p className="mt-1 text-sm leading-5 text-muted-foreground">{badge.description}</p>
-                <p className="mt-3 text-xs font-medium text-muted-foreground">{unlocked ? "Earned" : `Progress · ${Math.min(badge.progress, badge.target)} / ${badge.target}`}</p>
-                {!unlocked && <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary/70" style={{ width: `${Math.min(100, badge.progress / badge.target * 100)}%` }} /></div>}
-              </div>
-            </CardContent>
-          </Card></StudentReveal>;
+          const progress = Number.isFinite(badge.progress) ? Math.max(0, Math.min(badge.progress, badge.target)) : 0;
+          return <StudentReveal key={badge.name} delayMs={Math.min(index, 4) * 70} className="h-full"><article className="group flex h-full flex-col items-center px-2 text-center">
+            <BadgeMedallion icon={badge.icon} unlocked={unlocked} />
+            <h3 className="mt-2 text-sm font-semibold leading-5 text-foreground">{badge.name}</h3>
+            <p className="mt-1 min-h-[54px] text-xs leading-[18px] text-muted-foreground">{badge.description}</p>
+            <p className="mt-2 text-[11px] font-medium text-muted-foreground">{unlocked ? "Earned" : `${progress} / ${badge.target}`}</p>
+            {!unlocked && <div className="mt-1.5 h-1 w-full max-w-28 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary/70" style={{ width: `${Math.min(100, progress / badge.target * 100)}%` }} /></div>}
+          </article></StudentReveal>;
         })}
       </div>
       <StudentReveal delayMs={140}><Card className="mt-5 rounded-xl border-border bg-muted shadow-none"><CardContent className="flex flex-wrap items-center justify-between gap-3 p-4"><div><p className="font-medium text-foreground">Turn your next step into a milestone</p><p className="mt-1 text-sm text-muted-foreground">Practice an interview, join an event, or complete a course.</p></div><Link href="/student/interview" className="inline-flex min-h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground no-underline hover:bg-primary/90">Keep building <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></CardContent></Card></StudentReveal>
