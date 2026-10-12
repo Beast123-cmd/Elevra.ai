@@ -13,6 +13,7 @@ import { currentLabel, isActive, NAV, roleFromPath, type IconName, type ShellRol
 import { useApiStatus } from "./useApiStatus";
 import { ThemeToggle } from "./ThemeToggle";
 import { GuidedWalkthrough } from "./GuidedWalkthrough";
+import { StaffAssistant } from "@/components/insights/assistant/StaffAssistant";
 
 const ICONS: Record<IconName, LucideIcon> = {
   overview: BarChart3, workload: Activity, interventions: ClipboardCheck, notifications: Bell, queue: ListChecks,
@@ -184,12 +185,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main id="main" className={`mx-auto w-full max-w-[1320px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8 ${role !== "student" ? "!pb-24" : ""}`}>{children}</main>
       </div>
 
-      {role !== "student" && (
-        <Link href="/insights/assistant" aria-label="Ask Elevra" title="Ask Elevra"
-          className="fixed bottom-4 right-4 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-primary px-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-slate-900/20 transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:translate-y-0 sm:px-4 motion-reduce:transform-none">
-          <MessageSquareText className="h-5 w-5" aria-hidden="true" /><span>Ask</span>
-        </Link>
-      )}
+      {(role === "faculty" || role === "admin") && <StaffAssistant role={role} />}
 
       {/* mobile and tablet drawer */}
       {drawer && (
