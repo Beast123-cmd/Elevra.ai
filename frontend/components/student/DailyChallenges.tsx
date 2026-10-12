@@ -6,6 +6,7 @@ import { ArrowRight, Check, CircleHelp, Flame, LoaderCircle, RefreshCw, Sparkles
 import { api } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import { StudentReveal } from "./StudentReveal";
 
 type Category = "aptitude" | "coding" | "mcq";
 type Difficulty = "easy" | "medium" | "hard";
@@ -82,20 +83,20 @@ export function DailyChallenges() {
   }
 
   return <main className="mx-auto w-full max-w-[1120px] px-4 py-7 sm:px-6 sm:py-9 lg:px-10">
-    <header className="mb-6 border-l-2 border-primary pl-4"><p className="text-[11px] font-semibold uppercase tracking-[.12em] text-primary">Build your streak</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Daily challenges</h1><p className="mt-1 text-sm text-muted-foreground">A quick aptitude or coding question each day. Choose your difficulty and earn coins for correct answers.</p></header>
+    <StudentReveal><header className="mb-6 border-l-2 border-primary pl-4"><p className="text-[11px] font-semibold uppercase tracking-[.12em] text-primary">Build your streak</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Daily challenges</h1><p className="mt-1 text-sm text-muted-foreground">A quick aptitude or coding question each day. Choose your difficulty and earn coins for correct answers.</p></header></StudentReveal>
 
     {state.status === "loading" && <Card className="rounded-xl border-border"><CardContent className="flex items-center gap-2 p-5 text-sm text-muted-foreground"><LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />Loading your daily challenges…</CardContent></Card>}
     {state.status === "error" && <Card role="alert" className="rounded-xl border-border"><CardContent className="p-5"><h2 className="font-semibold text-foreground">Daily challenges are unavailable</h2><p className="mt-1 text-sm text-muted-foreground">{state.message}</p><button onClick={refresh} className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium text-foreground hover:bg-muted"><RefreshCw className="h-4 w-4" aria-hidden="true" />Try again</button></CardContent></Card>}
 
     {state.status === "ready" && <>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <StudentReveal className="grid gap-3 sm:grid-cols-3" delayMs={70}>
         <Card className="rounded-xl border-border bg-card"><CardContent className="flex items-center gap-3 p-4"><span className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><Flame className="h-5 w-5" aria-hidden="true" /></span><div><p className="text-xs text-muted-foreground">Daily login reward</p><p className="font-semibold text-foreground">+{state.daily.login?.coins ?? 5} coins · {state.daily.login?.streak_days ?? 1} day streak</p></div></CardContent></Card>
         <Card className="rounded-xl border-border bg-card"><CardContent className="flex items-center gap-3 p-4"><span className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><Target className="h-5 w-5" aria-hidden="true" /></span><div><p className="text-xs text-muted-foreground">Today's challenges</p><p className="font-semibold text-foreground">{state.daily.attempts.length} / 9 completed</p></div></CardContent></Card>
         <Card className="rounded-xl border-border bg-card"><CardContent className="flex items-center gap-3 p-4"><span className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><Trophy className="h-5 w-5" aria-hidden="true" /></span><div><p className="text-xs text-muted-foreground">Your coin wallet</p><p className="font-semibold text-foreground">{state.daily.coin_balance} coins · {(state.daily.login?.coins ?? 0) + state.daily.attempts.reduce((sum, item) => sum + item.coins, 0)} earned today</p></div></CardContent></Card>
-      </div>
+      </StudentReveal>
       {state.daily.login?.streak_days && state.daily.login.streak_days % 7 === 0 && <p className="mt-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-medium text-primary"><Sparkles className="mr-2 inline h-4 w-4" aria-hidden="true" />Seven day streak! You earned a 25 point bonus.</p>}
 
-      <Card className="mt-5 rounded-xl border-border bg-card shadow-sm"><CardContent className="p-4 sm:p-6">
+      <StudentReveal delayMs={140}><Card className="mt-5 rounded-xl border-border bg-card shadow-sm"><CardContent className="p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold text-foreground">Pick a challenge</h2><p className="mt-1 text-sm text-muted-foreground">One attempt per topic and difficulty each day.</p></div><span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">Resets at midnight · India time</span></div>
         <div className="mt-5 grid gap-4 lg:grid-cols-[.75fr_1.25fr]">
           <div>
@@ -126,8 +127,8 @@ export function DailyChallenges() {
             </>}
           </div>
         </div>
-      </CardContent></Card>
-      <div className="mt-5 text-center"><Link href="/student/achievements" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary no-underline hover:underline">See your badges and titles <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
+      </CardContent></Card></StudentReveal>
+      <StudentReveal delayMs={210}><div className="mt-5 text-center"><Link href="/student/achievements" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary no-underline hover:underline">See your badges and titles <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div></StudentReveal>
     </>}
   </main>;
 }

@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 
-export function StudentReveal({ children, className = "", animate = true }: { children: ReactNode; className?: string; delayMs?: number; animate?: boolean }) {
+export function StudentReveal({ children, className = "", delayMs = 0, animate = true }: { children: ReactNode; className?: string; delayMs?: number; animate?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const element = ref.current;
@@ -21,5 +21,5 @@ export function StudentReveal({ children, className = "", animate = true }: { ch
     return () => observer.disconnect();
   }, [animate]);
   const classes = [animate ? "student-reveal-pending" : "", className].filter(Boolean).join(" ");
-  return <div ref={ref} data-student-reveal className={classes}>{children}</div>;
+  return <div ref={ref} data-student-reveal className={classes} style={{ animationDelay: `${delayMs}ms` }}>{children}</div>;
 }
