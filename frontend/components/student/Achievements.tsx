@@ -69,23 +69,34 @@ function useAchievements() {
 
 const ICONS = { trophy: Trophy, certificate: BookOpenCheck, interview: Mic2, sparkles: Sparkles, streak: Flame };
 const MEDALS = {
-  trophy: { rim: "#e8ad35", face: "#fff0b3", ink: "#815313" },
-  certificate: { rim: "#38a889", face: "#c9f2df", ink: "#145d48" },
-  interview: { rim: "#8970d2", face: "#e8ddff", ink: "#503d92" },
-  sparkles: { rim: "#2999ba", face: "#c9eff5", ink: "#155f76" },
-  streak: { rim: "#e8785f", face: "#ffe0c9", ink: "#943e2a" },
+  trophy: { rim: "#b87513", face: "#ffdf70", ink: "#70400c", shine: "#fff3c4", shadow: "#6b390b" },
+  certificate: { rim: "#168267", face: "#73e2bd", ink: "#064c40", shine: "#dcfff2", shadow: "#063d37" },
+  interview: { rim: "#6640b2", face: "#c1a0ff", ink: "#38216f", shine: "#f0e5ff", shadow: "#27144f" },
+  sparkles: { rim: "#087aa4", face: "#61d8ed", ink: "#064c6b", shine: "#dcfbff", shadow: "#073349" },
+  streak: { rim: "#bd4b32", face: "#ff9b62", ink: "#752a21", shine: "#ffe5ca", shadow: "#5d211c" },
 };
 
 function BadgeMedallion({ icon, unlocked }: { icon: keyof typeof MEDALS; unlocked: boolean }) {
   const Icon = ICONS[icon];
   const colors = MEDALS[icon];
-  return <span className={`group relative grid h-[100px] w-[92px] shrink-0 place-items-center transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transition-none ${unlocked ? "" : "grayscale opacity-65"}`}>
-    <svg viewBox="0 0 100 112" className="absolute inset-0 h-full w-full drop-shadow-sm" aria-hidden="true">
-      <polygon points="50,2 96,28 96,82 50,109 4,82 4,28" fill={unlocked ? colors.rim : "hsl(var(--border))"} />
-      <polygon points="50,9 89,31 89,77 50,100 11,77 11,31" fill={unlocked ? colors.face : "hsl(var(--background))"} stroke={unlocked ? "#fff7df" : "hsl(var(--border))"} strokeWidth="3" />
-      <polygon points="50,16 82,34 82,73 50,92 18,73 18,34" fill={unlocked ? colors.rim : "hsl(var(--muted))"} opacity={unlocked ? 0.16 : 0.5} />
+  const id = `medal-${icon}-${unlocked ? "earned" : "locked"}`;
+  return <span className={`group relative grid h-[100px] w-[92px] shrink-0 place-items-center transition-transform duration-300 group-hover:-translate-y-1 motion-reduce:transition-none ${unlocked ? "" : "opacity-60"}`}>
+    <svg viewBox="0 0 100 112" className="absolute inset-0 h-full w-full drop-shadow-[0_5px_4px_rgba(20,30,24,0.28)]" aria-hidden="true">
+      {unlocked && <defs>
+        <linearGradient id={`${id}-rim`} x1="0" y1="0" x2="1" y2="1"><stop stopColor={colors.shine} /><stop offset=".28" stopColor={colors.face} /><stop offset=".55" stopColor={colors.rim} /><stop offset=".78" stopColor={colors.shine} /><stop offset="1" stopColor={colors.shadow} /></linearGradient>
+        <linearGradient id={`${id}-face`} x1="0" y1="0" x2=".85" y2="1"><stop stopColor={colors.shine} /><stop offset=".38" stopColor={colors.face} /><stop offset=".72" stopColor={colors.rim} /><stop offset="1" stopColor={colors.shadow} /></linearGradient>
+        <linearGradient id={`${id}-glint`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff" stopOpacity=".82" /><stop offset=".5" stopColor="#fff" stopOpacity=".08" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+      </defs>}
+      <polygon points="50,2 96,28 96,82 50,109 4,82 4,28" fill={unlocked ? `url(#${id}-rim)` : "hsl(var(--border))"} stroke={unlocked ? colors.shadow : "hsl(var(--border))"} strokeWidth="2" />
+      <polygon points="50,9 89,31 89,77 50,100 11,77 11,31" fill={unlocked ? `url(#${id}-face)` : "hsl(var(--background))"} stroke={unlocked ? colors.shine : "hsl(var(--border))"} strokeWidth="3" />
+      <polygon points="50,16 82,34 82,73 50,92 18,73 18,34" fill={unlocked ? colors.face : "hsl(var(--muted))"} opacity={unlocked ? 0.34 : 0.5} />
+      {unlocked && <>
+        <polygon points="50,9 89,31 50,48 11,31" fill={`url(#${id}-glint)`} />
+        <polygon points="50,16 82,34 82,73 50,92 18,73 18,34" fill="none" stroke={colors.shine} strokeOpacity=".62" strokeWidth="1.2" />
+        <path d="M17 31 50 12 83 31" fill="none" stroke="#fff" strokeOpacity=".8" strokeWidth="2" />
+      </>}
     </svg>
-    <Icon className="relative h-10 w-10 drop-shadow-sm" strokeWidth={2.3} style={{ color: unlocked ? colors.ink : undefined }} aria-hidden="true" />
+    <Icon className="relative h-10 w-10 drop-shadow-[0_2px_1px_rgba(255,255,255,0.28)]" strokeWidth={2.5} style={{ color: unlocked ? colors.ink : undefined }} aria-hidden="true" />
     {unlocked && <span className="absolute -right-0.5 top-2 grid h-6 w-6 place-items-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm"><BadgeCheck className="h-4 w-4" aria-hidden="true" /></span>}
   </span>;
 }
