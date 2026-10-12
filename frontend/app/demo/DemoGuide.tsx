@@ -14,7 +14,7 @@ const STUDENT: Account = { email: "student.red@demo.edu", label: "Student", home
 
 interface Step { title: string; say: string; account: Account; links: { href: string; label: string }[]; try: string[] }
 
-// Follows the demo story in docs/PRD.md section 10.
+// A guided walk through the product, one account per step.
 const STEPS: Step[] = [
   {
     title: "One student view from seven messy systems",

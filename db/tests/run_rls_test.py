@@ -4,8 +4,8 @@ The test (002_rls.test.sql) impersonates anonymous, role-less, admin, faculty an
 transaction, checks what each can read and write, and always rolls back.
 
     pip install "psycopg[binary]"
-    python docs/proposals/run_rls_test.py current     # test the database exactly as it is now (policies already applied)
-    python docs/proposals/run_rls_test.py migration   # apply db/migrations/002_rls.sql INSIDE the transaction first, then test
+    python db/tests/run_rls_test.py current     # test the database exactly as it is now (policies already applied)
+    python db/tests/run_rls_test.py migration   # apply db/migrations/002_rls.sql INSIDE the transaction first, then test
 
 Reads SUPABASE_DB_URL from the repo-root .env. Needs the seeded demo accounts.
 Exit code 0 = every check passed.

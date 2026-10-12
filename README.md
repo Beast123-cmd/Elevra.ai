@@ -10,7 +10,7 @@ what-if simulator and a path to improve.
 |---|---|
 | Live app | https://elevra.engimind.cloud |
 | API | https://elevra.engimind.cloud/api/health (FastAPI) |
-| Score note | [`docs/SCORE_METHODOLOGY.md`](docs/SCORE_METHODOLOGY.md) |
+| Score method | In the app: **Method & Trust** (model card, back-test, fairness) |
 | Slides / demo video | SLIDES_URL · VIDEO_URL (to be filled in) |
 
 There is no self sign-up: administrators create every login (Admin → Users) and assign mentors. Evaluator login details are shared separately with the submission.
@@ -48,7 +48,7 @@ Language is deliberately careful: a flag means **"needs a check-in"**, never "wi
 
 - Every AI feature has a non-AI fallback and shows an *offline* state; the dashboards read Supabase directly and keep working if the API is down.
 - AI text (briefs, messages, weekly summary) is accepted only if it passes a fact check: every figure must come from the data, no failure predictions, no gendered pronouns, length limit. Otherwise a standard text is shown and labelled as such.
-- Row-level security in Postgres: a student reads only their own rows, a mentor only their mentees, an admin everything. Verified with 59 automated checks (`docs/proposals/run_rls_test.py`).
+- Row-level security in Postgres: a student reads only their own rows, a mentor only their mentees, an admin everything. Verified with 59 automated checks (`db/tests/run_rls_test.py`).
 - Seeded interventions are labelled as synthetic demonstration data and excluded from the live support figures.
 
 ## Architecture
@@ -147,7 +147,7 @@ Tests: `cd frontend && npm test` · `cd backend && python -m unittest discover -
 
 ### Deploying
 
-The web app and API run on one VPS behind an nginx reverse proxy on a single HTTPS domain (the API is served under `/api`). HTTPS is required, because the voice interview needs the microphone. The setup guide is [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). After deploying, run `python deploy/smoke_test.py WEB_URL API_URL`; every line must say PASS.
+The web app and API run on one VPS behind an nginx reverse proxy on a single HTTPS domain (the API is served under `/api`). HTTPS is required, because the voice interview needs the microphone. Ready-made service and nginx files are in `deploy/`. After deploying, run `python deploy/smoke_test.py WEB_URL API_URL`; every line must say PASS.
 
 ### Environment variables (names only)
 
@@ -162,9 +162,9 @@ The service-role key is server-only and must never reach the browser.
 frontend/   Next.js app: app/{admin,faculty,student,insights,demo,login}, components/, lib/
 backend/    FastAPI: routers/{admin,faculty,student,assistant,briefs,chat,daily_tests,weekly,whatif,interview,tts}, common/, tests/
 pipeline/   generate/, clean/, scoring/ (engine + model), run.py, seed.py, tests/
-db/         migrations (schema, row-level security)
+db/         migrations (schema, row-level security) and tests/ (the row-level security test)
+deploy/     systemd and nginx files, plus a post-deploy smoke test
 data/raw/   the seven messy source files plus faculty
-docs/       PRD, build plan, score methodology, progress log, feature research
 ```
 
 ## Honest limits
