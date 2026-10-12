@@ -66,6 +66,6 @@ export function getBadges(data: StudentAchievements): BadgeProgress[] {
     { name: "Interview Ready", description: "Average 4.0 across your latest three interviews.", progress: recent.length >= 3 && average >= 4 ? 1 : 0, target: 1, icon: "interview" },
     { name: "All-Rounder", description: "Earn a verified hackathon, certification, and interview score.", progress: hackathons > 0 && certifications > 0 && data.interviews.length > 0 ? 1 : 0, target: 1, icon: "sparkles" },
     { name: "Streak Keeper", description: "Log in seven days in a row.", progress: data.loginStreak, target: 7, icon: "streak" },
-    { name: "Daily Starter", description: "Complete your first daily aptitude or coding challenge.", progress: data.challengeCount, target: 1, icon: "streak" },
+    { name: "Daily Starter", description: "Complete your first timed aptitude, SQL, C++, or coding test.", progress: data.challengeCount, target: 1, icon: "streak" },
   ];
 }

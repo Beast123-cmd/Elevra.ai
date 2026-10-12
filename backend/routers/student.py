@@ -35,8 +35,10 @@ router = APIRouter()
 # 'Ask Elevra' assistants (routers/assistant.py) are attached here because this router is already registered in
 # main.py, which is frozen. Endpoints: POST /assistant/student, POST /assistant/faculty, GET /assistant/faculty/suggestions.
 from routers import assistant as _assistant  # noqa: E402
+from routers import daily_tests as _daily_tests  # noqa: E402
 
 router.include_router(_assistant.router)
+router.include_router(_daily_tests.router)
 
 FEED_KEY = "hackathons"
 REFRESH_EVERY = timedelta(hours=24)
@@ -220,13 +222,17 @@ def daily_challenges_state(caller: Caller = Depends(require_role("student"))):
     attempts = client.table("student_daily_challenge_attempts").select("category,difficulty,correct,coins,created_at").eq("student_id", caller.student_id).eq("activity_date", today).execute().data or []
     all_logins = _student_points("student_daily_logins", "coins", caller.student_id)
     all_attempts = _student_points("student_daily_challenge_attempts", "coins,correct", caller.student_id)
+    all_tests = [row for row in _student_points("student_assessment_sessions", "coins,correct_count,total_questions,status", caller.student_id) if row.get("status") == "completed"]
     redemptions = _student_points("student_store_redemptions", "coins_spent,status", caller.student_id)
-    earned_coins = sum(int(row.get("coins") or 0) for row in all_logins + all_attempts)
+    earned_coins = sum(int(row.get("coins") or 0) for row in all_logins + all_attempts + all_tests)
+    test_question_count = sum(int(row.get("total_questions") or 0) for row in all_tests)
+    test_correct_count = sum(int(row.get("correct_count") or 0) for row in all_tests)
     spent_coins = sum(int(row.get("coins_spent") or 0) for row in redemptions if row.get("status") != "cancelled")
     coin_balance = earned_coins - spent_coins
     return {"activity_date": today, "login": login[0] if login else None, "attempts": attempts, "coin_balance": coin_balance,
             "earned_coins": earned_coins,
-            "challenge_count": len(all_attempts), "correct_challenge_count": sum(1 for row in all_attempts if row.get("correct"))}
+            "challenge_count": len(all_attempts) + test_question_count,
+            "correct_challenge_count": sum(1 for row in all_attempts if row.get("correct")) + test_correct_count}
 
 
 @router.get("/daily-challenges/question")
