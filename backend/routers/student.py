@@ -223,8 +223,10 @@ def daily_challenges_state(caller: Caller = Depends(require_role("student"))):
     all_logins = _student_points("student_daily_logins", "coins", caller.student_id)
     all_attempts = _student_points("student_daily_challenge_attempts", "coins,correct", caller.student_id)
     all_tests = [row for row in _student_points("student_assessment_sessions", "coins,correct_count,total_questions,status", caller.student_id) if row.get("status") == "completed"]
+    all_interviews = _student_points("mock_interviews", "feedback", caller.student_id)
     redemptions = _student_points("student_store_redemptions", "coins_spent,status", caller.student_id)
-    earned_coins = sum(int(row.get("coins") or 0) for row in all_logins + all_attempts + all_tests)
+    interview_coins = sum(int((row.get("feedback") or {}).get("coins_awarded") or 0) for row in all_interviews if isinstance(row.get("feedback") or {}, dict))
+    earned_coins = sum(int(row.get("coins") or 0) for row in all_logins + all_attempts + all_tests) + interview_coins
     test_question_count = sum(int(row.get("total_questions") or 0) for row in all_tests)
     test_correct_count = sum(int(row.get("correct_count") or 0) for row in all_tests)
     spent_coins = sum(int(row.get("coins_spent") or 0) for row in redemptions if row.get("status") != "cancelled")

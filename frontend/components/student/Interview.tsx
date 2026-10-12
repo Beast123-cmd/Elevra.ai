@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, Check, ChevronDown, Expand, FileText, Mic, MicOff, Send, ShieldCheck, Upload, Volume2 } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Coins, Expand, FileText, Mic, MicOff, Send, ShieldCheck, Upload, Volume2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import { fmt } from "@/lib/format";
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { playClip, preloadClips, speak, stopSpeaking, useLiveTranscription } from "./voice";
 import { CoachReport } from "./coach/CoachReport";
 import type { CoachFeedback, PracticeTask } from "./coach/types";
+import { showCoinReward } from "./CoinRewardCelebration";
 
 // Played the moment an answer is sent (voice on), so the interviewer responds instantly while the next question is written.
 const ACKS = ["Okay.", "Got it.", "Alright.", "I see.", "Thanks for that."];
@@ -28,6 +29,7 @@ interface TurnResponse {
 type Feedback = CoachFeedback;
 interface FinishResponse {
   score_5: number; feedback: Feedback; ai: boolean; mock_interview_avg: number;
+  coins_awarded?: number;
   old_success_score: number; new_success_score: number; old_placement: number | null; new_placement: number | null; transcript: Turn[];
   tasks?: PracticeTask[];
 }
@@ -330,6 +332,7 @@ export function Interview() {
     try {
       const r = mock ? { ...MOCK_FINISH, transcript: turns } : await api<FinishResponse>("/interview/finish", { session_id: sessionId });
       setResult(r); setPhase("result");
+      if (r.coins_awarded) showCoinReward(r.coins_awarded);
     } catch (e) { setError(friendlyError(e, "finish")); } finally { setBusy(null); }
   }
 
@@ -634,6 +637,7 @@ export function Interview() {
               <p className="mt-1 text-xs text-muted-foreground">
                 {fb.questions ?? "—"} questions · {fb.minutes !== undefined ? `${fmt(fb.minutes, 0)} min` : "—"}
               </p>
+              {(result.coins_awarded ?? 0) > 0 && <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 px-3 py-1.5 text-sm font-semibold text-amber-700 dark:text-amber-300"><Coins className="h-4 w-4" aria-hidden="true" />+{result.coins_awarded} coins earned</p>}
             </div>
             <div className="space-y-2">
               {fb.criteria ? CRITERIA.map((c) => (
