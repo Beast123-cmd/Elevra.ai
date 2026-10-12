@@ -66,6 +66,28 @@ function useAchievements() {
 }
 
 const ICONS = { trophy: Trophy, certificate: BookOpenCheck, interview: Mic2, sparkles: Sparkles, streak: Flame };
+const MEDALS = {
+  trophy: { rim: "#e8ad35", face: "#fff0b3", ink: "#815313" },
+  certificate: { rim: "#38a889", face: "#c9f2df", ink: "#145d48" },
+  interview: { rim: "#8970d2", face: "#e8ddff", ink: "#503d92" },
+  sparkles: { rim: "#2999ba", face: "#c9eff5", ink: "#155f76" },
+  streak: { rim: "#e8785f", face: "#ffe0c9", ink: "#943e2a" },
+};
+
+function BadgeMedallion({ icon, unlocked }: { icon: keyof typeof MEDALS; unlocked: boolean }) {
+  const Icon = ICONS[icon];
+  const colors = MEDALS[icon];
+  return <span className={`group relative z-0 mt-1 grid h-[76px] w-[76px] shrink-0 place-items-center rounded-full p-[5px] transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none ${unlocked ? "" : "bg-muted"}`}
+    style={unlocked ? { background: `linear-gradient(145deg, ${colors.rim}, #fff8dc 43%, ${colors.rim})`, boxShadow: `0 3px 10px ${colors.rim}45` } : undefined}>
+    {unlocked && <><span aria-hidden="true" className="absolute -bottom-1 left-[18px] z-0 h-6 w-4 rotate-[18deg] rounded-b-sm" style={{ background: colors.rim }} /><span aria-hidden="true" className="absolute -bottom-1 right-[18px] z-0 h-6 w-4 -rotate-[18deg] rounded-b-sm" style={{ background: colors.rim }} /></>}
+    <span className={`relative z-10 grid h-full w-full place-items-center rounded-full border-[3px] ${unlocked ? "" : "border-border bg-background text-muted-foreground"}`}
+      style={unlocked ? { borderColor: "#fff8dc", background: `radial-gradient(circle at 34% 27%, #ffffff 0%, ${colors.face} 48%, ${colors.rim} 145% )`, color: colors.ink } : undefined}>
+      {unlocked && <span aria-hidden="true" className="absolute inset-[3px] rounded-full border" style={{ borderColor: `${colors.rim}90` }} />}
+      <Icon className="relative h-8 w-8 drop-shadow-sm" strokeWidth={2.4} aria-hidden="true" />
+      {unlocked && <span aria-hidden="true" className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_5px_white]" />}
+    </span>
+  </span>;
+}
 
 function celebrateNewMilestones(data: StudentAchievements, studentId: string) {
   const key = `elevra-achievement-snapshot:${studentId}`;
@@ -111,11 +133,10 @@ function AchievementContent({ data }: { data: StudentAchievements }) {
       <StudentReveal delayMs={70}><div className="mt-6 flex flex-wrap items-end justify-between gap-2"><div><h2 className="text-lg font-semibold text-foreground">Your badge collection</h2><p className="mt-1 text-sm text-muted-foreground">{earned} of {badges.length} earned · keep going to unlock the rest.</p></div></div></StudentReveal>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {badges.map((badge, index) => {
-          const Icon = ICONS[badge.icon];
           const unlocked = badge.progress >= badge.target;
-          return <StudentReveal key={badge.name} delayMs={Math.min(index, 4) * 70} className="h-full"><Card className={`h-full rounded-xl border-border shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none ${unlocked ? "bg-primary/5" : "bg-card"}`}>
-            <CardContent className="flex min-h-[150px] gap-3 p-4">
-              <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${unlocked ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}><Icon className="h-5 w-5" aria-hidden="true" /></span>
+          return <StudentReveal key={badge.name} delayMs={Math.min(index, 4) * 70} className="h-full"><Card className={`group h-full rounded-xl border-border shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none ${unlocked ? "bg-primary/5" : "bg-card"}`}>
+            <CardContent className="flex min-h-[150px] gap-4 p-4">
+              <BadgeMedallion icon={badge.icon} unlocked={unlocked} />
               <div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-2"><h3 className="font-semibold text-foreground">{badge.name}</h3>{unlocked && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-label="Earned" />}</div>
                 <p className="mt-1 text-sm leading-5 text-muted-foreground">{badge.description}</p>
                 <p className="mt-3 text-xs font-medium text-muted-foreground">{unlocked ? "Earned" : `Progress · ${Math.min(badge.progress, badge.target)} / ${badge.target}`}</p>
