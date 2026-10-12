@@ -16,13 +16,6 @@ const ROLES = [
   { value: "admin", label: "Admin" },
 ] as const;
 
-const DEMO = [
-  { label: "Admin", role: "admin", email: "admin@demo.edu" },
-  { label: "Faculty", role: "faculty", email: "faculty1@demo.edu" },
-  { label: "Student · check-in", role: "student", email: "student.red@demo.edu" },
-  { label: "Student · strong progress", role: "student", email: "student.star@demo.edu" },
-] as const;
-
 type Role = (typeof ROLES)[number]["value"];
 
 export default function LoginPage() {
@@ -30,7 +23,6 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? "";
 
   async function signIn(userEmail: string, userPassword: string, expectedRole: Role) {
     if (busy) return;
@@ -60,15 +52,6 @@ export default function LoginPage() {
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void signIn(email, password, role);
-  }
-
-  function signInDemo(demoEmail: string, demoRole: Role) {
-    if (!demoPassword) {
-      toast.error("Demo accounts aren’t configured in this environment.");
-      return;
-    }
-    setRole(demoRole);
-    void signIn(demoEmail, demoPassword, demoRole);
   }
 
   return (
@@ -110,19 +93,6 @@ export default function LoginPage() {
           ))}
         </Tabs>
 
-        <details className="mt-5 border-t border-slate-100 pt-4">
-          <summary className="cursor-pointer list-none text-center text-xs font-medium text-[#286a62] outline-none hover:text-[#154e49] focus-visible:ring-2 focus-visible:ring-[#286a62]">
-            Try a demo account
-          </summary>
-          <p className="mt-3 text-center text-[11px] leading-4 text-slate-500">Demo workspaces use synthetic campus records.</p>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {DEMO.map((demo) => (
-              <Button key={demo.email} type="button" variant="outline" className="h-11 min-w-0 justify-center border-slate-200 px-2 text-[10px] font-medium text-slate-700 hover:border-[#b8cec3] hover:bg-[#f5f8f5] hover:text-[#154e49] sm:text-[11px]" disabled={busy} onClick={() => signInDemo(demo.email, demo.role)}>
-                <span className="truncate">{demo.label}</span>
-              </Button>
-            ))}
-          </div>
-        </details>
       </section>
 
       <p className="mt-5 text-center text-xs text-slate-500"><Link href="/" className="text-slate-600 underline decoration-slate-300 underline-offset-4 hover:text-[#154e49]">Back to Elevra</Link></p>
