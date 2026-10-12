@@ -179,7 +179,7 @@ body {
 }
 @layer base {
   /* Elevra "campus annual report" palette. HSL triplets, read by tailwind.config.ts as hsl(var(--x)).
-     See docs/superpowers/specs/2026-10-11-ui-design-system-design.md before changing anything here. */
+     Change these tokens with care: every screen reads them. */
   :root {
     --background: 42 31.3% 93.7%;
     --foreground: 153 14.3% 12.4%;

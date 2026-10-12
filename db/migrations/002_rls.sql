@@ -17,7 +17,7 @@
 --   create policy auth_read on <table> for select to authenticated using (true);
 -- and `alter view public.student_unified_view reset (security_invoker);`.
 --
--- Safe to run more than once. Test with docs/proposals/002_rls.test.sql (runs in a transaction and rolls back).
+-- Safe to run more than once. Test with db/tests/002_rls.test.sql (runs in a transaction and rolls back).
 
 -- Keep SECURITY DEFINER helpers outside the exposed API schema. Only authenticated
 -- requests can invoke the two policy helpers, and each checks auth.uid() explicitly.

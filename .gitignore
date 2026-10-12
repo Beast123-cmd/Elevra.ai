@@ -10,3 +10,8 @@ frontend/out/
 pipeline/out/
 .vercel
 *.pdf
+
+# internal planning notes and agent instructions: kept on our machines only
+docs/
+CLAUDE.md
+AGENTS.md
