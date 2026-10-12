@@ -256,6 +256,26 @@ def start_assessment(body: StartRequest, caller: Caller = Depends(require_role("
     return _serialize_session(row, questions)
 
 
+@router.post("/assessments/practice")
+def start_practice_assessment(body: StartRequest, caller: Caller = Depends(require_role("student"))):
+    """Start a repeatable practice test. It is intentionally not persisted or rewarded."""
+    if not caller.student_id:
+        raise HTTPException(403, "This account is not linked to a student record")
+    now = datetime.now(IST)
+    indices = random.SystemRandom().sample(range(50), LENGTHS[body.mode])
+    questions = [_question(body.category, body.difficulty, index) for index in indices]
+    return {
+        "session_id": f"practice-{now.timestamp()}",
+        "mode": "practice",
+        "category": body.category,
+        "difficulty": body.difficulty,
+        "duration_seconds": DURATIONS[body.mode],
+        "expires_at": (now + timedelta(seconds=DURATIONS[body.mode])).isoformat(),
+        "questions": [_public_question(question) for question in questions],
+        "answer_key": {question["question_id"]: question["answer"] for question in questions},
+    }
+
+
 @router.post("/assessments/submit")
 def submit_assessment(body: SubmitRequest, caller: Caller = Depends(require_role("student"))):
     if not caller.student_id:
