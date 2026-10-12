@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Clock3, Coins, Flame, LoaderCircle, RefreshCw, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock3, Coins, Expand, Flame, LoaderCircle, RefreshCw, Trophy } from "lucide-react";
 import { api } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { StudentReveal } from "./StudentReveal";
@@ -44,6 +44,7 @@ export function DailyChallenges() {
   const [remaining, setRemaining] = useState(0);
   const [starting, setStarting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [error, setError] = useState("");
   const submitLock = useRef(false);
   const answerRef = useRef(answers);
@@ -100,21 +101,56 @@ export function DailyChallenges() {
     if (remaining === 0 && session && !result && !submitting && !submitLock.current) void submitTest();
   }, [remaining, result, session, submitting, submitTest]);
 
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, []);
+
+  useEffect(() => {
+    if ((!session || result) && document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+  }, [session, result]);
+
   async function startTest() {
     if (starting) return;
     setStarting(true); setError("");
     try {
+      if (!document.documentElement.requestFullscreen) {
+        setError("Full-screen mode is not supported by this browser. Please use a supported browser to start the test.");
+        return;
+      }
+      try {
+        await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+        if (!document.fullscreenElement) throw new Error("Fullscreen was not entered");
+        setIsFullscreen(true);
+      } catch {
+        setError("Please allow full screen in your browser, then start the test again.");
+        return;
+      }
       const started = await api<TestSession>(mode === "practice" ? "/assessments/practice" : "/assessments/start", { mode: mode === "weekly" ? "weekly" : "daily", category, difficulty });
       setSession(started);
       setAnswers({}); answerRef.current = {}; setResult(started.result ?? null); setRemaining(Math.max(0, Math.ceil((Date.parse(started.expires_at) - Date.now()) / 1000)));
       submitLock.current = false;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not start this test. Please try again.");
+      if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+      setIsFullscreen(false);
     } finally { setStarting(false); }
+  }
+
+  async function reenterFullscreen() {
+    try {
+      await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+      setIsFullscreen(true);
+    } catch {
+      setError("Full screen could not be restored. Your test is still active.");
+    }
   }
 
   function leaveTest() {
     setSession(null); setAnswers({}); answerRef.current = {}; setResult(null); setError(""); submitLock.current = false;
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+    setIsFullscreen(false);
   }
 
   const topic = TOPICS.find((item) => item.id === category)!;
@@ -159,6 +195,7 @@ export function DailyChallenges() {
 
       {session && result && <StudentReveal delayMs={100}><Card className="mt-5 overflow-hidden rounded-2xl border-border bg-card"><CardContent className="p-6 text-center sm:p-10"><span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-primary/10 text-primary"><Trophy className="h-8 w-8" aria-hidden="true" /></span><p className="mt-4 text-xs font-semibold uppercase tracking-[.12em] text-primary">{mode === "practice" ? "Practice complete" : "Test complete"}</p><h2 className="mt-1 text-3xl font-bold tracking-tight text-foreground">{result.score_percent}%</h2><p className="mt-2 text-base text-muted-foreground">You got <strong className="text-foreground">{result.correct_count} of {result.total_questions}</strong> questions correct.</p>{mode === "practice" ? <p className="mt-4 text-sm text-muted-foreground">Practice tests do not award coins.</p> : <p className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full bg-amber-400/15 px-4 py-2 text-lg font-bold text-amber-700 dark:text-amber-300"><Coins className="h-5 w-5" aria-hidden="true" />+{result.coins} coins</p>}{result.already_completed && <p className="mt-2 text-xs text-muted-foreground">This is your saved result for this test period.</p>}<div className="mt-6"><button type="button" onClick={leaveTest} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:bg-muted">Back to tests</button></div></CardContent></Card></StudentReveal>}
     </>}
+    {session && !result && !isFullscreen && <div className="fixed inset-0 z-[120] grid place-items-center bg-background/90 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="test-fullscreen-title"><div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-center shadow-xl"><h2 id="test-fullscreen-title" className="text-lg font-semibold text-foreground">Full screen is required</h2><p className="mt-2 text-sm text-muted-foreground">Your timed test is still running. Return to full screen to continue.</p><button type="button" onClick={() => void reenterFullscreen()} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground"><Expand className="h-4 w-4" aria-hidden="true" />Return to test</button></div></div>}
     <div className="mt-5 text-center"><Link href="/student/achievements" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary no-underline hover:underline">See your badges and titles <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
   </main>;
 }
