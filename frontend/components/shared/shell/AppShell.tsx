@@ -1,7 +1,7 @@
 "use client";
 import {
-  Activity, Award, BarChart3, Bell, BookOpen, CalendarDays, ClipboardCheck, Compass, Database, FileCheck2, House, Inbox, ListChecks,
-  LogOut, Menu, MessageSquareText, Mic2, PanelLeftClose, PanelLeftOpen, PieChart, ShieldCheck, Trophy, Users, X, type LucideIcon,
+  Activity, Award, BarChart3, Bell, BookOpen, CalendarDays, ClipboardCheck, Compass, Database, FileCheck2, House, Inbox, ListChecks, Flame,
+  LogOut, Menu, MessageSquareText, Mic2, PanelLeftClose, PanelLeftOpen, PieChart, ShieldCheck, ShoppingBag, Trophy, Users, X, type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,7 +17,7 @@ import { GuidedWalkthrough } from "./GuidedWalkthrough";
 const ICONS: Record<IconName, LucideIcon> = {
   overview: BarChart3, workload: Activity, interventions: ClipboardCheck, notifications: Bell, queue: ListChecks,
   attendance: CalendarDays, segments: PieChart, dataHealth: Database, method: ShieldCheck, evidence: FileCheck2,
-  chat: MessageSquareText, users: Users, demo: Compass, home: House, plan: BookOpen, certifications: Award,
+  chat: MessageSquareText, users: Users, demo: Compass, home: House, plan: BookOpen, certifications: Award, achievements: Award, daily: Flame,
   hackathons: Trophy, events: CalendarDays, interview: Mic2, inbox: Inbox,
 };
 const ROLE_LABEL: Record<ShellRole, string> = { admin: "Administrator", faculty: "Faculty mentor", student: "Student" };
@@ -164,6 +164,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="hidden text-xs font-medium tracking-wide text-muted-foreground sm:block">Campus success, made visible</span>
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
               {identityReady && userId && <GuidedWalkthrough role={role} ready={identityReady} userId={userId} />}
+              {role === "student" && <Link href="/student/store" aria-label="Rewards store" title="Rewards store" className="grid h-10 w-10 place-items-center rounded-md border border-border text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ShoppingBag className="h-[18px] w-[18px]" aria-hidden="true" /></Link>}
               <ThemeToggle className="mr-1" />
               <button type="button" onClick={signOutAndLeave} className="flex h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Sign out">
                 <LogOut className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Sign out</span>
