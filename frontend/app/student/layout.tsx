@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { AppShell } from "@/components/shared/shell/AppShell";
 import { StudentAssistant } from "@/components/student/assistant/StudentAssistant";
+import { DailyLoginReward } from "@/components/student/DailyLoginReward";
+import { CoinRewardCelebration } from "@/components/student/CoinRewardCelebration";
 import { Interview } from "@/components/student/Interview";
 import { StudentProfileProvider } from "@/components/student/StudentProfileProvider";
 import { StudentLoading } from "@/components/student/StudentPage";
@@ -11,6 +13,8 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
       <Suspense fallback={<StudentLoading rows={3} />}>
         <StudentProfileProvider>
           {children}
+          <DailyLoginReward />
+          <CoinRewardCelebration />
           {/* mounted once here so a running mock interview survives moving between pages */}
           <Interview />
           <StudentAssistant />

@@ -11,6 +11,7 @@ import { Meter, Ring, type Tone } from "@/components/shared/viz";
 import { StudentLoading } from "./StudentPage";
 import { StudentReveal } from "./StudentReveal";
 import { useStudentProfile } from "./useStudentProfile";
+import { Achievements } from "./Achievements";
 
 const BAND_TONE: Record<string, Tone> = { Thriving: "green", "On Track": "primary", "Needs Attention": "highlight", Critical: "red" };
 /** Attendance is judged against the 75% rule and the 65% detention line; every other area against 60 and 45. */
@@ -140,6 +141,8 @@ function Dashboard({ profile }: { profile: Profile }) {
         <Link href="/student/notifications" className="inline-flex min-h-9 items-center gap-2 text-xs font-semibold text-primary no-underline hover:underline">Open inbox <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></Link>
       </div>
       </StudentReveal>
+      <StudentReveal><Achievements compact /></StudentReveal>
+      <StudentReveal><Link href="/student/daily-challenges" className="mt-3 flex min-h-16 flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 no-underline shadow-sm transition-colors hover:bg-muted"><span><span className="block text-sm font-semibold text-foreground">Daily aptitude, coding & MCQ challenges</span><span className="mt-0.5 block text-xs text-muted-foreground">Choose a difficulty, solve a quick question, and earn coins.</span></span><span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Play today <ArrowRight className="h-4 w-4" aria-hidden="true" /></span></Link></StudentReveal>
     </div>
   );
 }

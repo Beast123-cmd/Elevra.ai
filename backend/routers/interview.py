@@ -577,10 +577,12 @@ def finish(body: FinishBody, caller: Caller = Depends(require_role("student"))):
 
     state = s["transcript"]
     score, feedback, used_ai = mark_interview(turns, known_focus(caller.student_id), state.get("focus") or None)
+    coins_awarded = round(score * 5)
     feedback["minutes"] = round(_elapsed_minutes(s["created_at"]), 1)
     feedback["questions"] = _questions_asked(turns)
     feedback["mode"] = state.get("mode", "full")
     feedback["version"] = 2
+    feedback["coins_awarded"] = coins_awarded
     db().table("mock_interviews").update({"score": score, "feedback": feedback}).eq("id", body.session_id).execute()
     tasks = save_coaching(caller.student_id, body.session_id, feedback)
 
@@ -594,6 +596,7 @@ def finish(body: FinishBody, caller: Caller = Depends(require_role("student"))):
     result = rescore(caller.student_id, avg, count)
     old_p, new_p = result["old"]["pillars"].get("placement"), result["new"]["pillars"].get("placement")
     return {"session_id": body.session_id, "score_5": score, "feedback": feedback, "ai": used_ai, "mock_interview_avg": avg,
+            "coins_awarded": coins_awarded,
             "old_success_score": result["old"]["score"], "new_success_score": result["new"]["score"],
             "old_placement": old_p, "new_placement": new_p, "transcript": turns,
             "tasks": [{"id": t["id"], "day": t["day"], "task": t["task"], "done": t["done"]} for t in tasks]}

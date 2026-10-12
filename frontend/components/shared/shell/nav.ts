@@ -6,8 +6,8 @@ export type ShellRole = "admin" | "faculty" | "student";
 
 export type IconName =
   | "overview" | "workload" | "interventions" | "notifications" | "queue" | "attendance" | "segments"
-  | "dataHealth" | "method" | "evidence" | "users" | "demo" | "home" | "plan" | "certifications"
-  | "hackathons" | "events" | "interview" | "inbox";
+  | "dataHealth" | "method" | "evidence" | "chat" | "users" | "demo" | "home" | "plan" | "certifications"
+  | "hackathons" | "events" | "interview" | "inbox" | "achievements" | "daily";
 
 export interface NavItem { href: string; label: string; icon: IconName; exact?: boolean }
 export interface NavGroup { label: string | null; items: NavItem[] }
@@ -64,6 +64,8 @@ export const NAV: Record<ShellRole, NavGroup[]> = {
         { href: "/student/certifications", label: "Certifications", icon: "certifications" },
         { href: "/student/hackathons", label: "Hackathons", icon: "hackathons" },
         { href: "/student/interview", label: "Mock interview", icon: "interview" },
+        { href: "/student/achievements", label: "Achievements", icon: "achievements" },
+        { href: "/student/daily-challenges", label: "Daily challenges", icon: "daily" },
         { href: "/student/notifications", label: "Inbox", icon: "inbox" },
       ],
     },
