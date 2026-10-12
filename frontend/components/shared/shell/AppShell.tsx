@@ -122,11 +122,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const initial = (email[0] ?? ROLE_LABEL[role][0]).toUpperCase();
 
   return (
-    <div className={`min-h-screen bg-background lg:grid lg:transition-[grid-template-columns] lg:duration-[240ms] lg:ease-[cubic-bezier(.22,.61,.36,1)] motion-reduce:transition-none ${collapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[244px_minmax(0,1fr)]"}`}>
+    <div data-app-shell className={`min-h-screen bg-background lg:grid lg:transition-[grid-template-columns] lg:duration-[240ms] lg:ease-[cubic-bezier(.22,.61,.36,1)] motion-reduce:transition-none ${collapsed ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[244px_minmax(0,1fr)]"}`}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-card focus:px-3 focus:py-2">Skip to content</a>
 
       {/* desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen flex-col border-r border-sidebar-border bg-sidebar px-3 py-4 lg:flex">
+      <aside data-app-sidebar className="sticky top-0 hidden h-screen flex-col border-r border-sidebar-border bg-sidebar px-3 py-4 lg:flex">
         <div className={`mb-6 flex min-h-10 items-center ${collapsed ? "justify-center" : "justify-between px-1"}`}>
           {collapsed ? (
             <button type="button" onClick={toggleCollapsed} className="group grid h-10 w-10 place-items-center rounded-lg text-muted-foreground transition-[background-color,color,transform] duration-150 ease-out hover:bg-card hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none" aria-label="Expand sidebar">

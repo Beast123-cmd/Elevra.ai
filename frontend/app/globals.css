@@ -344,6 +344,14 @@ body {
   }
 }
 
+/* Timed assessments use the whole viewport; keep the app navigation out of the test view. */
+:root:fullscreen [data-app-shell] {
+  display: block !important;
+}
+:root:fullscreen [data-app-sidebar] {
+  display: none !important;
+}
+
 /* Device theme is the default until someone chooses Light or Dark. */
 @media (prefers-color-scheme: dark) {
   html:not(.light):not(.dark) { color-scheme: dark; }
