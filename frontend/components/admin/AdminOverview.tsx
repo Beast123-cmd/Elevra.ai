@@ -10,6 +10,7 @@ import { Empty, PageHeader, Panel } from "@/components/shared/ui-kit";
 import { Funnel, MiniRing, VisualStat } from "@/components/shared/viz";
 import { SearchFilterBar } from "@/components/shared/SearchFilterBar";
 import { PILLARS, type Insight } from "@/lib/types";
+import { PracticeInsights } from "./PracticeInsights";
 import { WeeklyBrief } from "./WeeklyBrief";
 import {
   applyFilters, bandDistribution, filterOptions, heatmapByDepartment, kpis, quadrantPoints, riskBy, type OverviewRow,
@@ -153,6 +154,8 @@ export function AdminOverview({ rows, insights = [], cases = null }: { rows: Ove
             <VisualStat label="Placement-ready" value={k.placementReadyPct === null ? "–" : `${k.placementReadyPct}%`} note="readiness score 70 or more"
               visual={<MiniRing pct={k.placementReadyPct ?? 0} tone="green" label={`${k.placementReadyPct}% placement-ready`} />} />
           </div>
+
+          <PracticeInsights />
 
           {insights.length > 0 && (
             <Panel title="What the data shows" description="Patterns found by joining the sources. Associations in a synthetic cohort, not proof of cause.">

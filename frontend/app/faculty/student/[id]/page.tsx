@@ -5,6 +5,7 @@ import { BriefCard } from "@/components/faculty/BriefCard";
 import { canViewStudent } from "@/components/faculty/interventions";
 import { InterventionPanel } from "@/components/faculty/InterventionPanel";
 import { MessageDrafts } from "@/components/faculty/MessageDrafts";
+import { PracticePanel } from "@/components/faculty/PracticePanel";
 import { EmptyState } from "@/components/shared/Kpi";
 import { getIdentity } from "@/components/shared/session";
 import { StudentProfile } from "@/components/shared/StudentProfile";
@@ -58,6 +59,7 @@ export default function StudentDetailPage() {
         brief={<BriefCard profile={profile} />}
         support={
           <div className="space-y-4">
+            <PracticePanel studentId={profile.student_id} />
             <InterventionPanel studentId={profile.student_id} scoreBefore={profile.score} facultyId={facultyId} />
             <MessageDrafts profile={profile} />
           </div>
