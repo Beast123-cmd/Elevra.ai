@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Database, FileCheck2, Gauge, Layers3, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Database, FileCheck2, Gauge, Github, Layers3, Linkedin, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { Brand } from "@/components/shared/Brand";
 
 const SIGNALS = [
@@ -46,6 +46,12 @@ const MVP = [
   { icon: Sparkles, title: "Student improvement path", detail: "What-if exploration, skill gaps and relevant next steps in the student workspace." },
   { icon: UsersRound, title: "Mentor and campus views", detail: "A prioritized check-in queue plus cohort patterns and data-health insights." },
 ];
+
+const TEAM = [
+  { name: "Utkarsh Waghmare", initials: "UW", linkedin: "https://www.linkedin.com/in/utkarsh-waghmare-39a068254/", github: "https://github.com/beutkarshh" },
+  { name: "Aayush Angal", initials: "AA", linkedin: "https://www.linkedin.com/in/aayushangal/", github: "https://github.com/Beast123-cmd" },
+  { name: "Mahesh Loya", initials: "ML", linkedin: "https://www.linkedin.com/in/maheshloya/", github: "https://github.com/Mahesh-Loya" },
+] as const;
 
 function FlowIllustration({ step, signal, onSignalChange }: { step: number; signal: number; onSignalChange: (index: number) => void }) {
   const [showAll, setShowAll] = useState(false);
@@ -240,7 +246,7 @@ export default function Home() {
             <a href="#journey" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">How it works</a>
             <a href="#mvp" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">MVP features</a>
             <a href="#impact" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">Impact</a>
-            <Link href="/about" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">About us</Link>
+            <a href="#about" className="text-xs font-medium text-slate-600 no-underline transition-colors hover:text-[#154e49] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62]">About us</a>
           </nav>
           <Link href="/login" className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md bg-[#154e49] px-3.5 text-xs font-semibold text-white no-underline transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#103e3a] hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#154e49] focus-visible:ring-offset-2 sm:h-11 sm:px-4 sm:text-sm">
             Sign in <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -315,7 +321,32 @@ export default function Home() {
         </div>
       </section>
 
-      <footer data-reveal className="mx-auto flex max-w-[1240px] flex-col gap-2 border-t border-[#e0e6e1] px-5 py-5 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>Elevra.ai · Student success intelligence · <Link href="/about" className="underline decoration-slate-300 underline-offset-4 hover:text-[#154e49]">About us</Link></span><span>Scores are guidance signals, shown with their drivers and available data.</span></footer>
+      <section id="about" className="scroll-mt-20 border-t border-[#e0e6e1] bg-white" aria-labelledby="about-heading">
+        <div className="mx-auto max-w-[1240px] px-5 py-14 sm:px-8 sm:py-20">
+          <p data-reveal className="text-[10px] font-semibold uppercase tracking-[.15em] text-[#286a62]">About us</p>
+          <h2 data-reveal data-reveal-delay="1" id="about-heading" className="mt-3 max-w-[16ch] text-[clamp(1.8rem,4vw,2.8rem)] font-semibold leading-[1.08] tracking-[-.045em] text-[#172824]">The team behind Elevra.</h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-3 sm:gap-5">
+            {TEAM.map((person, index) => (
+              <li key={person.name} data-reveal data-reveal-delay={String(index + 1)} className="flex min-w-0 flex-col items-start gap-4 rounded-2xl border border-[#dbe5df] bg-[#fafbf9] p-5 sm:p-6">
+                <div className="flex min-w-0 items-center gap-3.5">
+                  <span aria-hidden="true" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#eaf2ed] text-sm font-semibold text-[#286a62]">{person.initials}</span>
+                  <h3 className="min-w-0 text-base font-semibold leading-tight tracking-[-.025em] text-[#172824]">{person.name}</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <a href={person.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${person.name} on LinkedIn (opens in a new tab)`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-[#dbe5df] bg-white px-3.5 text-xs font-semibold text-[#154e49] no-underline transition-[background-color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[#b8cec3] hover:bg-[#f5f8f5] active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2 motion-reduce:transform-none">
+                    <Linkedin className="h-4 w-4" aria-hidden="true" />LinkedIn
+                  </a>
+                  <a href={person.github} target="_blank" rel="noopener noreferrer" aria-label={`${person.name} on GitHub (opens in a new tab)`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-[#dbe5df] bg-white px-3.5 text-xs font-semibold text-[#154e49] no-underline transition-[background-color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[#b8cec3] hover:bg-[#f5f8f5] active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#286a62] focus-visible:ring-offset-2 motion-reduce:transform-none">
+                    <Github className="h-4 w-4" aria-hidden="true" />GitHub
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <footer data-reveal className="mx-auto flex max-w-[1240px] flex-col gap-2 border-t border-[#e0e6e1] px-5 py-5 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>Elevra.ai · Student success intelligence · <a href="#about" className="underline decoration-slate-300 underline-offset-4 hover:text-[#154e49]">About us</a></span><span>Scores are guidance signals, shown with their drivers and available data.</span></footer>
       </div>
     </main>
   );

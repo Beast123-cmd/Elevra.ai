@@ -154,7 +154,6 @@ export function DailyChallenges() {
   }
 
   const topic = TOPICS.find((item) => item.id === category)!;
-  const level = LEVELS.find((item) => item.id === difficulty)!;
 
   return <main className="mx-auto w-full max-w-[1120px] px-4 py-7 sm:px-6 sm:py-9 lg:px-10">
     <StudentReveal><header className="mb-6 border-l-2 border-primary pl-4"><p className="text-[11px] font-semibold uppercase tracking-[.12em] text-primary">Build your streak</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Daily & weekly tests</h1><p className="mt-1 text-sm text-muted-foreground">Choose a topic and difficulty, take a timed test, and earn coins for each correct answer.</p></header></StudentReveal>
