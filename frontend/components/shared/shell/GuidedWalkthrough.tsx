@@ -217,8 +217,8 @@ export function GuidedWalkthrough({ role, ready, userId }: { role: ShellRole; re
   return (
     <>
       <button ref={launcherRef} type="button" onClick={start} title="Walk me through this dashboard" aria-label="Start dashboard walkthrough"
-        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3">
-        <Compass className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Walkthrough</span>
+        className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3">
+        <Compass className="h-[18px] w-[18px]" aria-hidden="true" /><span className="hidden sm:inline">Walkthrough</span>
       </button>
       {active && step && position && tooltip && (
         createPortal(<>

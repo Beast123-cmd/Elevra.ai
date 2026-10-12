@@ -165,7 +165,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
               {identityReady && userId && <GuidedWalkthrough role={role} ready={identityReady} userId={userId} />}
               {role === "student" && <Link href="/student/store" aria-label="Rewards store" title="Rewards store" className="grid h-10 w-10 place-items-center rounded-md border border-border text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ShoppingBag className="h-[18px] w-[18px]" aria-hidden="true" /></Link>}
-              <ThemeToggle className="mr-1" />
+              <ThemeToggle />
               <button type="button" onClick={signOutAndLeave} className="flex h-10 items-center gap-2 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Sign out">
                 <LogOut className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Sign out</span>
               </button>
