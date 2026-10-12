@@ -79,7 +79,7 @@ export function DemoGuide() {
       router.push(href);
       router.refresh();
     } catch {
-      setError(`Couldn't switch to the ${account.label} demo account. Sign out and use the ${account.label} button on the login page instead.`);
+      setError(`Couldn't switch to the ${account.label} demo account. Sign out and sign in as the ${account.label} account instead.`);
       setBusy(null);
     }
   }
