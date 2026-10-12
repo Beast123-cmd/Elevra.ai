@@ -23,13 +23,23 @@ export interface StudentAchievements {
   challengeCount: number;
 }
 
+function safeCount(value: unknown): number {
+  const count = Number(value);
+  return Number.isFinite(count) ? Math.max(0, count) : 0;
+}
+
 export function buildAchievements(activities: AchievementActivity[], interviews: AchievementInterview[], dailyPoints = 0, loginStreak = 0, challengeCount = 0, loginDays = 0, testCount = 0): StudentAchievements {
   const counts = activities.reduce((result, item) => {
     result[item.type] += 1;
     return result;
   }, { event: 0, club: 0, hackathon: 0, certification: 0 });
+  const earnedPoints = safeCount(dailyPoints);
+  const safeLoginStreak = safeCount(loginStreak);
+  const safeLoginDays = safeCount(loginDays);
+  const safeTestCount = safeCount(testCount);
+  const safeChallengeCount = safeCount(challengeCount);
   const xp = counts.hackathon * 100 + counts.certification * 80 + (counts.event + counts.club) * 25
-    + interviews.length * 30 + interviews.filter((item) => item.score >= 4.5).length * 20 + dailyPoints;
+    + interviews.length * 30 + interviews.filter((item) => item.score >= 4.5).length * 20 + earnedPoints;
   const titles = [
     { name: "Campus Newcomer", xp: 0 },
     { name: "Opportunity Scout", xp: 1000 },
@@ -41,7 +51,8 @@ export function buildAchievements(activities: AchievementActivity[], interviews:
   const current = [...titles].reverse().find((item) => xp >= item.xp) ?? titles[0];
   const next = titles[titles.indexOf(current) + 1] ?? null;
   return {
-    activities, interviews, xp, title: current.name, nextTitle: next?.name ?? null, loginStreak, loginDays, testCount, challengeCount,
+    activities, interviews, xp, title: current.name, nextTitle: next?.name ?? null,
+    loginStreak: safeLoginStreak, loginDays: safeLoginDays, testCount: safeTestCount, challengeCount: safeChallengeCount,
     xpToNext: next ? next.xp - xp : 0,
     titleProgress: next ? Math.max(0, Math.min(100, ((xp - current.xp) / (next.xp - current.xp)) * 100)) : 100,
   };
