@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
-import { BadgeCheck, Coins, LoaderCircle, RefreshCw, ShoppingBag, Sparkles } from "lucide-react";
+import { BadgeCheck, Coins, LoaderCircle, RefreshCw } from "lucide-react";
 import { StudentReveal } from "./StudentReveal";
 
 interface StoreItem { item_id: string; title: string; description: string; cost_coins: number; image_path: string; stock: number }
@@ -45,14 +45,7 @@ export function StudentStore() {
     {state.status === "loading" && <Card className="rounded-xl border-border"><CardContent className="flex items-center gap-2 p-5 text-sm text-muted-foreground"><LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />Loading the rewards store…</CardContent></Card>}
     {state.status === "error" && <Card role="alert" className="rounded-xl border-border"><CardContent className="p-5"><h2 className="font-semibold text-foreground">Store unavailable</h2><p className="mt-1 text-sm text-muted-foreground">{state.message}</p><button onClick={reload} className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium hover:bg-muted"><RefreshCw className="h-4 w-4" aria-hidden="true" />Try again</button></CardContent></Card>}
     {state.status === "ready" && <>
-      <StudentReveal delayMs={70}><section className="relative overflow-hidden rounded-2xl border border-border bg-card" aria-label="Elevra merchandise collection">
-        <div className="grid lg:grid-cols-[.85fr_1.15fr]">
-          <div className="flex flex-col justify-center p-5 sm:p-7 lg:p-9"><span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"><Coins className="h-4 w-4" aria-hidden="true" />{state.data.coin_balance.toLocaleString()} coins</span><h2 className="mt-4 max-w-md text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Good work deserves good gear.</h2><p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">Earn coins by showing up and practising. Redeem them for Elevra merch and collect it on campus.</p><div className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground"><Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />Daily login and challenge coins go straight to your wallet.</div></div>
-          <div className="relative min-h-[210px] sm:min-h-[280px]"><Image src="/images/elevra-merch-collection.webp" alt="Elevra forest-green t-shirt, backpack, cap, pen, and sticker pack" fill priority sizes="(max-width: 1024px) 100vw, 60vw" className="object-cover" /></div>
-        </div>
-      </section></StudentReveal>
-
-      <div className="mb-3 mt-7 flex flex-wrap items-end justify-between gap-2"><div><h2 className="text-lg font-semibold text-foreground">Choose your reward</h2><p className="mt-1 text-sm text-muted-foreground">Redemptions create a campus pickup request.</p></div><span className="text-xs text-muted-foreground">Limited stock · first come, first served</span></div>
+      <StudentReveal delayMs={70}><div className="mb-3 mt-2 flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-semibold text-foreground">Choose your reward</h2><p className="mt-1 text-sm text-muted-foreground">Redemptions create a campus pickup request.</p></div><div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"><Coins className="h-4 w-4" aria-hidden="true" />{state.data.coin_balance.toLocaleString()} coins</span><span className="text-xs text-muted-foreground">Limited stock · first come, first served</span></div></div></StudentReveal>
       {notice && <p role={notice.tone === "error" ? "alert" : "status"} className={`mb-4 rounded-lg border px-4 py-3 text-sm ${notice.tone === "success" ? "border-primary/30 bg-primary/5 text-primary" : "border-destructive/30 bg-destructive/5 text-destructive"}`}>{notice.message}</p>}
       {state.data.items.length === 0 ? <Card className="rounded-xl border-border"><CardContent className="p-5"><h3 className="font-semibold text-foreground">No rewards are available right now</h3><p className="mt-1 text-sm text-muted-foreground">Check back soon for new Elevra merch.</p></CardContent></Card> :
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{state.data.items.map((item, index) => {
