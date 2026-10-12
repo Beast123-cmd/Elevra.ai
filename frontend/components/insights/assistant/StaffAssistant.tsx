@@ -126,8 +126,8 @@ export function StaffAssistant({ role }: { role: "faculty" | "admin" }) {
 
   const lastAnswer = turns[turns.length - 1]?.answer;
   const noun = role === "admin" ? "students" : "mentees";
-  // The full-page chat screens already have a chat box of their own.
-  const hidden = path === "/insights/assistant" || path === "/admin/chat";
+  // The full-page chat screen already has a chat box of its own.
+  const hidden = path === "/insights/assistant";
 
   return (
     <AssistantShell

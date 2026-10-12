@@ -1,7 +1,7 @@
 "use client";
 import {
   Activity, Award, BarChart3, Bell, BookOpen, CalendarDays, ClipboardCheck, Compass, Database, FileCheck2, House, Inbox, ListChecks,
-  LogOut, Menu, MessageSquareText, Mic2, PanelLeftClose, PanelLeftOpen, PieChart, ShieldCheck, Trophy, Users, X, type LucideIcon,
+  LogOut, Menu, Mic2, PanelLeftClose, PanelLeftOpen, PieChart, ShieldCheck, Trophy, Users, X, type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,7 +18,7 @@ import { StaffAssistant } from "@/components/insights/assistant/StaffAssistant";
 const ICONS: Record<IconName, LucideIcon> = {
   overview: BarChart3, workload: Activity, interventions: ClipboardCheck, notifications: Bell, queue: ListChecks,
   attendance: CalendarDays, segments: PieChart, dataHealth: Database, method: ShieldCheck, evidence: FileCheck2,
-  chat: MessageSquareText, users: Users, demo: Compass, home: House, plan: BookOpen, certifications: Award,
+  users: Users, demo: Compass, home: House, plan: BookOpen, certifications: Award,
   hackathons: Trophy, events: CalendarDays, interview: Mic2, inbox: Inbox,
 };
 const ROLE_LABEL: Record<ShellRole, string> = { admin: "Administrator", faculty: "Faculty mentor", student: "Student" };
